@@ -5,14 +5,18 @@ import org.cloudbus.cloudsim.UtilizationModel;
 
 public class Tuple extends Cloudlet{
 
-	private String queryId;
-	private String destOperatorId;
-	private String srcOperatorId;
-	private String sensorName;
+	public static final int UP = 1;
+	public static final int DOWN = 2;
+	
+	private String appId;
+	
+	private String tupleType;
+	private String destModuleName;
+	private String srcModuleName;
 	private int actualTupleId;
-	private double emitTime;
-	private String sensorType;
-	public Tuple(String queryId, int cloudletId, long cloudletLength, int pesNumber,
+	private int direction;
+	
+	public Tuple(String appId, int cloudletId, int direction, long cloudletLength, int pesNumber,
 			long cloudletFileSize, long cloudletOutputSize,
 			UtilizationModel utilizationModelCpu,
 			UtilizationModel utilizationModelRam,
@@ -20,31 +24,8 @@ public class Tuple extends Cloudlet{
 		super(cloudletId, cloudletLength, pesNumber, cloudletFileSize,
 				cloudletOutputSize, utilizationModelCpu, utilizationModelRam,
 				utilizationModelBw);
-		setQueryId(queryId);
-	}
-
-	public String getQueryId() {
-		return queryId;
-	}
-
-	public void setQueryId(String queryId) {
-		this.queryId = queryId;
-	}
-
-	public String getDestOperatorId() {
-		return destOperatorId;
-	}
-
-	public void setDestOperatorId(String destOperatorId) {
-		this.destOperatorId = destOperatorId;
-	}
-
-	public String getSensorName() {
-		return sensorName;
-	}
-
-	public void setSensorName(String sensorName) {
-		this.sensorName = sensorName;
+		setAppId(appId);
+		setDirection(direction);
 	}
 
 	public int getActualTupleId() {
@@ -55,28 +36,44 @@ public class Tuple extends Cloudlet{
 		this.actualTupleId = actualTupleId;
 	}
 
-	public String getSrcOperatorId() {
-		return srcOperatorId;
+	public String getAppId() {
+		return appId;
 	}
 
-	public void setSrcOperatorId(String srcOperatorId) {
-		this.srcOperatorId = srcOperatorId;
+	public void setAppId(String appId) {
+		this.appId = appId;
 	}
 
-	public double getEmitTime() {
-		return emitTime;
+	public String getTupleType() {
+		return tupleType;
 	}
 
-	public void setEmitTime(double emitTime) {
-		this.emitTime = emitTime;
+	public void setTupleType(String tupleType) {
+		this.tupleType = tupleType;
 	}
 
-	public String getSensorType() {
-		return sensorType;
+	public String getDestModuleName() {
+		return destModuleName;
 	}
 
-	public void setSensorType(String sensorType) {
-		this.sensorType = sensorType;
+	public void setDestModuleName(String destModuleName) {
+		this.destModuleName = destModuleName;
+	}
+
+	public String getSrcModuleName() {
+		return srcModuleName;
+	}
+
+	public void setSrcModuleName(String srcModuleName) {
+		this.srcModuleName = srcModuleName;
+	}
+
+	public int getDirection() {
+		return direction;
+	}
+
+	public void setDirection(int direction) {
+		this.direction = direction;
 	}
 
 }

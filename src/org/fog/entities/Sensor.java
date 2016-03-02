@@ -18,16 +18,17 @@ public class Sensor extends SimEntity{
 	private long outputSize;
 	private double lastTransmitTime = -1;
 	private double transmitInterval;
-	private String queryId;
+	private String appId;
 	private int userId;
-	private String sensorType;
+	private String tupleType;
+	private String sensorName;
 	private int tupleCpuSize;
 	private int tupleNwSize;
 	private String spoutName;
 	
-	public Sensor(String name, int userId, String queryId, int gatewayDeviceId, GeoLocation geoLocation, double transmitInterval, int cpuLength, int nwLength, String type, String spoutName) {
+	public Sensor(String name, int userId, String appId, int gatewayDeviceId, GeoLocation geoLocation, double transmitInterval, int cpuLength, int nwLength, String tupleType, String spoutName) {
 		super(name);
-		this.setQueryId(queryId);
+		this.setAppId(appId);
 		this.gatewayDeviceId = gatewayDeviceId;
 		this.geoLocation = geoLocation;
 		this.length = cpuLength;
@@ -35,8 +36,6 @@ public class Sensor extends SimEntity{
 		this.outputSize = 3;
 		this.setTransmitInterval(transmitInterval);
 		setUserId(userId);
-		setSensorType(type);
-		System.out.println(this.sensorType);
 		setTupleCpuSize(cpuLength);
 		setTupleNwSize(nwLength);
 		setSpoutName(spoutName);
@@ -44,15 +43,16 @@ public class Sensor extends SimEntity{
 	
 	public void transmit(double delay){
 		
-		Tuple tuple = new Tuple(getQueryId(), FogUtils.generateTupleId(), length, 1, fileSize, outputSize, new UtilizationModelFull(), new UtilizationModelFull(), new UtilizationModelFull());
+		Tuple tuple = new Tuple(getAppId(), FogUtils.generateTupleId(), Tuple.UP, length, 1, fileSize, outputSize, 
+				new UtilizationModelFull(), new UtilizationModelFull(), new UtilizationModelFull());
 		tuple.setUserId(getUserId());
-		tuple.setSensorType(getSensorType());
+		tuple.setTupleType(getTupleType());
 		tuple.setActualTupleId(FogUtils.generateActualTupleId());
 		//System.out.println((CloudSim.clock()+delay)+" : Sensor "+getName()+" sending actual tuple id "+tuple.getActualTupleId());
 		//System.out.println(CloudSim.getEntityName(gatewayDeviceId));
-		tuple.setDestOperatorId(getSpoutName());
-		tuple.setSrcOperatorId("sensor-"+getSensorType()+"-");
-		tuple.setEmitTime(CloudSim.clock()+delay);
+		tuple.setDestModuleName(getSpoutName());
+		tuple.setSrcModuleName(getSensorName());
+		//tuple.setEmitTime(CloudSim.clock()+delay);
 		//TupleEmitTimes.getInstance().setEmitTime(tuple.getActualTupleId(), CloudSim.clock()+delay);
 		send(gatewayDeviceId, delay, FogEvents.TUPLE_ARRIVAL,tuple);
 		
@@ -112,28 +112,12 @@ public class Sensor extends SimEntity{
 		this.lastTransmitTime = lastTransmitTime;
 	}
 
-	public String getQueryId() {
-		return queryId;
-	}
-
-	public void setQueryId(String queryId) {
-		this.queryId = queryId;
-	}
-
 	public int getUserId() {
 		return userId;
 	}
 
 	public void setUserId(int userId) {
 		this.userId = userId;
-	}
-
-	public String getSensorType() {
-		return sensorType;
-	}
-
-	public void setSensorType(String sensorType) {
-		this.sensorType = sensorType;
 	}
 
 	public int getTupleCpuSize() {
@@ -158,6 +142,30 @@ public class Sensor extends SimEntity{
 
 	public void setSpoutName(String spoutName) {
 		this.spoutName = spoutName;
+	}
+
+	public String getTupleType() {
+		return tupleType;
+	}
+
+	public void setTupleType(String tupleType) {
+		this.tupleType = tupleType;
+	}
+
+	public String getSensorName() {
+		return sensorName;
+	}
+
+	public void setSensorName(String sensorName) {
+		this.sensorName = sensorName;
+	}
+
+	public String getAppId() {
+		return appId;
+	}
+
+	public void setAppId(String appId) {
+		this.appId = appId;
 	}
 
 }

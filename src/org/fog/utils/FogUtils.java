@@ -29,5 +29,5 @@ public class FogUtils {
 	//public static int MAX = 10000000;
 	public static int MAX = 100000;
 	
-	public static Map<String, GeoCoverage> queryIdToGeoCoverageMap = new HashMap<String, GeoCoverage>();
+	public static Map<String, GeoCoverage> appIdToGeoCoverageMap = new HashMap<String, GeoCoverage>();
 }

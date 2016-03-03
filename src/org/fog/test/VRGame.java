@@ -80,7 +80,7 @@ public class VRGame {
 	}
 
 	private static void createSensor(String sensorName, Application app, int userId, int gatewayDeviceId, int transmitInterval, int tupleCpuSize, int tupleNwSize, String tupleType, String destOpId){
-		Sensor sensor = new Sensor(sensorName, userId, app.getAppId(), gatewayDeviceId, null, transmitInterval, tupleCpuSize, tupleNwSize, tupleType, destOpId);
+		new Sensor(sensorName, userId, app.getAppId(), gatewayDeviceId, null, transmitInterval, tupleCpuSize, tupleNwSize, tupleType, destOpId);
 		//app.registerSensor(sensor0);
 	}
 	private static int createActuator(String actuatorName, String appId, int userId, int gatewayDeviceId, String actuatorType, String srcModuleName){
@@ -89,10 +89,11 @@ public class VRGame {
 		//app.registerSensor(sensor0);
 	}
 	
+	@SuppressWarnings("serial")
 	private static List<FogDevice> createFogDevices(String appId, int userId, int transmitInterval) {
 		final FogDevice gw0 = createFogDevice("gateway-0", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 1);
 		
-		final FogDevice cloud = createFogDevice("cloud", FogUtils.MAX, new GeoCoverage(-FogUtils.MAX, FogUtils.MAX, -FogUtils.MAX, FogUtils.MAX), FogUtils.MAX, 1000, 0);
+		final FogDevice cloud = createFogDevice("cloud", FogUtils.MAX, new GeoCoverage(-FogUtils.MAX, FogUtils.MAX, -FogUtils.MAX, FogUtils.MAX), FogUtils.MAX, 1000, 1);
 		
 		gw0.setParentId(cloud.getId());
 		cloud.setParentId(-1);
@@ -161,6 +162,7 @@ public class VRGame {
 		return fogdevice;
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked", "serial" })
 	private static Application createApplication(String appId, int userId, int transmitInterval){
 		int mips = 1000;
 		long size = 10000; // image size (MB)

@@ -27,7 +27,7 @@ public class Actuator extends SimEntity{
 
 	@Override
 	public void startEntity() {
-		//send(gatewayDeviceId, Math.random()*10+CloudSim.getMinTimeBetweenEvents(), FogEvents.SENSOR_JOINED, geoLocation);
+		sendNow(gatewayDeviceId, FogEvents.ACTUATOR_JOINED);
 	}
 
 	@Override
@@ -36,12 +36,11 @@ public class Actuator extends SimEntity{
 		case FogEvents.TUPLE_ARRIVAL:
 			processTupleArrival(ev);
 			break;
-		}
-			
+		}		
 	}
 
 	private void processTupleArrival(SimEvent ev) {
-		Tuple tuple = (Tuple)ev.getData();
+		//Tuple tuple = (Tuple)ev.getData();
 		Logger.debug(getName(), "Tuple arrived.");
 	}
 

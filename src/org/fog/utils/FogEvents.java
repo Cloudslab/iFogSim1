@@ -21,4 +21,5 @@ public class FogEvents {
 	public static final int CONTROL_MSG_ARRIVAL = BASE + 17;
 	public static final int UPDATE_NORTH_TUPLE_QUEUE = BASE+18;
 	public static final int UPDATE_SOUTH_TUPLE_QUEUE = BASE+19;
+	public static final int ACTUATOR_JOINED = BASE+20;
 }

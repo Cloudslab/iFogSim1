@@ -183,7 +183,7 @@ public class FogDevice extends Datacenter {
 	public String getOperatorName(int vmId){
 		for(Vm vm : this.getHost().getVmList()){
 			if(vm.getId() == vmId)
-				return ((StreamOperator)vm).getName();
+				return ((AppModule)vm).getName();
 		}
 		return null;
 	}
@@ -221,7 +221,7 @@ public class FogDevice extends Datacenter {
 	private void updateAllocatedMips(String incomingOperator){
 		getHost().getVmScheduler().deallocatePesForAllVms();
 		for(final Vm vm : getHost().getVmList()){
-			if(vm.getCloudletScheduler().runningCloudlets() > 0 || ((StreamOperator)vm).getName().equals(incomingOperator)){
+			if(vm.getCloudletScheduler().runningCloudlets() > 0 || ((AppModule)vm).getName().equals(incomingOperator)){
 				getHost().getVmScheduler().allocatePesForVm(vm, new ArrayList<Double>(){
 					private static final long serialVersionUID = 1L;
 				{add((double) getHost().getTotalMips());}});
@@ -232,7 +232,7 @@ public class FogDevice extends Datacenter {
 			}
 		}
 		for(final Vm vm : getHost().getVmList()){
-			StreamOperator operator = (StreamOperator)vm;
+			AppModule operator = (AppModule)vm;
 			operator.updateVmProcessing(CloudSim.clock(), getVmAllocationPolicy().getHost(operator).getVmScheduler()
 					.getAllocatedMipsForVm(operator));
 		}
@@ -240,7 +240,7 @@ public class FogDevice extends Datacenter {
 	
 	private void updateUtils(){
 		for(Vm vm : getHost().getVmList()){
-			StreamOperator operator = (StreamOperator)vm;
+			AppModule operator = (AppModule)vm;
 			if(utilization.get(operator.getName()).size() > RESOURCE_USAGE_VECTOR_SIZE){
 				utilization.get(operator.getName()).remove();
 			}
@@ -256,7 +256,7 @@ public class FogDevice extends Datacenter {
 	private void displayAllocatedMipsForOperators(){
 		System.out.println("-----------------------------------------");
 		for(Vm vm : getHost().getVmList()){
-			StreamOperator operator = (StreamOperator)vm;
+			AppModule operator = (AppModule)vm;
 			System.out.println("Allocated MIPS for "+operator.getName()+" : "+getHost().getVmScheduler().getTotalAllocatedMipsForVm(operator));
 		}
 		System.out.println("-----------------------------------------");
@@ -283,6 +283,7 @@ public class FogDevice extends Datacenter {
 			updateCloudTraffic();
 		}
 		Tuple tuple = (Tuple)ev.getData();
+		//System.out.println(CloudSim.clock()+" : "+getName()+" : has received a tuple = "+tuple.getActualTupleId());
 		send(ev.getSource(), CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ACK);
 		addChild(ev.getSource());
 		if(FogUtils.appIdToGeoCoverageMap.containsKey(tuple.getAppId())){
@@ -292,7 +293,7 @@ public class FogDevice extends Datacenter {
 		}
 		
 		if(getHost().getVmList().size() > 0){
-			final StreamOperator operator = (StreamOperator)getHost().getVmList().get(0);
+			final AppModule operator = (AppModule)getHost().getVmList().get(0);
 			if(CloudSim.clock() > 100){
 				getHost().getVmScheduler().deallocatePesForVm(operator);
 				getHost().getVmScheduler().allocatePesForVm(operator, new ArrayList<Double>(){
@@ -309,7 +310,7 @@ public class FogDevice extends Datacenter {
 			if(appToModulesMap.get(tuple.getAppId()).contains(tuple.getDestModuleName())){
 				int vmId = -1;
 				for(Vm vm : getHost().getVmList()){
-					if(((StreamOperator)vm).getName().equals(tuple.getDestModuleName()))
+					if(((AppModule)vm).getName().equals(tuple.getDestModuleName()))
 						vmId = vm.getId();
 				}
 				if(vmId < 0){

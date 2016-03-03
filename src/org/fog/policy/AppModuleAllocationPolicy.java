@@ -7,19 +7,18 @@ import java.util.Map;
 import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.VmAllocationPolicy;
-import org.fog.entities.StreamOperator;
 
-public class StreamOperatorAllocationPolicy extends VmAllocationPolicy{
+public class AppModuleAllocationPolicy extends VmAllocationPolicy{
 
 	private Host fogHost;
 	
-	private List<Integer> streamOperatorIds;
+	private List<Integer> appModuleIds;
 	
-	public StreamOperatorAllocationPolicy(List<? extends Host> list) {
+	public AppModuleAllocationPolicy(List<? extends Host> list) {
 		super(list);
 		if(list.size()==1)
 			fogHost = list.get(0);
-		streamOperatorIds = new ArrayList<Integer>();
+		appModuleIds = new ArrayList<Integer>();
 	}
 
 	@Override
@@ -28,7 +27,7 @@ public class StreamOperatorAllocationPolicy extends VmAllocationPolicy{
 		boolean result = host.vmCreate(vm);
 		//System.out.println("Trying to create "+((StreamOperator)vm).getName()+" in device "+host.getDatacenter().getName()+" ---> "+result);
 		if (result) { // if vm were succesfully created in the host
-			getStreamOperatorIds().add(vm.getId());
+			getAppModuleIdsIds().add(vm.getId());
 		}
 		
 		return result;
@@ -39,7 +38,7 @@ public class StreamOperatorAllocationPolicy extends VmAllocationPolicy{
 		boolean result = host.vmCreate(vm);
 
 		if (result) { // if vm were succesfully created in the host
-			getStreamOperatorIds().add(vm.getId());
+			getAppModuleIdsIds().add(vm.getId());
 		}
 		
 		return result;
@@ -77,12 +76,12 @@ public class StreamOperatorAllocationPolicy extends VmAllocationPolicy{
 		this.fogHost = fogHost;
 	}
 
-	public List<Integer> getStreamOperatorIds() {
-		return streamOperatorIds;
+	public List<Integer> getAppModuleIdsIds() {
+		return appModuleIds;
 	}
 
-	public void setStreamOperatorIds(List<Integer> streamOperatorIds) {
-		this.streamOperatorIds = streamOperatorIds;
+	public void setAppModuleIds(List<Integer> appModuleIds) {
+		this.appModuleIds = appModuleIds;
 	}
 
 }

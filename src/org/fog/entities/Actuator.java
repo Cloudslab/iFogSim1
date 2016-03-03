@@ -12,14 +12,16 @@ public class Actuator extends SimEntity{
 	private String appId;
 	private int userId;
 	private String actuatorType;
+	private String srcModuleName;
 	
-	public Actuator(String name, int userId, String appId, int gatewayDeviceId, GeoLocation geoLocation, String actuatorType) {
+	public Actuator(String name, int userId, String appId, int gatewayDeviceId, GeoLocation geoLocation, String actuatorType, String srcModuleName) {
 		super(name);
 		this.setAppId(appId);
 		this.gatewayDeviceId = gatewayDeviceId;
 		this.geoLocation = geoLocation;
 		setUserId(userId);
 		setActuatorType(actuatorType);
+		setSrcModuleName(srcModuleName);
 	}
 
 	@Override
@@ -85,6 +87,14 @@ public class Actuator extends SimEntity{
 
 	public void setActuatorType(String actuatorType) {
 		this.actuatorType = actuatorType;
+	}
+
+	public String getSrcModuleName() {
+		return srcModuleName;
+	}
+
+	public void setSrcModuleName(String srcModuleName) {
+		this.srcModuleName = srcModuleName;
 	}
 
 }

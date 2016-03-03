@@ -1,5 +1,6 @@
 package org.fog.dsp;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,11 +17,12 @@ public class OperatorPlacementOnlyCloud {
 	public OperatorPlacementOnlyCloud(List<FogDevice> fogDevices, Application application){
 		this.setFogDevices(fogDevices);
 		this.setApplication(application);
-		
+		this.moduleToDeviceMap = new HashMap<String, Integer>();
 		List<AppModule> modules = application.getModules();
 		for(AppModule module : modules){
 			FogDevice currentDevice = getDeviceById(CloudSim.getEntityId("cloud"));
 			if(canBeCreated(currentDevice, module)){
+				
 				moduleToDeviceMap.put(module.getName(), currentDevice.getId());
 			}
 		}		

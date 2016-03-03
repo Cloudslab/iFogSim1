@@ -7,7 +7,6 @@ import org.cloudbus.cloudsim.core.SimEvent;
 import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
 import org.fog.utils.GeoLocation;
-import org.fog.utils.TupleEmitTimes;
 
 public class Sensor extends SimEntity{
 
@@ -24,9 +23,10 @@ public class Sensor extends SimEntity{
 	private String sensorName;
 	private int tupleCpuSize;
 	private int tupleNwSize;
-	private String spoutName;
+	private String destModuleName;
 	
-	public Sensor(String name, int userId, String appId, int gatewayDeviceId, GeoLocation geoLocation, double transmitInterval, int cpuLength, int nwLength, String tupleType, String spoutName) {
+	public Sensor(String name, int userId, String appId, int gatewayDeviceId, GeoLocation geoLocation, 
+			double transmitInterval, int cpuLength, int nwLength, String tupleType, String destModuleName) {
 		super(name);
 		this.setAppId(appId);
 		this.gatewayDeviceId = gatewayDeviceId;
@@ -38,7 +38,8 @@ public class Sensor extends SimEntity{
 		setUserId(userId);
 		setTupleCpuSize(cpuLength);
 		setTupleNwSize(nwLength);
-		setSpoutName(spoutName);
+		setDestModuleName(destModuleName);
+		setTupleType(tupleType);
 	}
 	
 	public void transmit(double delay){
@@ -48,12 +49,8 @@ public class Sensor extends SimEntity{
 		tuple.setUserId(getUserId());
 		tuple.setTupleType(getTupleType());
 		tuple.setActualTupleId(FogUtils.generateActualTupleId());
-		//System.out.println((CloudSim.clock()+delay)+" : Sensor "+getName()+" sending actual tuple id "+tuple.getActualTupleId());
-		//System.out.println(CloudSim.getEntityName(gatewayDeviceId));
-		tuple.setDestModuleName(getSpoutName());
+		tuple.setDestModuleName(getDestModuleName());
 		tuple.setSrcModuleName(getSensorName());
-		//tuple.setEmitTime(CloudSim.clock()+delay);
-		//TupleEmitTimes.getInstance().setEmitTime(tuple.getActualTupleId(), CloudSim.clock()+delay);
 		send(gatewayDeviceId, delay, FogEvents.TUPLE_ARRIVAL,tuple);
 		
 		lastTransmitTime = CloudSim.clock();
@@ -68,7 +65,6 @@ public class Sensor extends SimEntity{
 	public void processEvent(SimEvent ev) {
 		switch(ev.getTag()){
 		case FogEvents.TUPLE_ACK:
-			//System.out.println("Tuple ack received at time \t"+CloudSim.clock());
 			transmit(transmitInterval);
 			break;
 		}
@@ -136,14 +132,6 @@ public class Sensor extends SimEntity{
 		this.tupleNwSize = tupleNwSize;
 	}
 
-	public String getSpoutName() {
-		return spoutName;
-	}
-
-	public void setSpoutName(String spoutName) {
-		this.spoutName = spoutName;
-	}
-
 	public String getTupleType() {
 		return tupleType;
 	}
@@ -166,6 +154,14 @@ public class Sensor extends SimEntity{
 
 	public void setAppId(String appId) {
 		this.appId = appId;
+	}
+
+	public String getDestModuleName() {
+		return destModuleName;
+	}
+
+	public void setDestModuleName(String destModuleName) {
+		this.destModuleName = destModuleName;
 	}
 
 }

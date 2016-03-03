@@ -16,6 +16,14 @@ public class Application {
 	private List<AppModule> modules;
 	private List<AppEdge> edges;
 
+	public Application(String appId, List<AppModule> modules,
+			List<AppEdge> edges, GeoCoverage geoCoverage) {
+		setAppId(appId);
+		setModules(modules);
+		setEdges(edges);
+		setGeoCoverage(geoCoverage);
+	}
+
 	public AppModule getModuleByName(String name){
 		for(AppModule module : modules){
 			if(module.getName().equals(name))
@@ -30,6 +38,9 @@ public class Application {
 		for(AppEdge edge : getEdges()){
 			if(edge.getSource().equals(moduleName)){
 				Pair<String, String> pair = new Pair<String, String>(inputTuple.getTupleType(), edge.getTupleType());
+				
+				if(module.getSelectivityMap().get(pair)==null)
+					continue;
 				double selectivity = module.getSelectivityMap().get(pair);
 				if(Math.random() < selectivity){
 					Tuple tuple = new Tuple(appId, FogUtils.generateTupleId(), edge.getDirection(),  

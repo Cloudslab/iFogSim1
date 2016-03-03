@@ -27,7 +27,8 @@ public class AppModule extends Vm{
 			long bw,
 			long size,
 			String vmm,
-			CloudletScheduler cloudletScheduler) {
+			CloudletScheduler cloudletScheduler,
+			Map<Pair<String, String>, Double> selectivityMap) {
 		super(id, userId, mips, 1, ram, bw, size, vmm, cloudletScheduler);
 		setName(name);
 		setId(id);
@@ -48,6 +49,7 @@ public class AppModule extends Vm{
 		setCurrentAllocatedMips(null);
 		setCurrentAllocatedRam(0);
 		setCurrentAllocatedSize(0);
+		setSelectivityMap(selectivityMap);
 	}
 	public AppModule(AppModule operator) {
 		super(FogUtils.generateEntityId(), operator.getUserId(), operator.getMips(), 1, operator.getRam(), operator.getBw(), operator.getSize(), operator.getVmm(), new TupleScheduler(operator.getMips(), 1));
@@ -60,6 +62,7 @@ public class AppModule extends Vm{
 		setCurrentAllocatedMips(null);
 		setCurrentAllocatedRam(0);
 		setCurrentAllocatedSize(0);
+		setSelectivityMap(operator.getSelectivityMap());
 	}
 	
 	

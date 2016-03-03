@@ -17,7 +17,7 @@ import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEvent;
-import org.fog.entities.StreamOperator;
+
 
 /**
  * Datacenter class is a CloudResource whose hostList are virtualized. It deals with processing of

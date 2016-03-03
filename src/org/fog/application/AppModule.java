@@ -1,5 +1,8 @@
 package org.fog.application;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.math3.util.Pair;
@@ -15,6 +18,11 @@ public class AppModule extends Vm{
 	private GeoCoverage geoCoverage;
 	private String appId;
 	private Map<Pair<String, String>, Double> selectivityMap;
+	
+	/**
+	 * Mapping from tupleType emitted by this AppModule to Actuators subscribing to that tupleType
+	 */
+	private Map<String, List<Integer>> actuatorSubscriptions;
 	
 	public AppModule(
 			int id,
@@ -50,6 +58,7 @@ public class AppModule extends Vm{
 		setCurrentAllocatedRam(0);
 		setCurrentAllocatedSize(0);
 		setSelectivityMap(selectivityMap);
+		setActuatorSubscriptions(new HashMap<String, List<Integer>>());
 	}
 	public AppModule(AppModule operator) {
 		super(FogUtils.generateEntityId(), operator.getUserId(), operator.getMips(), 1, operator.getRam(), operator.getBw(), operator.getSize(), operator.getVmm(), new TupleScheduler(operator.getMips(), 1));
@@ -65,7 +74,11 @@ public class AppModule extends Vm{
 		setSelectivityMap(operator.getSelectivityMap());
 	}
 	
-	
+	public void subscribeActuator(int id, String tuplyType){
+		if(!getActuatorSubscriptions().containsKey(tuplyType))
+			getActuatorSubscriptions().put(tuplyType, new ArrayList<Integer>());
+		getActuatorSubscriptions().get(tuplyType).add(id);
+	}
 	
 	public String getName() {
 		return name;
@@ -90,5 +103,11 @@ public class AppModule extends Vm{
 	}
 	public void setAppId(String appId) {
 		this.appId = appId;
+	}
+	public Map<String, List<Integer>> getActuatorSubscriptions() {
+		return actuatorSubscriptions;
+	}
+	public void setActuatorSubscriptions(Map<String, List<Integer>> actuatorSubscriptions) {
+		this.actuatorSubscriptions = actuatorSubscriptions;
 	}
 }

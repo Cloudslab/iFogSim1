@@ -7,6 +7,7 @@ public class Tuple extends Cloudlet{
 
 	public static final int UP = 1;
 	public static final int DOWN = 2;
+	public static final int ACTUATOR = 3;
 	
 	private String appId;
 	
@@ -15,6 +16,7 @@ public class Tuple extends Cloudlet{
 	private String srcModuleName;
 	private int actualTupleId;
 	private int direction;
+	private int actuatorId;
 	
 	public Tuple(String appId, int cloudletId, int direction, long cloudletLength, int pesNumber,
 			long cloudletFileSize, long cloudletOutputSize,
@@ -74,6 +76,14 @@ public class Tuple extends Cloudlet{
 
 	public void setDirection(int direction) {
 		this.direction = direction;
+	}
+
+	public int getActuatorId() {
+		return actuatorId;
+	}
+
+	public void setActuatorId(int actuatorId) {
+		this.actuatorId = actuatorId;
 	}
 
 }

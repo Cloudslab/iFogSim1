@@ -43,23 +43,50 @@ public class Application {
 					continue;
 				double selectivity = module.getSelectivityMap().get(pair);
 				if(Math.random() < selectivity){
-					Tuple tuple = new Tuple(appId, FogUtils.generateTupleId(), edge.getDirection(),  
-							(long) (edge.getTupleCpuLength()),
-							inputTuple.getNumberOfPes(),
-							(long) (edge.getTupleNwLength()),
-							inputTuple.getCloudletOutputSize(),
-							inputTuple.getUtilizationModelCpu(),
-							inputTuple.getUtilizationModelRam(),
-							inputTuple.getUtilizationModelBw()
-							);
 					
-					tuple.setActualTupleId(inputTuple.getActualTupleId());
-					tuple.setUserId(inputTuple.getUserId());
-					tuple.setAppId(inputTuple.getAppId());
-					
-					tuple.setDestModuleName(edge.getDestination());
-					tuple.setSrcModuleName(edge.getSource());
-					tuples.add(tuple);
+					//TODO check if the edge is ACTUATOR, then create multiple tuples
+					if(edge.getEdgeType() == AppEdge.ACTUATOR){
+						for(Integer actuatorId : module.getActuatorSubscriptions().get(edge.getTupleType())){
+							Tuple tuple = new Tuple(appId, FogUtils.generateTupleId(), edge.getDirection(),  
+									(long) (edge.getTupleCpuLength()),
+									inputTuple.getNumberOfPes(),
+									(long) (edge.getTupleNwLength()),
+									inputTuple.getCloudletOutputSize(),
+									inputTuple.getUtilizationModelCpu(),
+									inputTuple.getUtilizationModelRam(),
+									inputTuple.getUtilizationModelBw()
+									);
+							tuple.setActualTupleId(inputTuple.getActualTupleId());
+							tuple.setUserId(inputTuple.getUserId());
+							tuple.setAppId(inputTuple.getAppId());
+							tuple.setDestModuleName(edge.getDestination());
+							tuple.setSrcModuleName(edge.getSource());
+							tuple.setDirection(Tuple.ACTUATOR);
+							tuple.setTupleType(edge.getTupleType());
+							
+							tuple.setActuatorId(actuatorId);
+							
+							tuples.add(tuple);
+						}
+					}else{
+						Tuple tuple = new Tuple(appId, FogUtils.generateTupleId(), edge.getDirection(),  
+								(long) (edge.getTupleCpuLength()),
+								inputTuple.getNumberOfPes(),
+								(long) (edge.getTupleNwLength()),
+								inputTuple.getCloudletOutputSize(),
+								inputTuple.getUtilizationModelCpu(),
+								inputTuple.getUtilizationModelRam(),
+								inputTuple.getUtilizationModelBw()
+								);
+						tuple.setActualTupleId(inputTuple.getActualTupleId());
+						tuple.setUserId(inputTuple.getUserId());
+						tuple.setAppId(inputTuple.getAppId());
+						tuple.setDestModuleName(edge.getDestination());
+						tuple.setSrcModuleName(edge.getSource());
+						tuple.setDirection(edge.getDirection());
+						tuple.setTupleType(edge.getTupleType());
+						tuples.add(tuple);
+					}
 				}
 			}
 		}

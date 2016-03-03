@@ -4,6 +4,7 @@ import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.fog.utils.FogEvents;
 import org.fog.utils.GeoLocation;
+import org.fog.utils.Logger;
 
 public class Actuator extends SimEntity{
 
@@ -32,16 +33,16 @@ public class Actuator extends SimEntity{
 	@Override
 	public void processEvent(SimEvent ev) {
 		switch(ev.getTag()){
-		case FogEvents.CONTROL_MSG_ARRIVAL:
-			processTupleArrival();
+		case FogEvents.TUPLE_ARRIVAL:
+			processTupleArrival(ev);
 			break;
 		}
 			
 	}
 
-	private void processTupleArrival() {
-		// TODO Auto-generated method stub
-		
+	private void processTupleArrival(SimEvent ev) {
+		Tuple tuple = (Tuple)ev.getData();
+		Logger.debug(getName(), "Tuple arrived.");
 	}
 
 	@Override

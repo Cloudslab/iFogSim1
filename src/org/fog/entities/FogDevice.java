@@ -22,7 +22,6 @@ import org.fog.application.Application;
 import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
 import org.fog.utils.GeoCoverage;
-import org.fog.utils.Logger;
 
 public class FogDevice extends Datacenter {
 	private Queue<Tuple> northTupleQueue;

@@ -31,6 +31,7 @@ import org.fog.scheduler.StreamOperatorScheduler;
 import org.fog.scheduler.TupleScheduler;
 import org.fog.utils.FogUtils;
 import org.fog.utils.GeoCoverage;
+import org.fog.utils.distribution.DeterministicDistribution;
 
 public class VRGame {
 
@@ -80,7 +81,7 @@ public class VRGame {
 	}
 
 	private static void createSensor(String sensorName, Application app, int userId, int gatewayDeviceId, int transmitInterval, int tupleCpuSize, int tupleNwSize, String tupleType, String destOpId){
-		new Sensor(sensorName, userId, app.getAppId(), gatewayDeviceId, null, transmitInterval, tupleCpuSize, tupleNwSize, tupleType, destOpId);
+		new Sensor(sensorName, userId, app.getAppId(), gatewayDeviceId, null, new DeterministicDistribution(transmitInterval), tupleCpuSize, tupleNwSize, tupleType, destOpId);
 		//app.registerSensor(sensor0);
 	}
 	private static int createActuator(String actuatorName, String appId, int userId, int gatewayDeviceId, String actuatorType, String srcModuleName){

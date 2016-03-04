@@ -7,6 +7,7 @@ import org.cloudbus.cloudsim.core.SimEvent;
 import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
 import org.fog.utils.GeoLocation;
+import org.fog.utils.distribution.Distribution;
 
 public class Sensor extends SimEntity{
 
@@ -16,7 +17,6 @@ public class Sensor extends SimEntity{
 	private long fileSize;
 	private long outputSize;
 	private double lastTransmitTime = -1;
-	private double transmitInterval;
 	private String appId;
 	private int userId;
 	private String tupleType;
@@ -24,9 +24,10 @@ public class Sensor extends SimEntity{
 	private int tupleCpuSize;
 	private int tupleNwSize;
 	private String destModuleName;
+	private Distribution transmitDistribution;
 	
 	public Sensor(String name, int userId, String appId, int gatewayDeviceId, GeoLocation geoLocation, 
-			double transmitInterval, int cpuLength, int nwLength, String tupleType, String destModuleName) {
+			Distribution transmitDistribution, int cpuLength, int nwLength, String tupleType, String destModuleName) {
 		super(name);
 		this.setAppId(appId);
 		this.gatewayDeviceId = gatewayDeviceId;
@@ -34,7 +35,7 @@ public class Sensor extends SimEntity{
 		this.length = cpuLength;
 		this.fileSize = nwLength;
 		this.outputSize = 3;
-		this.setTransmitInterval(transmitInterval);
+		this.setTransmitDistribution(transmitDistribution);
 		setUserId(userId);
 		setTupleCpuSize(cpuLength);
 		setTupleNwSize(nwLength);
@@ -65,7 +66,7 @@ public class Sensor extends SimEntity{
 	public void processEvent(SimEvent ev) {
 		switch(ev.getTag()){
 		case FogEvents.TUPLE_ACK:
-			transmit(transmitInterval);
+			transmit(transmitDistribution.getNextValue());
 			break;
 		}
 			
@@ -90,14 +91,6 @@ public class Sensor extends SimEntity{
 
 	public void setGeoLocation(GeoLocation geoLocation) {
 		this.geoLocation = geoLocation;
-	}
-
-	public double getTransmitInterval() {
-		return transmitInterval;
-	}
-
-	public void setTransmitInterval(double transmitInterval) {
-		this.transmitInterval = transmitInterval;
 	}
 
 	public double getLastTransmitTime() {
@@ -162,6 +155,14 @@ public class Sensor extends SimEntity{
 
 	public void setDestModuleName(String destModuleName) {
 		this.destModuleName = destModuleName;
+	}
+
+	public Distribution getTransmitDistribution() {
+		return transmitDistribution;
+	}
+
+	public void setTransmitDistribution(Distribution transmitDistribution) {
+		this.transmitDistribution = transmitDistribution;
 	}
 
 }

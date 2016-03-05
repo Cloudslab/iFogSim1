@@ -22,6 +22,7 @@ import org.fog.application.Application;
 import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
 import org.fog.utils.GeoCoverage;
+import org.fog.utils.Logger;
 
 public class FogDevice extends Datacenter {
 	private Queue<Tuple> northTupleQueue;
@@ -278,32 +279,13 @@ public class FogDevice extends Datacenter {
 		}
 	}
 	
-	/*private void updateUtils(){
-		for(Vm vm : getHost().getVmList()){
-			AppModule operator = (AppModule)vm;
-			if(utilization.get(operator.getName()).size() > RESOURCE_USAGE_VECTOR_SIZE){
-				utilization.get(operator.getName()).remove();
-			}
-			utilization.get(operator.getName()).add(operator.getTotalUtilizationOfCpu(CloudSim.clock()));
-		}
-	}*/
-	
 	private void processAppSubmit(SimEvent ev) {
 		Application app = (Application)ev.getData();
 		applicationMap.put(app.getAppId(), app);
 	}
 
-	/*private void displayAllocatedMipsForOperators(){
-		System.out.println("-----------------------------------------");
-		for(Vm vm : getHost().getVmList()){
-			AppModule operator = (AppModule)vm;
-			System.out.println("Allocated MIPS for "+operator.getName()+" : "+getHost().getVmScheduler().getTotalAllocatedMipsForVm(operator));
-		}
-		System.out.println("-----------------------------------------");
-	}*/
-	
 	private void addChild(int childId){
-		if(CloudSim.getEntityName(childId).contains("sensor"))
+		if(CloudSim.getEntityName(childId).toLowerCase().contains("sensor"))
 			return;
 		if(!getChildrenIds().contains(childId) && childId != getId())
 			getChildrenIds().add(childId);
@@ -321,12 +303,14 @@ public class FogDevice extends Datacenter {
 	private void sendTupleToActuator(Tuple tuple){
 		for(Integer actuatorId : getAssociatedActuatorIds()){
 			if(actuatorId == tuple.getActuatorId()){
+				Logger.debug(getName(), "Sending tuple to associated actuator.");
 				sendNow(actuatorId, FogEvents.TUPLE_ARRIVAL, tuple);
 				return;
 			}
 		}
 		int childId = getChildIdForTuple(tuple);
-		sendDown(tuple, childId);
+		if(childId != -1)
+			sendDown(tuple, childId);
 	}
 	
 	private void processTupleArrival(SimEvent ev){
@@ -334,9 +318,14 @@ public class FogDevice extends Datacenter {
 			updateCloudTraffic();
 		}
 		Tuple tuple = (Tuple)ev.getData();
-		//System.out.println(CloudSim.clock()+" : "+getName()+" : has received a tuple = "+tuple.getActualTupleId());
+		
+		for(Vm vm : getVmList())
+			System.out.println(getName()+"--->"+((AppModule)vm).getName());
+		
+		Logger.debug(getName(), "Received tuple with tupleType = "+tuple.getTupleType()+"\t| Source : "+
+		CloudSim.getEntityName(ev.getSource())+"|Dest : "+CloudSim.getEntityName(ev.getDestination())+"| ID : "+tuple.getCloudletId());
 		send(ev.getSource(), CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ACK);
-		addChild(ev.getSource());
+		
 		if(FogUtils.appIdToGeoCoverageMap.containsKey(tuple.getAppId())){
 			GeoCoverage geo = FogUtils.appIdToGeoCoverageMap.get(tuple.getAppId());
 			if(!(getGeoCoverage().covers(geo) || geo.covers(geoCoverage)))
@@ -375,12 +364,22 @@ public class FogDevice extends Datacenter {
 				tuple.setVmId(vmId);
 				executeTuple(ev, tuple.getDestModuleName());
 			}else if(tuple.getDestModuleName()!=null){
-				sendUp(tuple);
+				if(tuple.getDirection() == Tuple.UP)
+					sendUp(tuple);
+				else if(tuple.getDirection() == Tuple.DOWN){
+					for(int childId : getChildrenIds())
+						sendDown(tuple, childId);
+				}
 			}else{
 				sendUp(tuple);
 			}
 		}else{
-			sendUp(tuple);
+			if(tuple.getDirection() == Tuple.UP)
+				sendUp(tuple);
+			else if(tuple.getDirection() == Tuple.DOWN){
+				for(int childId : getChildrenIds())
+					sendDown(tuple, childId);
+			}
 		}
 	}
 
@@ -432,6 +431,7 @@ public class FogDevice extends Datacenter {
 	
 	protected void sendUpFreeLink(Tuple tuple){
 		double networkDelay = tuple.getCloudletFileSize()/getUplinkBandwidth();
+		Logger.debug(getName(), "Sending tuple with tupleType = "+tuple.getTupleType()+" UP");
 		setNorthLinkBusy(true);
 		send(getId(), networkDelay, FogEvents.UPDATE_NORTH_TUPLE_QUEUE);
 		send(parentId, networkDelay+latency, FogEvents.TUPLE_ARRIVAL, tuple);
@@ -459,7 +459,7 @@ public class FogDevice extends Datacenter {
 	
 	protected void sendDownFreeLink(Tuple tuple, int childId){
 		double networkDelay = tuple.getCloudletFileSize()/getDownlinkBandwidth();
-		System.out.println(";;;;;;;;"+getDownlinkBandwidth());
+		Logger.debug(getName(), "Sending tuple with tupleType = "+tuple.getTupleType()+" DOWN");
 		setSouthLinkBusy(true);
 		send(getId(), networkDelay, FogEvents.UPDATE_SOUTH_TUPLE_QUEUE);
 		send(childId, networkDelay+latency, FogEvents.TUPLE_ARRIVAL, tuple);

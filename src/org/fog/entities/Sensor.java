@@ -7,6 +7,7 @@ import org.cloudbus.cloudsim.core.SimEvent;
 import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
 import org.fog.utils.GeoLocation;
+import org.fog.utils.Logger;
 import org.fog.utils.distribution.Distribution;
 
 public class Sensor extends SimEntity{
@@ -52,6 +53,9 @@ public class Sensor extends SimEntity{
 		tuple.setActualTupleId(FogUtils.generateActualTupleId());
 		tuple.setDestModuleName(getDestModuleName());
 		tuple.setSrcModuleName(getSensorName());
+		
+		Logger.debug(getName(), "Sending tuple with tupleType = "+tuple.getTupleType());
+		
 		send(gatewayDeviceId, delay, FogEvents.TUPLE_ARRIVAL,tuple);
 		
 		lastTransmitTime = CloudSim.clock();

@@ -26,6 +26,7 @@ import org.fog.entities.FogDeviceCharacteristics;
 import org.fog.entities.Sensor;
 import org.fog.entities.Tuple;
 import org.fog.placement.Controller;
+import org.fog.placement.ModuleMapping;
 import org.fog.policy.AppModuleAllocationPolicy;
 import org.fog.scheduler.StreamOperatorScheduler;
 import org.fog.scheduler.TupleScheduler;
@@ -33,7 +34,7 @@ import org.fog.utils.FogUtils;
 import org.fog.utils.GeoCoverage;
 import org.fog.utils.distribution.DeterministicDistribution;
 
-public class VRGame {
+public class VRGameModuleMapping {
 
 	public static void main(String[] args) {
 
@@ -51,20 +52,29 @@ public class VRGame {
 			
 			FogBroker broker = new FogBroker("broker");
 			
-			int transmitInterval = 10;
+			int transmitInterval = 1000;
 
 			Application application = createApplication(appId, broker.getId(), transmitInterval);
 
 			List<FogDevice> fogDevices = createFogDevices(appId, broker.getId(), transmitInterval);
 			
-			createSensor("EEGSensor", application, broker.getId(), CloudSim.getEntityId("gateway-0"), transmitInterval, 1, 100, "SENSOR", "client");
-			int actuator1Id = createActuator("Display-1", appId, broker.getId(), CloudSim.getEntityId("gateway-0"), "ACTUATOR", "client");
-			int actuator2Id = createActuator("Display-2", appId, broker.getId(), CloudSim.getEntityId("gateway-0"), "ACTUATOR", "client");
+			createSensor("EEGSensor-0", application, broker.getId(), CloudSim.getEntityId("gateway-0"), transmitInterval, 1, 100, "SENSOR", "client");
+			createSensor("EEGSensor-1", application, broker.getId(), CloudSim.getEntityId("gateway-1"), transmitInterval, 1, 100, "SENSOR", "client");
+			int actuator0Id = createActuator("Display-0", appId, broker.getId(), CloudSim.getEntityId("gateway-0"), "ACTUATOR", "client");
+			int actuator1Id = createActuator("Display-1", appId, broker.getId(), CloudSim.getEntityId("gateway-1"), "ACTUATOR", "client");
 			
+			application.getModuleByName("client").subscribeActuator(actuator0Id, "ACTUATOR");
 			application.getModuleByName("client").subscribeActuator(actuator1Id, "ACTUATOR");
-			application.getModuleByName("client").subscribeActuator(actuator2Id, "ACTUATOR");
 			
-			Controller controller = new Controller("master-controller", fogDevices);
+			
+			ModuleMapping moduleMapping = ModuleMapping.createModuleMapping();
+			moduleMapping.addModuleToDevice("client", "gateway-0");
+			moduleMapping.addModuleToDevice("client", "gateway-1");
+			moduleMapping.addModuleToDevice("classifier", "gateway-0");
+			moduleMapping.addModuleToDevice("classifier", "gateway-1");
+			moduleMapping.addModuleToDevice("tuner", "cloud");
+			
+			Controller controller = new Controller("master-controller", fogDevices, moduleMapping);
 			
 			controller.submitApplication(application, 0);
 			
@@ -92,14 +102,17 @@ public class VRGame {
 	
 	@SuppressWarnings("serial")
 	private static List<FogDevice> createFogDevices(String appId, int userId, int transmitInterval) {
-		final FogDevice gw0 = createFogDevice("gateway-0", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 1);
+		final FogDevice gw0 = createFogDevice("gateway-0", 100, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 1);
+		final FogDevice gw1 = createFogDevice("gateway-1", 100, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 1);
 		
 		final FogDevice cloud = createFogDevice("cloud", FogUtils.MAX, new GeoCoverage(-FogUtils.MAX, FogUtils.MAX, -FogUtils.MAX, FogUtils.MAX), FogUtils.MAX, 1000, 1);
+		cloud.setChildrenIds(new ArrayList<Integer>(){{add(gw0.getId());add(gw1.getId());}});
 		
 		gw0.setParentId(cloud.getId());
+		gw1.setParentId(cloud.getId());
 		cloud.setParentId(-1);
 
-		List<FogDevice> fogDevices = new ArrayList<FogDevice>(){{add(gw0);add(cloud);}};
+		List<FogDevice> fogDevices = new ArrayList<FogDevice>(){{add(gw0);add(gw1);add(cloud);}};
 		return fogDevices;
 	}
 
@@ -190,12 +203,12 @@ public class VRGame {
 		
 		List<AppModule> modules = new ArrayList<AppModule>(){{add(client);add(classifier);add(tuner);}};
 		
-		final AppEdge edgeSensor = new AppEdge("SENSOR", "client", 100, 100, "SENSOR", Tuple.UP, AppEdge.SENSOR);
-		final AppEdge edge_Sensor = new AppEdge("client", "classifier", 100, 100, "_SENSOR", Tuple.UP, AppEdge.MODULE);
-		final AppEdge edgeHistory = new AppEdge("classifier", "tuner", 100, 100, "HISTORY", Tuple.UP, AppEdge.MODULE);
-		final AppEdge edgeClassification = new AppEdge("classifier", "client", 100, 100, "CLASSIFICATION", Tuple.DOWN, AppEdge.MODULE);
-		final AppEdge edgeTuningParams = new AppEdge("tuner", "classifier", 100, 100, "TUNING_PARAMS", Tuple.DOWN, AppEdge.MODULE);
-		final AppEdge edgeActuator = new AppEdge("client", "ACTUATOR", 100, 100, "ACTUATOR", Tuple.DOWN, AppEdge.ACTUATOR);
+		final AppEdge edgeSensor = new AppEdge("SENSOR", "client", 1000, 100, "SENSOR", Tuple.UP, AppEdge.SENSOR);
+		final AppEdge edge_Sensor = new AppEdge("client", "classifier", 1000, 100, "_SENSOR", Tuple.UP, AppEdge.MODULE);
+		final AppEdge edgeHistory = new AppEdge("classifier", "tuner", 1000, 100, "HISTORY", Tuple.UP, AppEdge.MODULE);
+		final AppEdge edgeClassification = new AppEdge("classifier", "client", 1000, 100, "CLASSIFICATION", Tuple.DOWN, AppEdge.MODULE);
+		final AppEdge edgeTuningParams = new AppEdge("tuner", "classifier", 1000, 100, "TUNING_PARAMS", Tuple.DOWN, AppEdge.MODULE);
+		final AppEdge edgeActuator = new AppEdge("client", "ACTUATOR", 1000, 100, "ACTUATOR", Tuple.DOWN, AppEdge.ACTUATOR);
 		List<AppEdge> edges = new ArrayList<AppEdge>(){{add(edgeSensor);add(edge_Sensor);add(edgeHistory);add(edgeClassification);
 		add(edgeTuningParams);add(edgeActuator);}};
 		

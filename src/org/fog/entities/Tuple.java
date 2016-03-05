@@ -1,5 +1,8 @@
 package org.fog.entities;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.UtilizationModel;
 
@@ -17,6 +20,14 @@ public class Tuple extends Cloudlet{
 	private int actualTupleId;
 	private int direction;
 	private int actuatorId;
+	private int sourceDeviceId;
+	
+	/**
+	 * Map to keep track of which module instances has a tuple traversed.
+	 * 
+	 * Map from moduleName to vmId of a module instance
+	 */
+	private Map<String, Integer> moduleCopyMap;
 	
 	public Tuple(String appId, int cloudletId, int direction, long cloudletLength, int pesNumber,
 			long cloudletFileSize, long cloudletOutputSize,
@@ -28,6 +39,8 @@ public class Tuple extends Cloudlet{
 				utilizationModelBw);
 		setAppId(appId);
 		setDirection(direction);
+		setSourceDeviceId(-1);
+		setModuleCopyMap(new HashMap<String, Integer>());
 	}
 
 	public int getActualTupleId() {
@@ -84,6 +97,22 @@ public class Tuple extends Cloudlet{
 
 	public void setActuatorId(int actuatorId) {
 		this.actuatorId = actuatorId;
+	}
+
+	public int getSourceDeviceId() {
+		return sourceDeviceId;
+	}
+
+	public void setSourceDeviceId(int sourceDeviceId) {
+		this.sourceDeviceId = sourceDeviceId;
+	}
+
+	public Map<String, Integer> getModuleCopyMap() {
+		return moduleCopyMap;
+	}
+
+	public void setModuleCopyMap(Map<String, Integer> moduleCopyMap) {
+		this.moduleCopyMap = moduleCopyMap;
 	}
 
 }

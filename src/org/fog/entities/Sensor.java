@@ -54,7 +54,7 @@ public class Sensor extends SimEntity{
 		tuple.setDestModuleName(getDestModuleName());
 		tuple.setSrcModuleName(getSensorName());
 		
-		Logger.debug(getName(), "Sending tuple with tupleType = "+tuple.getTupleType());
+		Logger.debug(getName(), "Sending tuple with tupleId = "+tuple.getCloudletId());
 		
 		send(gatewayDeviceId, delay, FogEvents.TUPLE_ARRIVAL,tuple);
 		

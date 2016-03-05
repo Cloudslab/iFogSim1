@@ -214,7 +214,6 @@ public class FogDevice extends Datacenter {
 	}
 	
 	protected void checkCloudletCompletion() {
-		
 		boolean cloudletCompleted = false;
 		List<? extends Host> list = getVmAllocationPolicy().getHostList();
 		for (int i = 0; i < list.size(); i++) {
@@ -228,8 +227,10 @@ public class FogDevice extends Datacenter {
 						Tuple tuple = (Tuple)cl;
 						Application application = getApplicationMap().get(tuple.getAppId());
 						
-						List<Tuple> resultantTuples = application.getResultantTuples(tuple.getDestModuleName(), tuple);
+						List<Tuple> resultantTuples = application.getResultantTuples(tuple.getDestModuleName(), tuple, getId());
 						for(Tuple resTuple : resultantTuples){
+							resTuple.setModuleCopyMap(new HashMap<String, Integer>(tuple.getModuleCopyMap()));
+							resTuple.getModuleCopyMap().put(((AppModule)vm).getName(), vm.getId());
 							sendToSelf(resTuple);
 						}
 						sendNow(cl.getUserId(), CloudSimTags.CLOUDLET_RETURN, cl);
@@ -314,13 +315,13 @@ public class FogDevice extends Datacenter {
 	}
 	
 	private void processTupleArrival(SimEvent ev){
-		if(getName().equals("cloud")){
-			updateCloudTraffic();
-		}
 		Tuple tuple = (Tuple)ev.getData();
 		
-		for(Vm vm : getVmList())
-			System.out.println(getName()+"--->"+((AppModule)vm).getName());
+		if(getName().equals("cloud")){
+			updateCloudTraffic();
+			Logger.error(getName(), tuple.getModuleCopyMap().toString());
+			Logger.error(getName(), tuple.getTupleType());
+		}
 		
 		Logger.debug(getName(), "Received tuple with tupleType = "+tuple.getTupleType()+"\t| Source : "+
 		CloudSim.getEntityName(ev.getSource())+"|Dest : "+CloudSim.getEntityName(ev.getDestination())+"| ID : "+tuple.getCloudletId());
@@ -353,15 +354,19 @@ public class FogDevice extends Datacenter {
 		
 		if(appToModulesMap.containsKey(tuple.getAppId())){
 			if(appToModulesMap.get(tuple.getAppId()).contains(tuple.getDestModuleName())){
+				String moduleName = tuple.getDestModuleName();
 				int vmId = -1;
 				for(Vm vm : getHost().getVmList()){
 					if(((AppModule)vm).getName().equals(tuple.getDestModuleName()))
 						vmId = vm.getId();
 				}
-				if(vmId < 0){
+				if(vmId < 0
+						|| (tuple.getModuleCopyMap().containsKey(tuple.getDestModuleName()) && 
+								tuple.getModuleCopyMap().get(tuple.getDestModuleName())!=vmId )){
 					return;
 				}
 				tuple.setVmId(vmId);
+				Logger.error(getName(), "Executing tuple for operator " + moduleName);
 				executeTuple(ev, tuple.getDestModuleName());
 			}else if(tuple.getDestModuleName()!=null){
 				if(tuple.getDirection() == Tuple.UP)

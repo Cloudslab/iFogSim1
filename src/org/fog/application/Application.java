@@ -32,7 +32,7 @@ public class Application {
 		return null;
 	}
 
-	public List<Tuple> getResultantTuples(String moduleName, Tuple inputTuple){
+	public List<Tuple> getResultantTuples(String moduleName, Tuple inputTuple, int sourceDeviceId){
 		List<Tuple> tuples = new ArrayList<Tuple>();
 		AppModule module = getModuleByName(moduleName);
 		for(AppEdge edge : getEdges()){
@@ -63,7 +63,7 @@ public class Application {
 							tuple.setSrcModuleName(edge.getSource());
 							tuple.setDirection(Tuple.ACTUATOR);
 							tuple.setTupleType(edge.getTupleType());
-							
+							tuple.setSourceDeviceId(sourceDeviceId);
 							tuple.setActuatorId(actuatorId);
 							
 							tuples.add(tuple);

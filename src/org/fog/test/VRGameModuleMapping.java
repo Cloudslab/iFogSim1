@@ -58,8 +58,8 @@ public class VRGameModuleMapping {
 
 			List<FogDevice> fogDevices = createFogDevices(appId, broker.getId(), transmitInterval);
 			
-			createSensor("EEGSensor-0", application, broker.getId(), CloudSim.getEntityId("gateway-0"), transmitInterval, 1, 100, "SENSOR", "client");
-			createSensor("EEGSensor-1", application, broker.getId(), CloudSim.getEntityId("gateway-1"), transmitInterval, 1, 100, "SENSOR", "client");
+			createSensor("EEGSensor-0", application, broker.getId(), CloudSim.getEntityId("gateway-0"), transmitInterval, 100, 100, "SENSOR", "client");
+			createSensor("EEGSensor-1", application, broker.getId(), CloudSim.getEntityId("gateway-1"), transmitInterval, 100, 100, "SENSOR", "client");
 			int actuator0Id = createActuator("Display-0", appId, broker.getId(), CloudSim.getEntityId("gateway-0"), "ACTUATOR", "client");
 			int actuator1Id = createActuator("Display-1", appId, broker.getId(), CloudSim.getEntityId("gateway-1"), "ACTUATOR", "client");
 			
@@ -102,8 +102,8 @@ public class VRGameModuleMapping {
 	
 	@SuppressWarnings("serial")
 	private static List<FogDevice> createFogDevices(String appId, int userId, int transmitInterval) {
-		final FogDevice gw0 = createFogDevice("gateway-0", 100, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 1);
-		final FogDevice gw1 = createFogDevice("gateway-1", 100, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 1);
+		final FogDevice gw0 = createFogDevice("gateway-0", 10, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 10);
+		final FogDevice gw1 = createFogDevice("gateway-1", 10, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 10);
 		
 		final FogDevice cloud = createFogDevice("cloud", FogUtils.MAX, new GeoCoverage(-FogUtils.MAX, FogUtils.MAX, -FogUtils.MAX, FogUtils.MAX), FogUtils.MAX, 1000, 1);
 		cloud.setChildrenIds(new ArrayList<Integer>(){{add(gw0.getId());add(gw1.getId());}});

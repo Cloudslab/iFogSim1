@@ -67,7 +67,7 @@ public class GraphicSDN extends JFrame {
         setLocationRelativeTo(null);
         //setResizable(false);
         
-        setTitle("CloudSim SDN");
+        setTitle("Fog Topology Creator");
         contentPane = new JPanel();
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout());
@@ -198,33 +198,33 @@ public class GraphicSDN extends JFrame {
         JToolBar toolbar = new JToolBar();
 
         ImageIcon iHost = new ImageIcon(
-                getClass().getResource("dc.png"));
+                getClass().getResource("/images/sensor.png"));
         ImageIcon iHline = new ImageIcon(
-                getClass().getResource("hline2.png"));
+                getClass().getResource("/images/hline2.png"));
         ImageIcon iHOpen = new ImageIcon(
-                getClass().getResource("openPhyTop.png"));
+                getClass().getResource("/images/openPhyTop.png"));
         ImageIcon iHSave = new ImageIcon(
-                getClass().getResource("savePhyTop.png"));
+                getClass().getResource("/images/savePhyTop.png"));
         ImageIcon iVM = new ImageIcon(
-                getClass().getResource("vm2.png"));
+                getClass().getResource("/images/vm2.png"));
         ImageIcon iVline = new ImageIcon(
-                getClass().getResource("vline2.png"));
+                getClass().getResource("/images/vline2.png"));
         ImageIcon iVOpen = new ImageIcon(
-                getClass().getResource("openVirTop.png"));
+                getClass().getResource("/images/openVirTop.png"));
         ImageIcon iVSave = new ImageIcon(
-                getClass().getResource("saveVirTop.png"));
+                getClass().getResource("/images/saveVirTop.png"));
         ImageIcon iPhy = new ImageIcon(
-                getClass().getResource("upload1.png"));
+                getClass().getResource("/images/upload1.png"));
         ImageIcon iVir = new ImageIcon(
-                getClass().getResource("upload2.png"));
+                getClass().getResource("/images/upload2.png"));
         ImageIcon iWl1 = new ImageIcon(
-                getClass().getResource("upload3.png"));
+                getClass().getResource("/images/upload3.png"));
         ImageIcon iWl2 = new ImageIcon(
-                getClass().getResource("upload4.png"));
+                getClass().getResource("/images/upload4.png"));
         ImageIcon run = new ImageIcon(
-                getClass().getResource("play.png"));
+                getClass().getResource("/images/play.png"));
         ImageIcon exit = new ImageIcon(
-                getClass().getResource("exit.png"));
+                getClass().getResource("/images/exit.png"));
 
         final JButton btnHost = new JButton(iHost);
         btnHost.setToolTipText("Add Host Node");

@@ -7,12 +7,15 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -38,9 +41,25 @@ public class GraphView extends JPanel {
 
 		this.graph = graph;
 		
-		imgHost = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/src/host.png"));
-		imgSwitch = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/src/disk.png"));
-		imgVm = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/src/vm2.png"));
+		imgHost = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/images/host.png"));
+		imgSwitch = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/images/disk.png"));
+		imgVm = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/images/vm2.png"));
+		
+		/*try {
+			
+			imgHost = ImageIO.read(new File("/home/harshit/workspace/FogSim/src/images/host.png"));
+			
+			imgSwitch = ImageIO.read(new File("/home/harshit/workspace/FogSim/src/images/disk.png"));
+			
+			imgVm = ImageIO.read(new File("/home/harshit/workspace/FogSim/src/images/vm2.png"));
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		
+		
+		
 		initComponents();
 	}
 

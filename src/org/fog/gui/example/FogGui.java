@@ -1,19 +1,18 @@
-package org.fog.gui;
+package org.fog.gui.example;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map.Entry;
 
+import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -26,23 +25,25 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JSeparator;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.cloudbus.cloudsim.sdn.graph.core.Bridge;
-import org.cloudbus.cloudsim.sdn.graph.core.Edge;
-import org.cloudbus.cloudsim.sdn.graph.core.Graph;
-import org.cloudbus.cloudsim.sdn.graph.core.GraphView;
-import org.cloudbus.cloudsim.sdn.graph.core.Node;
-import org.cloudbus.cloudsim.sdn.graph.dialog.*;
+import org.fog.gui.core.Bridge;
+import org.fog.gui.core.Graph;
+import org.fog.gui.core.GraphView;
+import org.fog.gui.dialog.AddPhysicalEdge;
+import org.fog.gui.dialog.AddPhysicalNode;
+import org.fog.gui.dialog.AddSensor;
+import org.fog.gui.dialog.AddVirtualEdge;
+import org.fog.gui.dialog.AddVirtualNode;
+import org.fog.gui.dialog.SDNRun;
 
-public class GraphicsFog extends JFrame {
+
+public class FogGui extends JFrame {
 	private static final long serialVersionUID = -2238414769964738933L;
 	
 	private JPanel contentPane;
@@ -65,13 +66,13 @@ public class GraphicsFog extends JFrame {
 	
 	private String mode;  //'m':manual; 'i':import
 
-	public GraphicsFog() {
+	public FogGui() {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(1280, 800));
         setLocationRelativeTo(null);
         //setResizable(false);
         
-        setTitle("CloudSim Fog");
+        setTitle("Fog Topology Creator");
         contentPane = new JPanel();
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout());
@@ -157,6 +158,11 @@ public class GraphicsFog extends JFrame {
 		    	openAddVirtualEdgeDialog();
 		    }
 		};
+		ActionListener addSensorListener = new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		    	openAddSensorDialog();
+		    }
+		};
 		ActionListener importPhyTopoListener = new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
 		    	String fileName = importFile("josn");
@@ -200,38 +206,42 @@ public class GraphicsFog extends JFrame {
     	
         //---------- Start Creating project tool bar ----------
         JToolBar toolbar = new JToolBar();
-
-        ImageIcon iHost = new ImageIcon(
-                getClass().getResource("/src/dc.png"));
+                
+        ImageIcon iSensor = new ImageIcon(
+                getClass().getResource("/images/sensor.png"));
+        ImageIcon iActuator = new ImageIcon(
+                getClass().getResource("/images/actuator.png"));
         ImageIcon iHline = new ImageIcon(
-                getClass().getResource("/src/hline2.png"));
+                getClass().getResource("/images/hline2.png"));
         ImageIcon iHOpen = new ImageIcon(
-                getClass().getResource("/src/openPhyTop.png"));
+                getClass().getResource("/images/openPhyTop.png"));
         ImageIcon iHSave = new ImageIcon(
-                getClass().getResource("/src/savePhyTop.png"));
+                getClass().getResource("/images/savePhyTop.png"));
         ImageIcon iVM = new ImageIcon(
-                getClass().getResource("/src/vm2.png"));
+                getClass().getResource("/images/vm2.png"));
         ImageIcon iVline = new ImageIcon(
-                getClass().getResource("/src/vline2.png"));
+                getClass().getResource("/images/vline2.png"));
         ImageIcon iVOpen = new ImageIcon(
-                getClass().getResource("/src/openVirTop.png"));
+                getClass().getResource("/images/openVirTop.png"));
         ImageIcon iVSave = new ImageIcon(
-                getClass().getResource("/src/saveVirTop.png"));
+                getClass().getResource("/images/saveVirTop.png"));
         ImageIcon iPhy = new ImageIcon(
-                getClass().getResource("/src/upload1.png"));
+                getClass().getResource("/images/upload1.png"));
         ImageIcon iVir = new ImageIcon(
-                getClass().getResource("/src/upload2.png"));
+                getClass().getResource("/images/upload2.png"));
         ImageIcon iWl1 = new ImageIcon(
-                getClass().getResource("/src/upload3.png"));
+                getClass().getResource("/images/upload3.png"));
         ImageIcon iWl2 = new ImageIcon(
-                getClass().getResource("/src/upload4.png"));
+                getClass().getResource("/images/upload4.png"));
         ImageIcon run = new ImageIcon(
-                getClass().getResource("/src/play.png"));
+                getClass().getResource("/images/play.png"));
         ImageIcon exit = new ImageIcon(
-                getClass().getResource("/src/exit.png"));
+                getClass().getResource("/images/exit.png"));
 
-        final JButton btnHost = new JButton(iHost);
-        btnHost.setToolTipText("Add Host Node");
+        final JButton btnSensor = new JButton(iSensor);
+        btnSensor.setToolTipText("Add Sensor");
+        final JButton btnActuator = new JButton(iActuator);
+        btnActuator.setToolTipText("Add Actuator");
         final JButton btnVm = new JButton(iVM);
         btnVm.setToolTipText("Add virtual Machine");
         final JButton btnHedge = new JButton(iHline);
@@ -262,7 +272,9 @@ public class GraphicsFog extends JFrame {
         btnExit.setToolTipText("Exit CloudSim");
         toolbar.setAlignmentX(0);
         
-        btnHost.addActionListener(addPhysicalNodeListener);
+        
+        //btnHost.addActionListener(addPhysicalNodeListener);
+        btnSensor.addActionListener(addSensorListener);
         btnHedge.addActionListener(addPhysicalEdgeListener);
         btnHopen.addActionListener(importPhyTopoListener);
         btnHsave.addActionListener(savePhyTopoListener);
@@ -296,7 +308,7 @@ public class GraphicsFog extends JFrame {
             		}
             		// run simulation
             		SDNRun run = new SDNRun(physicalTopologyFile, deploymentFile, 
-            								workloads_background, workloads, GraphicsFog.this);
+            								workloads_background, workloads, FogGui.this);
 
             		
 		        }else if("m"==mode){
@@ -312,7 +324,8 @@ public class GraphicsFog extends JFrame {
 
         });       
 
-        toolbar.add(btnHost);
+        toolbar.add(btnSensor);
+        toolbar.add(btnActuator);
         toolbar.add(btnHedge);
         toolbar.add(btnHopen);
         toolbar.add(btnHsave);
@@ -404,7 +417,8 @@ public class GraphicsFog extends JFrame {
 		        try {
 		    	    String cmd = e.getActionCommand();
 		    	    if("Canvas" == cmd){
-		    	    	btnHost.setVisible(true);
+		    	    	btnSensor.setVisible(true);
+		    	    	btnActuator.setVisible(true);
 		    	    	btnHedge.setVisible(true);
 		    	    	btnHopen.setVisible(true);
 		    	    	btnHsave.setVisible(true);
@@ -430,7 +444,9 @@ public class GraphicsFog extends JFrame {
 		    	    	mode = "m";
 		    	    	
 		    	    }else if("Execution" == cmd){
-		    	    	btnHost.setVisible(false);
+		    	    	//btnHost.setVisible(false);
+		    	    	btnSensor.setVisible(false);
+		    	    	btnActuator.setVisible(false);
 		    	    	btnHedge.setVisible(false);
 		    	    	btnHopen.setVisible(false);
 		    	    	btnHsave.setVisible(false);
@@ -504,7 +520,9 @@ public class GraphicsFog extends JFrame {
         manualMode.setSelected(true);
         mode = "m";
         
-        btnHost.setVisible(true);
+        //btnHost.setVisible(true);
+        btnSensor.setVisible(true);
+        btnActuator.setVisible(true);
     	btnHedge.setVisible(true);
     	btnHopen.setVisible(true);
     	btnHsave.setVisible(true);
@@ -529,8 +547,8 @@ public class GraphicsFog extends JFrame {
         //----- End Initialize menu and tool bar -----
 
     }
-    
-    /** initialize Canvas */
+
+	/** initialize Canvas */
     private void initGraph(){
     	physicalGraph = new Graph();
     	virtualGraph = new Graph();
@@ -546,21 +564,25 @@ public class GraphicsFog extends JFrame {
     
     /** dialog opening */
     private void openAddPhysicalNodeDialog(){
-    	AddPhysicalNode phyNode = new AddPhysicalNode(physicalGraph, GraphicsFog.this);
+    	AddPhysicalNode phyNode = new AddPhysicalNode(physicalGraph, FogGui.this);
     	physicalCanvas.repaint();
     }
     private void openAddPhysicalEdgeDialog(){
-    	AddPhysicalEdge phyEdge = new AddPhysicalEdge(physicalGraph, GraphicsFog.this);
+    	AddPhysicalEdge phyEdge = new AddPhysicalEdge(physicalGraph, FogGui.this);
     	physicalCanvas.repaint();
     }
     private void openAddVirtualNodeDialog(){
-    	AddVirtualNode vmNode = new AddVirtualNode(virtualGraph, GraphicsFog.this);
+    	AddVirtualNode vmNode = new AddVirtualNode(virtualGraph, FogGui.this);
     	virtualCanvas.repaint();  	
     }
     private void openAddVirtualEdgeDialog(){
-    	AddVirtualEdge phyNode = new AddVirtualEdge(virtualGraph, GraphicsFog.this);
+    	AddVirtualEdge phyNode = new AddVirtualEdge(virtualGraph, FogGui.this);
     	virtualCanvas.repaint();
     }
+    protected void openAddSensorDialog() {
+		AddSensor sensor = new AddSensor(physicalGraph, FogGui.this);
+		physicalCanvas.repaint();
+	}
     
     /** common utility */
     private String importFile(String type){
@@ -619,12 +641,13 @@ public class GraphicsFog extends JFrame {
     }
     
     
+    
     /** Application entry point */
 	public static void main(String args[]) throws InterruptedException {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-            	GraphicsFog fog = new GraphicsFog();
-                fog.setVisible(true);
+            	FogGui sdn = new FogGui();
+                sdn.setVisible(true);
             }
         });
 	}

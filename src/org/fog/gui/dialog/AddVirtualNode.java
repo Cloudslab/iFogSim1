@@ -21,10 +21,10 @@ import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.UIManager;
 
-import org.cloudbus.cloudsim.sdn.graph.core.Graph;
-import org.cloudbus.cloudsim.sdn.graph.core.SpringUtilities;
-import org.cloudbus.cloudsim.sdn.graph.core.VmNode;
-import org.cloudbus.cloudsim.sdn.graph.core.Node;
+import org.fog.gui.core.Graph;
+import org.fog.gui.core.SpringUtilities;
+import org.fog.gui.core.VmNode;
+import org.fog.gui.core.Node;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class AddVirtualNode extends JDialog {

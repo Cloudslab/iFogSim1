@@ -27,10 +27,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.cloudbus.cloudsim.sdn.graph.core.Edge;
-import org.cloudbus.cloudsim.sdn.graph.core.Graph;
-import org.cloudbus.cloudsim.sdn.graph.core.Node;
-import org.cloudbus.cloudsim.sdn.graph.core.NodeCellRenderer;
+import org.fog.gui.core.Edge;
+import org.fog.gui.core.Graph;
+import org.fog.gui.core.Node;
+import org.fog.gui.core.NodeCellRenderer;
+
+
 
 /** A dialog to add a new edge */
 public class AddVirtualEdge extends JDialog {

@@ -198,7 +198,7 @@ public class GraphicSDN extends JFrame {
         JToolBar toolbar = new JToolBar();
 
         ImageIcon iHost = new ImageIcon(
-                getClass().getResource("/images/sensor.png"));
+                getClass().getResource("/images/host.png"));
         ImageIcon iHline = new ImageIcon(
                 getClass().getResource("/images/hline2.png"));
         ImageIcon iHOpen = new ImageIcon(

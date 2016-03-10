@@ -21,11 +21,11 @@ import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.UIManager;
 
-import org.cloudbus.cloudsim.sdn.graph.core.Graph;
-import org.cloudbus.cloudsim.sdn.graph.core.Node;
-import org.cloudbus.cloudsim.sdn.graph.core.SpringUtilities;
-import org.cloudbus.cloudsim.sdn.graph.core.SwitchNode;
-import org.cloudbus.cloudsim.sdn.graph.core.HostNode;
+import org.fog.gui.core.Graph;
+import org.fog.gui.core.Node;
+import org.fog.gui.core.SpringUtilities;
+import org.fog.gui.core.SwitchNode;
+import org.fog.gui.core.HostNode;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class AddPhysicalNode extends JDialog {

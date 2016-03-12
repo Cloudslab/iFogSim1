@@ -18,4 +18,6 @@ public abstract class Distribution {
 	public void setRandom(Random random) {
 		this.random = random;
 	}
+
+	public abstract int getDistributionType();
 }

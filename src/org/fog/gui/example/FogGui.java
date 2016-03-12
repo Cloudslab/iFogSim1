@@ -190,11 +190,9 @@ public class FogGui extends JFrame {
 		    public void actionPerformed(ActionEvent e) {
 		    	String fileName = importFile("josn");
 		    	Graph phyGraph= Bridge.jsonToGraph(fileName, 0);
-/*		    	System.out.println(phyGraph.getAdjacencyList().size());
-		    	for (Entry<Node, List<Edge>> entry : phyGraph.getAdjacencyList().entrySet()) {
-		    		System.out.println(entry.getKey().getName()+entry.getKey().getType());
-		    	}*/
+		    	
 		    	physicalCanvas.setGraph(phyGraph);
+		    	physicalCanvas.repaint();
 		    }
 		};
 		ActionListener importVirTopoListener = new ActionListener() {
@@ -209,7 +207,6 @@ public class FogGui extends JFrame {
 		    	try {
 					saveFile("json", physicalGraph);
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 		    }
@@ -219,7 +216,6 @@ public class FogGui extends JFrame {
 		    	try {
 					saveFile("json", virtualGraph);
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 		    }

@@ -31,5 +31,10 @@ public class UniformDistribution extends Distribution{
 	public void setMax(double max) {
 		this.max = max;
 	}
+	
+	@Override
+	public int getDistributionType() {
+		return Distribution.UNIFORM;
+	}
 
 }

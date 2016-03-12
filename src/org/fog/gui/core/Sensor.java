@@ -35,6 +35,10 @@ public class Sensor extends Node implements Serializable{
 		}
 	}
 
+	public int getDistributionType(){
+		return distribution.getDistributionType();
+	}
+	
 	public String getName() {
 		return name;
 	}

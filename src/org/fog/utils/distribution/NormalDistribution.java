@@ -33,5 +33,10 @@ public class NormalDistribution extends Distribution{
 	public void setStdDev(double stdDev) {
 		this.stdDev = stdDev;
 	}
+	
+	@Override
+	public int getDistributionType() {
+		return Distribution.NORMAL;
+	}
 
 }

@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.fog.utils.distribution.DeterministicDistribution;
+import org.fog.utils.distribution.Distribution;
+import org.fog.utils.distribution.NormalDistribution;
+import org.fog.utils.distribution.UniformDistribution;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -62,6 +66,34 @@ public class Bridge {
 							graph.addNode(hNode);
 						}
 						
+					} else if(nodeType.equals("FOG_DEVICE")){
+						long mips = (Long) node.get("mips");
+						int ram = new BigDecimal((Long)node.get("ram")).intValueExact();
+						long upBw = new BigDecimal((Long)node.get("upBw")).intValueExact();
+						long downBw = new BigDecimal((Long)node.get("downBw")).intValueExact();
+						int level = new BigDecimal((Long)node.get("level")).intValue();
+						
+						Node fogDevice = new FogDevice(nodeName, mips, ram, upBw, downBw, level);
+						graph.addNode(fogDevice);
+ 
+					} else if(nodeType.equals("SENSOR")){
+						int distType = new BigDecimal((Long)node.get("distribution")).intValue();
+						Distribution distribution = null;
+						if(distType == Distribution.DETERMINISTIC)
+							distribution = new DeterministicDistribution(new BigDecimal((Double)node.get("value")).doubleValue());
+						else if(distType == Distribution.NORMAL){
+							distribution = new NormalDistribution(new BigDecimal((Double)node.get("mean")).doubleValue(), 
+									new BigDecimal((Double)node.get("stdDev")).doubleValue());
+						} else if(distType == Distribution.UNIFORM){
+							distribution = new UniformDistribution(new BigDecimal((Double)node.get("min")).doubleValue(), 
+									new BigDecimal((Double)node.get("max")).doubleValue());
+						}
+						
+						Node sensor = new Sensor(nodeName, distribution);
+						graph.addNode(sensor);
+					} else if(nodeType.equals("ACTUATOR")){
+						Node actuator = new Actuator(nodeName);
+						graph.addNode(actuator);
 					} else {   //switch
 						int bw = new BigDecimal((Long)node.get("bw")).intValueExact();
 						long iops = (Long) node.get("iops");
@@ -164,6 +196,36 @@ public class Bridge {
 			// add node
 			JSONObject jobj = new JSONObject();
 			switch(srcNode.getType()){
+				case "ACTUATOR":
+					Actuator actuator = (Actuator)srcNode;
+					jobj.put("name", actuator.getName());
+					jobj.put("type", actuator.getType());
+					break;
+				case "SENSOR":
+					Sensor sensor = (Sensor)srcNode;
+					jobj.put("name", sensor.getName());
+					jobj.put("type", sensor.getType());
+					jobj.put("distribution", sensor.getDistributionType());
+					if(sensor.getDistributionType()==Distribution.DETERMINISTIC)
+						jobj.put("value", ((DeterministicDistribution)sensor.getDistribution()).getValue());
+					else if(sensor.getDistributionType()==Distribution.NORMAL){
+						jobj.put("mean", ((NormalDistribution)sensor.getDistribution()).getMean());
+						jobj.put("stdDev", ((NormalDistribution)sensor.getDistribution()).getStdDev());
+					} else if(sensor.getDistributionType()==Distribution.UNIFORM){
+						jobj.put("min", ((UniformDistribution)sensor.getDistribution()).getMin());
+						jobj.put("max", ((UniformDistribution)sensor.getDistribution()).getMax());
+					}
+					break;
+				case "FOG_DEVICE":
+					FogDevice fogDevice = (FogDevice)srcNode;
+					jobj.put("name", fogDevice.getName());
+					jobj.put("type", fogDevice.getType());
+					jobj.put("mips", fogDevice.getMips());
+					jobj.put("ram", fogDevice.getRam());
+					jobj.put("upBw", fogDevice.getUpBw());
+					jobj.put("downBw", fogDevice.getDownBw());
+					jobj.put("level", fogDevice.getLevel());
+					break;
 				case "host":
 					HostNode hNode = (HostNode)srcNode;
 					jobj.put("name", hNode.getName());
@@ -208,7 +270,8 @@ public class Bridge {
 				JSONObject jobj2 = new JSONObject();
 				jobj2.put("source", srcNode.getName());
 				jobj2.put("destination", destNode.getName());
-				if("host"==destNode.getType() || "core"==destNode.getType() || "edge"==destNode.getType()){
+				if("host"==destNode.getType() || "core"==destNode.getType() || "edge"==destNode.getType() || 
+						"FOG_DEVICE"==destNode.getType() || "SENSOR"==destNode.getType() || "ACTUATOR"==destNode.getType()){
 					jobj2.put("latency", edge.getLatency());
 				}else if("vm"==destNode.getName()){
 					if(edge.getBandwidth()>0){

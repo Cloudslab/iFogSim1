@@ -21,5 +21,10 @@ public class DeterministicDistribution extends Distribution{
 	public void setValue(double value) {
 		this.value = value;
 	}
+
+	@Override
+	public int getDistributionType() {
+		return Distribution.DETERMINISTIC;
+	}
 	
 }

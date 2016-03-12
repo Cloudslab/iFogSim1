@@ -5,6 +5,12 @@ public class UniformDistribution extends Distribution{
 	private double min;
 	private double max;
 	
+	public UniformDistribution(double min, double max){
+		super();
+		setMin(min);
+		setMax(max);
+	}
+	
 	@Override
 	public double getNextValue() {
 		return getRandom().nextDouble()*(getMax()-getMin())+getMin();

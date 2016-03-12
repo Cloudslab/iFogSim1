@@ -5,6 +5,7 @@ public class DeterministicDistribution extends Distribution{
 	private double value;
 
 	public DeterministicDistribution(double value) {
+		super();
 		setValue(value);
 	}
 	

@@ -189,6 +189,9 @@ public class GraphView extends JPanel {
 						case "edge":
 							g.drawImage(imgSwitch, wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight, this);
 							break;
+						case "FOG_DEVICE":
+							g.drawImage(imgHost, wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight, this);
+							break;
 					}
 				
 				     //g.setColor(Color.white);

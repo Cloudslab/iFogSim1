@@ -22,6 +22,7 @@ import javax.swing.SpringLayout;
 import javax.swing.UIManager;
 
 import org.fog.gui.core.Graph;
+import org.fog.gui.core.Sensor;
 import org.fog.gui.core.SpringUtilities;
 import org.fog.gui.core.VmNode;
 import org.fog.gui.core.Node;
@@ -33,11 +34,14 @@ public class AddSensor extends JDialog {
 	private final Graph graph;
 	
 	private JTextField sensorName;
-	private JComboBox cType;
-	private JTextField tfSize;
-	private JTextField tfPes;
-	private JTextField tfMips;
-	private JTextField tfRam;
+	private JComboBox parentDevice;
+	private JComboBox distribution;
+	private JTextField uniformLowerBound;
+	private JTextField uniformUpperBound;
+	private JTextField deterministicValue;
+	private JTextField normalMean;
+	private JTextField normalStdDev;
+	
 
 	/**
 	 * Constructor.
@@ -80,37 +84,64 @@ public class AddSensor extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				boolean catchedError = false;
 				if (sensorName.getText() == null || sensorName.getText().length() < 1) {
-					prompt("Please type VM name", "Error");
-				} else if (cType.getSelectedIndex() < 0) {
-					prompt("Please select VM type", "Error");
-				} else if (tfSize.getText() == null || tfSize.getText().length() < 1) {
-					prompt("Please type VM size", "Error");
-				} else if (tfPes.getText() == null || tfPes.getText().length() < 1) {
-					prompt("Please type pes", "Error");
-				} else if (tfMips.getText() == null || tfMips.getText().length() < 1) {
-					prompt("Please type VM mips", "Error");
-				} else if (tfRam.getText() == null || tfRam.getText().length() < 1) {
-					prompt("Please type VM RAM", "Error");
+					prompt("Please type Sensor name", "Error");
+				} else if (distribution.getSelectedIndex() < 0) {
+					prompt("Please select Emission time distribution", "Error");
 				} else {
-					long t1 = 0;
-					int t2 = 0;
-					long t3 = 0;
-					int t4 = 0;
-					try {
-						t1 = Long.parseLong(tfSize.getText());
-						t2 = Integer.parseInt(tfPes.getText());
-						t3 = Long.parseLong(tfMips.getText());
-						t4 = Integer.parseInt(tfRam.getText());
-					} catch (NumberFormatException e1) {
-						catchedError = true;
-						prompt("Input should be numerical character", "Error");
+					double normalMean_ = -1;
+					double normalStdDev_ = -1;
+					double uniformLow_ = -1;
+					double uniformUp_ = -1;
+					double deterministicVal_ = -1;
+					
+					String dist = (String)distribution.getSelectedItem();
+					if(dist.equals("Normal")){
+						try {
+							normalMean_ = Double.parseDouble(normalMean.getText());
+							normalStdDev_ = Double.parseDouble(normalStdDev.getText());
+						} catch (NumberFormatException e1) {
+							catchedError = true;
+							prompt("Input should be numerical character", "Error");
+						}
+						if(!catchedError){
+							Sensor sensor = new Sensor(sensorName.getText().toString(), (String)distribution.getSelectedItem(),
+											normalMean_, normalStdDev_, uniformLow_, uniformUp_, deterministicVal_);
+							graph.addNode(sensor);
+							setVisible(false);
+						}
+					} else if(dist.equals("Uniform")){
+						try {
+							uniformLow_ = Double.parseDouble(uniformLowerBound.getText());
+							uniformUp_ = Double.parseDouble(uniformUpperBound.getText());
+						} catch (NumberFormatException e1) {
+							catchedError = true;
+							prompt("Input should be numerical character", "Error");
+						}
+						if(!catchedError){
+							Sensor sensor = new Sensor(sensorName.getText().toString(), (String)distribution.getSelectedItem(),
+									normalMean_, normalStdDev_, uniformLow_, uniformUp_, deterministicVal_);
+							graph.addNode(sensor);
+							setVisible(false);
+						}
+					} else if(dist.equals("Deterministic")){
+						try {
+							deterministicVal_ = Double.parseDouble(deterministicValue.getText());
+						} catch (NumberFormatException e1) {
+							catchedError = true;
+							prompt("Input should be numerical character", "Error");
+						}
+						if(!catchedError){
+							Sensor sensor = new Sensor(sensorName.getText().toString(), (String)distribution.getSelectedItem(),
+									normalMean_, normalStdDev_, uniformLow_, uniformUp_, deterministicVal_);
+							graph.addNode(sensor);
+							setVisible(false);
+						}
 					}
-					if(!catchedError){
-						Node node = new VmNode(sensorName.getText().toString(), (String)cType.getSelectedItem(),
-										t1, t2, t3, t4);
-						graph.addNode(node);
-						setVisible(false);
-					}
+					
+					
+					
+					
+					
 				}
 			}
 		});
@@ -137,18 +168,18 @@ public class AddSensor extends JDialog {
 		lName.setLabelFor(sensorName);
 		springPanel.add(sensorName);
 		
-		JLabel lType = new JLabel("Type: ", JLabel.TRAILING);
-		springPanel.add(lType);	
-		cType = new JComboBox(distributionType);
-		lType.setLabelFor(cType);
-		cType.setSelectedIndex(-1);
-		cType.addItemListener(new ItemListener() {
+		JLabel distLabel = new JLabel("Distribution Type: ", JLabel.TRAILING);
+		springPanel.add(distLabel);	
+		distribution = new JComboBox(distributionType);
+		distLabel.setLabelFor(distribution);
+		distribution.setSelectedIndex(-1);
+		distribution.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				
 			}
 		});
-		springPanel.add(cType);		
+		springPanel.add(distribution);		
 		
 		JLabel lSize = new JLabel("Size: ");
 		springPanel.add(lSize);	

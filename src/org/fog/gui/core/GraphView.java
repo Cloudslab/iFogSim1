@@ -74,7 +74,50 @@ public class GraphView extends JPanel {
 				int nodeHeight = Math.max(height, f.getHeight());
 				int nodeWidth = nodeHeight;
 
-				int i = 0;
+				int maxLevel=-1, minLevel=1000;
+				Map<Integer, List<Node>> levelMap = new HashMap<Integer, List<Node>>();
+				List<Node> endpoints = new ArrayList<Node>(); 
+				for (Node node : graph.getAdjacencyList().keySet()) {
+					if(node.getType().equals("FOG_DEVICE")){
+						int level = ((FogDevice)node).getLevel();
+						if(!levelMap.containsKey(level))
+							levelMap.put(level, new ArrayList<Node>());
+						levelMap.get(level).add(node);
+						
+						if(level > maxLevel)
+							maxLevel = level;
+						if(level < minLevel)
+							minLevel = level;
+					} else if(node.getType().equals("SENSOR") || node.getType().equals("ACTUATOR")){
+						endpoints.add(node);
+					}
+				}
+				
+				double yDist = canvas.getHeight()/(maxLevel-minLevel+3);
+				int k=1;
+				for(int i=minLevel;i<=maxLevel;i++, k++){
+					double xDist = canvas.getWidth()/(levelMap.get(i).size()+1);
+					
+					for(int j=1;j<=levelMap.get(i).size();j++){
+						System.out.println(levelMap);
+						Node node = levelMap.get(i).get(j-1);
+						int x = (int)xDist*j;
+						int y = (int)yDist*k;
+						coordForNodes.put(node, new Coordinates(x, y));
+						node.setCoordinate(new Coordinates(x, y));
+					}
+				}
+				
+				double xDist = canvas.getWidth()/(endpoints.size()+1);
+				for(int i=0;i<endpoints.size();i++){
+					Node node = endpoints.get(i);
+					int x = (int)xDist*(i+1);
+					int y = (int)yDist*k;
+					coordForNodes.put(node, new Coordinates(x, y));
+					node.setCoordinate(new Coordinates(x, y));
+				}
+				
+				/*int i = 0;
 				for (Node node : graph.getAdjacencyList().keySet()) {
 					// calculate coordinates
 					int x = Double.valueOf(offsetX + Math.cos(i * angle) * radius).intValue();
@@ -84,7 +127,7 @@ public class GraphView extends JPanel {
 					coordForNodes.put(node, new Coordinates(x, y));
 					node.setCoordinate(new Coordinates(x, y));
 					i++;
-				}
+				}*/
 
 				Map<Node, List<Node>> drawnList = new HashMap<Node, List<Node>>();
 				// draw edges first

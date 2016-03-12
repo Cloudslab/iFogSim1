@@ -7,6 +7,7 @@ package org.fog.gui.core;
 public class FogDevice extends Node {
 	private static final long serialVersionUID = -8635044061126993668L;
 	
+	private int level;
 	private String name;
 	private long mips;
 	private int ram;
@@ -16,13 +17,14 @@ public class FogDevice extends Node {
 	public FogDevice() {
 	}
 
-	public FogDevice(String name, long mips, int ram, long upBw, long downBw) {
+	public FogDevice(String name, long mips, int ram, long upBw, long downBw, int level) {
 		super(name, "FOG_DEVICE");
 		this.name = name;
 		this.mips = mips;
 		this.ram = ram;
 		this.upBw = upBw;
 		this.downBw = downBw;
+		this.level = level;
 	}
 
 
@@ -69,6 +71,14 @@ public class FogDevice extends Node {
 	@Override
 	public String toString() {
 		return "FogDevice [mips=" + mips + " ram=" + ram + " upBw=" + upBw + " downBw=" + downBw + "]";
+	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
 	}
 
 }

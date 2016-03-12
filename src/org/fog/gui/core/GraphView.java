@@ -7,17 +7,13 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -34,8 +30,10 @@ public class GraphView extends JPanel {
 
 	private Image imgDefault;
 	private Image imgHost;
+	private Image imgSensor;
 	private Image imgSwitch;
 	private Image imgVm;
+	private Image imgActuator;
 	
 	public GraphView(final Graph graph) {
 
@@ -44,20 +42,8 @@ public class GraphView extends JPanel {
 		imgHost = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/images/host.png"));
 		imgSwitch = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/images/disk.png"));
 		imgVm = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/images/vm2.png"));
-		
-		/*try {
-			
-			imgHost = ImageIO.read(new File("/home/harshit/workspace/FogSim/src/images/host.png"));
-			
-			imgSwitch = ImageIO.read(new File("/home/harshit/workspace/FogSim/src/images/disk.png"));
-			
-			imgVm = ImageIO.read(new File("/home/harshit/workspace/FogSim/src/images/vm2.png"));
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-		
+		imgSensor = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/images/sensor.png"));
+		imgActuator = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/images/actuator.png"));
 		
 		
 		initComponents();
@@ -78,7 +64,7 @@ public class GraphView extends JPanel {
 
 				int offsetX = canvas.getWidth() / 2;
 				int offsetY = canvas.getHeight() / 2;
-				//System.out.println("sys:"+canvas.getWidth() + ":" + canvas.getHeight());
+				System.out.println("sys:"+canvas.getWidth() + ":" + canvas.getHeight());
 
 				int height = 40;
 				int width = 40;
@@ -191,6 +177,12 @@ public class GraphView extends JPanel {
 							break;
 						case "FOG_DEVICE":
 							g.drawImage(imgHost, wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight, this);
+							break;
+						case "SENSOR":
+							g.drawImage(imgSensor, wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight, this);
+							break;
+						case "ACTUATOR":
+							g.drawImage(imgActuator, wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight, this);
 							break;
 					}
 				

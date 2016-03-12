@@ -16,6 +16,7 @@ public class Sensor extends Node implements Serializable{
 	private Distribution distribution;
 	
 	public Sensor(String name, Distribution distribution){
+		super(name, "SENSOR");
 		setName(name);
 		setDistribution(distribution);
 	}
@@ -23,6 +24,7 @@ public class Sensor extends Node implements Serializable{
 	public Sensor(String name, String selectedItem, double normalMean_,
 			double normalStdDev_, double uniformLow_, double uniformUp_,
 			double deterministicVal_) {
+		super(name, "SENSOR");
 		setName(name);
 		if(normalMean_ != -1){
 			setDistribution(new NormalDistribution(normalMean_, normalStdDev_));

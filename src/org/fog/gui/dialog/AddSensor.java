@@ -134,11 +134,6 @@ public class AddSensor extends JDialog {
 							setVisible(false);
 						}
 					}
-					
-					
-					
-					
-					
 				}
 			}
 		});
@@ -173,9 +168,13 @@ public class AddSensor extends JDialog {
 		distribution.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				
+				JComboBox ctype = (JComboBox)e.getSource();
+				String item = (String)ctype.getSelectedItem();
+				updatePanel(item);				
 			}
 		});
+		
+		
 		springPanel.add(distribution);		
 		
 		JLabel normalMeanLabel = new JLabel("Mean: ");
@@ -216,7 +215,36 @@ public class AddSensor extends JDialog {
 		return springPanel;
 	}
 	
-    public static void setUIFont (javax.swing.plaf.FontUIResource f){
+    protected void updatePanel(String item) {
+		switch(item){
+		case "Normal":
+			normalMean.setVisible(true);
+			normalStdDev.setVisible(true);
+			uniformLowerBound.setVisible(false);
+			uniformUpperBound.setVisible(false);
+			deterministicValue.setVisible(false);
+			break;
+		case "Uniform":
+			normalMean.setVisible(false);
+			normalStdDev.setVisible(false);
+			uniformLowerBound.setVisible(true);
+			uniformUpperBound.setVisible(true);
+			deterministicValue.setVisible(false);
+			break;
+		case "Deterministic":
+			normalMean.setVisible(false);
+			normalStdDev.setVisible(false);
+			uniformLowerBound.setVisible(false);
+			uniformUpperBound.setVisible(false);
+			deterministicValue.setVisible(true);
+			break;
+		default:
+			break;
+		}
+		
+	}
+
+	public static void setUIFont (javax.swing.plaf.FontUIResource f){
         java.util.Enumeration keys = UIManager.getDefaults().keys();
         while (keys.hasMoreElements()) {
           Object key = keys.nextElement();

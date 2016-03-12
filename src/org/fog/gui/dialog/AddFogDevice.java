@@ -33,6 +33,7 @@ public class AddFogDevice extends JDialog {
 	private JLabel downBwLabel;
 	private JLabel mipsLabel;
 	private JLabel ramLabel;
+	private JLabel levelLabel;
 	
 	private JLabel lop1;
 	private JLabel lop2;
@@ -44,6 +45,7 @@ public class AddFogDevice extends JDialog {
 	private JTextField downBw;
 	private JTextField mips;
 	private JTextField ram;
+	private JTextField level;
 
 
 	public AddFogDevice(final Graph graph, final JFrame frame) {
@@ -91,20 +93,23 @@ public class AddFogDevice extends JDialog {
 					prompt("Please enter MIPS", "Error");				
 				} else if (ram.getText() == null || ram.getText().length() < 1) {
 					prompt("Please enter RAM", "Error");				
+				} else if (level.getText() == null || level.getText().length() < 1) {
+					prompt("Please enter Level", "Error");
 				}
-				long upBw_=-1, downBw_=-1, mips_=-1; int ram_=-1;
+				long upBw_=-1, downBw_=-1, mips_=-1; int ram_=-1, level_=-1;
 				try {
 					upBw_ = Long.parseLong(upBw.getText());
 					downBw_ = Long.parseLong(downBw.getText());
 					mips_ = Long.parseLong(mips.getText());
 					ram_ = Integer.parseInt(ram.getText());
+					level_ = Integer.parseInt(level.getText());
 					catchedError = false;
 				} catch (NumberFormatException e1) {
 					catchedError = true;
 					prompt("Input should be numerical character", "Error");
 				}
 				if(!catchedError){
-					FogDevice fogDevice = new FogDevice(deviceName.getText().toString(), mips_, ram_, upBw_, downBw_);
+					FogDevice fogDevice = new FogDevice(deviceName.getText().toString(), mips_, ram_, upBw_, downBw_, level_);
 					graph.addNode(fogDevice);
 					setVisible(false);								
 				}
@@ -139,9 +144,7 @@ public class AddFogDevice extends JDialog {
 		}
 	}*/
 	
-	private JPanel createInputPanelArea() {
-	    String[] vmType = {"core","edge","host"};
- 
+	private JPanel createInputPanelArea() { 
         //Create and populate the panel.
         JPanel springPanel = new JPanel(new SpringLayout());
         springPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));		
@@ -150,7 +153,13 @@ public class AddFogDevice extends JDialog {
 		springPanel.add(deviceNameLabel);
 		deviceName = new JTextField();
 		deviceNameLabel.setLabelFor(deviceName);
-		springPanel.add(deviceName);	
+		springPanel.add(deviceName);
+		
+		levelLabel = new JLabel("Level: ");
+		springPanel.add(levelLabel);
+		level = new JTextField();
+		levelLabel.setLabelFor(level);
+		springPanel.add(level);
 		
 		upBwLabel = new JLabel("Uplink Bw: ");
 		springPanel.add(upBwLabel);
@@ -181,7 +190,7 @@ public class AddFogDevice extends JDialog {
 		
         //Lay out the panel.
         SpringUtilities.makeCompactGrid(springPanel,
-                                        5, 2,        //rows, cols
+                                        6, 2,        //rows, cols
                                         6, 6,        //initX, initY
                                         6, 6);       //xPad, yPad
         //updatePanel("core");

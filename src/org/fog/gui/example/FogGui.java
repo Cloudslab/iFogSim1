@@ -35,6 +35,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.fog.gui.core.Bridge;
 import org.fog.gui.core.Graph;
 import org.fog.gui.core.GraphView;
+import org.fog.gui.dialog.AddActuator;
 import org.fog.gui.dialog.AddFogDevice;
 import org.fog.gui.dialog.AddLink;
 import org.fog.gui.dialog.AddPhysicalEdge;
@@ -270,7 +271,7 @@ public class FogGui extends JFrame {
         
         
         btnSensor.addActionListener(addSensorListener);
-        btnSensor.addActionListener(addActuatorListener);
+        btnActuator.addActionListener(addActuatorListener);
         btnFogDevice.addActionListener(addFogDeviceListener);
         btnLink.addActionListener(addLinkListener);
         btnHopen.addActionListener(importPhyTopoListener);
@@ -504,8 +505,8 @@ public class FogGui extends JFrame {
     }
 
 	protected void openAddActuatorDialog() {
-		// TODO Auto-generated method stub
-		
+		AddActuator actuator = new AddActuator(physicalGraph, FogGui.this);
+		physicalCanvas.repaint();
 	}
 	
 	protected void openAddLinkDialog() {

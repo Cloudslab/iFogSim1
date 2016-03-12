@@ -24,8 +24,6 @@ import javax.swing.UIManager;
 import org.fog.gui.core.Graph;
 import org.fog.gui.core.Sensor;
 import org.fog.gui.core.SpringUtilities;
-import org.fog.gui.core.VmNode;
-import org.fog.gui.core.Node;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class AddSensor extends JDialog {
@@ -34,7 +32,6 @@ public class AddSensor extends JDialog {
 	private final Graph graph;
 	
 	private JTextField sensorName;
-	private JComboBox parentDevice;
 	private JComboBox distribution;
 	private JTextField uniformLowerBound;
 	private JTextField uniformUpperBound;
@@ -156,7 +153,7 @@ public class AddSensor extends JDialog {
 	}
 
 	private JPanel createInputPanelArea() {
-	    String[] distributionType = {"vm"};
+	    String[] distributionType = {"Normal", "Uniform", "Deterministic"};
  
         //Create and populate the panel.
         JPanel springPanel = new JPanel(new SpringLayout());
@@ -181,33 +178,39 @@ public class AddSensor extends JDialog {
 		});
 		springPanel.add(distribution);		
 		
-		JLabel lSize = new JLabel("Size: ");
-		springPanel.add(lSize);	
-		tfSize = new JTextField();
-		lSize.setLabelFor(tfSize);
-		springPanel.add(tfSize);		
+		JLabel normalMeanLabel = new JLabel("Mean: ");
+		springPanel.add(normalMeanLabel);	
+		normalMean = new JTextField();
+		normalMeanLabel.setLabelFor(normalMean);
+		springPanel.add(normalMean);
 		
-		JLabel lPes = new JLabel("Pes: ");
-		springPanel.add(lPes);	
-		tfPes = new JTextField();
-		lPes.setLabelFor(tfPes);
-		springPanel.add(tfPes);	
+		JLabel normalStdDevLabel = new JLabel("StdDev: ");
+		springPanel.add(normalStdDevLabel);	
+		normalStdDev = new JTextField();
+		normalStdDevLabel.setLabelFor(normalStdDev);
+		springPanel.add(normalStdDev);
 		
-		JLabel lMips = new JLabel("Mips: ");
-		springPanel.add(lMips);	
-		tfMips = new JTextField();
-		lMips.setLabelFor(tfMips);
-		springPanel.add(tfMips);		
+		JLabel uniformLowLabel = new JLabel("Min: ");
+		springPanel.add(uniformLowLabel);	
+		uniformLowerBound = new JTextField();
+		uniformLowLabel.setLabelFor(uniformLowerBound);
+		springPanel.add(uniformLowerBound);
 		
-		JLabel lRam = new JLabel("Ram: ");
-		springPanel.add(lRam);
-		tfRam = new JTextField();
-		lRam.setLabelFor(tfRam);
-		springPanel.add(tfRam);
-				
+		JLabel uniformUpLabel = new JLabel("Max: ");
+		springPanel.add(uniformUpLabel);	
+		uniformUpperBound = new JTextField();
+		uniformUpLabel.setLabelFor(uniformUpperBound);
+		springPanel.add(uniformUpperBound);
+		
+		JLabel deterministicValueLabel = new JLabel("Value: ");
+		springPanel.add(deterministicValueLabel);	
+		deterministicValue = new JTextField();
+		uniformLowLabel.setLabelFor(deterministicValue);
+		springPanel.add(deterministicValue);		
+						
        //Lay out the panel.
         SpringUtilities.makeCompactGrid(springPanel,
-                                        6, 2,        //rows, columns
+                                        7, 2,        //rows, columns
                                         6, 6,        //initX, initY
                                         6, 6);       //xPad, yPad
 		return springPanel;

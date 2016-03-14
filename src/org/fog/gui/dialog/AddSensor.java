@@ -32,6 +32,7 @@ public class AddSensor extends JDialog {
 	private final Graph graph;
 	
 	private JTextField sensorName;
+	private JTextField sensorType;
 	private JComboBox distribution;
 	private JTextField uniformLowerBound;
 	private JTextField uniformUpperBound;
@@ -82,6 +83,8 @@ public class AddSensor extends JDialog {
 				boolean catchedError = false;
 				if (sensorName.getText() == null || sensorName.getText().length() < 1) {
 					prompt("Please type Sensor name", "Error");
+				} else if (sensorType.getText() == null || sensorType.getText().length() < 1) {
+					prompt("Please type Sensor Type", "Error");
 				} else if (distribution.getSelectedIndex() < 0) {
 					prompt("Please select Emission time distribution", "Error");
 				} else {
@@ -90,7 +93,7 @@ public class AddSensor extends JDialog {
 					double uniformLow_ = -1;
 					double uniformUp_ = -1;
 					double deterministicVal_ = -1;
-					
+					String _sensorType = sensorType.getText();
 					String dist = (String)distribution.getSelectedItem();
 					if(dist.equals("Normal")){
 						try {
@@ -101,7 +104,7 @@ public class AddSensor extends JDialog {
 							prompt("Input should be numerical character", "Error");
 						}
 						if(!catchedError){
-							Sensor sensor = new Sensor(sensorName.getText().toString(), (String)distribution.getSelectedItem(),
+							Sensor sensor = new Sensor(sensorName.getText().toString(), _sensorType, (String)distribution.getSelectedItem(),
 											normalMean_, normalStdDev_, uniformLow_, uniformUp_, deterministicVal_);
 							graph.addNode(sensor);
 							setVisible(false);
@@ -115,7 +118,7 @@ public class AddSensor extends JDialog {
 							prompt("Input should be numerical character", "Error");
 						}
 						if(!catchedError){
-							Sensor sensor = new Sensor(sensorName.getText().toString(), (String)distribution.getSelectedItem(),
+							Sensor sensor = new Sensor(sensorName.getText().toString(), _sensorType, (String)distribution.getSelectedItem(),
 									normalMean_, normalStdDev_, uniformLow_, uniformUp_, deterministicVal_);
 							graph.addNode(sensor);
 							setVisible(false);
@@ -128,7 +131,7 @@ public class AddSensor extends JDialog {
 							prompt("Input should be numerical character", "Error");
 						}
 						if(!catchedError){
-							Sensor sensor = new Sensor(sensorName.getText().toString(), (String)distribution.getSelectedItem(),
+							Sensor sensor = new Sensor(sensorName.getText().toString(), _sensorType, (String)distribution.getSelectedItem(),
 									normalMean_, normalStdDev_, uniformLow_, uniformUp_, deterministicVal_);
 							graph.addNode(sensor);
 							setVisible(false);
@@ -160,6 +163,12 @@ public class AddSensor extends JDialog {
 		lName.setLabelFor(sensorName);
 		springPanel.add(sensorName);
 		
+		JLabel lType = new JLabel("Type: ");
+		springPanel.add(lType);
+		sensorType = new JTextField();
+		lType.setLabelFor(sensorType);
+		springPanel.add(sensorType);
+				
 		JLabel distLabel = new JLabel("Distribution Type: ", JLabel.TRAILING);
 		springPanel.add(distLabel);	
 		distribution = new JComboBox(distributionType);
@@ -209,7 +218,7 @@ public class AddSensor extends JDialog {
 						
        //Lay out the panel.
         SpringUtilities.makeCompactGrid(springPanel,
-                                        7, 2,        //rows, columns
+                                        8, 2,        //rows, columns
                                         6, 6,        //initX, initY
                                         6, 6);       //xPad, yPad
 		return springPanel;

@@ -77,6 +77,7 @@ public class Bridge {
 						graph.addNode(fogDevice);
  
 					} else if(nodeType.equals("SENSOR")){
+						String sensorType = node.get("sensorType").toString();
 						int distType = new BigDecimal((Long)node.get("distribution")).intValue();
 						Distribution distribution = null;
 						if(distType == Distribution.DETERMINISTIC)
@@ -88,8 +89,8 @@ public class Bridge {
 							distribution = new UniformDistribution(new BigDecimal((Double)node.get("min")).doubleValue(), 
 									new BigDecimal((Double)node.get("max")).doubleValue());
 						}
-						
-						Node sensor = new Sensor(nodeName, distribution);
+						System.out.println("Sensor type : "+sensorType);
+						Node sensor = new Sensor(nodeName, sensorType, distribution);
 						graph.addNode(sensor);
 					} else if(nodeType.equals("ACTUATOR")){
 						Node actuator = new Actuator(nodeName);
@@ -204,6 +205,7 @@ public class Bridge {
 				case "SENSOR":
 					Sensor sensor = (Sensor)srcNode;
 					jobj.put("name", sensor.getName());
+					jobj.put("sensorType", sensor.getSensorType());
 					jobj.put("type", sensor.getType());
 					jobj.put("distribution", sensor.getDistributionType());
 					if(sensor.getDistributionType()==Distribution.DETERMINISTIC)

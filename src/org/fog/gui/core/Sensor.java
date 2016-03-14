@@ -12,20 +12,23 @@ public class Sensor extends Node implements Serializable{
 	private static final long serialVersionUID = 4087896123649020073L;
 
 	private String name;
+	private String sensorType;
 	
 	private Distribution distribution;
 	
-	public Sensor(String name, Distribution distribution){
+	public Sensor(String name, String type, Distribution distribution){
 		super(name, "SENSOR");
 		setName(name);
+		setSensorType(type);
 		setDistribution(distribution);
 	}
 
-	public Sensor(String name, String selectedItem, double normalMean_,
+	public Sensor(String name, String sensorType, String selectedItem, double normalMean_,
 			double normalStdDev_, double uniformLow_, double uniformUp_,
 			double deterministicVal_) {
 		super(name, "SENSOR");
 		setName(name);
+		setSensorType(sensorType);
 		if(normalMean_ != -1){
 			setDistribution(new NormalDistribution(normalMean_, normalStdDev_));
 		}else if(uniformLow_ != -1){
@@ -66,6 +69,14 @@ public class Sensor extends Node implements Serializable{
 			return "Sensor [dist=3 value=" + ((DeterministicDistribution)distribution).getValue() + "]";
 		else
 			return "";
+	}
+
+	public String getSensorType() {
+		return sensorType;
+	}
+
+	public void setSensorType(String sensorType) {
+		this.sensorType = sensorType;
 	}
 	
 }

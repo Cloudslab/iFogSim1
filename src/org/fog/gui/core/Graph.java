@@ -59,7 +59,7 @@ public class Graph implements Serializable {
 
 		// do bidirectional adding. Ugly duplicated code.
 		// only execute when there is an edge defined.
-		if (value != null) {
+		/*if (value != null) {
 			Edge reverseEdge = new Edge(key, value.getInfo());
 
 			if (adjacencyList.containsKey(value.getNode())) {
@@ -80,7 +80,7 @@ public class Graph implements Serializable {
 
 				adjacencyList.put(value.getNode(), edges);
 			}
-		}
+		}*/
 	}
 
 	/** Simply adds a new node, without setting any edges */

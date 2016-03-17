@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.QuadCurve2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,14 +27,16 @@ public class GraphView extends JPanel {
 
 	private JPanel canvas;
 	private Graph graph;
-	private final int ARR_SIZE = 4;
+	private final int ARR_SIZE = 10;
 
 	private Image imgDefault;
 	private Image imgHost;
 	private Image imgSensor;
 	private Image imgSwitch;
-	private Image imgVm;
+	private Image imgAppModule;
 	private Image imgActuator;
+	private Image imgSensorModule;
+	private Image imgActuatorModule;
 	
 	public GraphView(final Graph graph) {
 
@@ -41,10 +44,11 @@ public class GraphView extends JPanel {
 		
 		imgHost = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/images/host.png"));
 		imgSwitch = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/images/disk.png"));
-		imgVm = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/images/vm2.png"));
+		imgAppModule = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/images/module.png"));
 		imgSensor = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/images/sensor.png"));
 		imgActuator = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/images/actuator.png"));
-		
+		imgSensorModule = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/images/sensorModule.png"));
+		imgActuatorModule = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/images/actuatorModule.png"));
 		
 		initComponents();
 	}
@@ -117,8 +121,10 @@ public class GraphView extends JPanel {
 					node.setCoordinate(new Coordinates(x, y));
 				}
 				
-				/*int i = 0;
+				int i = 0;
 				for (Node node : graph.getAdjacencyList().keySet()) {
+					if(node.getType().equals("FOG_DEVICE")||node.getType().equals("SENSOR")||node.getType().equals("ACTUATOR"))
+						continue;
 					// calculate coordinates
 					int x = Double.valueOf(offsetX + Math.cos(i * angle) * radius).intValue();
 					int y = Double.valueOf(offsetY + Math.sin(i * angle) * radius).intValue();
@@ -127,9 +133,67 @@ public class GraphView extends JPanel {
 					coordForNodes.put(node, new Coordinates(x, y));
 					node.setCoordinate(new Coordinates(x, y));
 					i++;
-				}*/
+				}
 
+				
+				
+				
 				Map<Node, List<Node>> drawnList = new HashMap<Node, List<Node>>();
+				
+				
+				
+				for (Entry<Node, Coordinates> entry : coordForNodes.entrySet()) {
+					// first paint a single node for testing.
+					g.setColor(Color.black);
+					// int nodeWidth = Math.max(width, f.stringWidth(entry.getKey().getNodeText()) + width / 2);
+
+					Coordinates wrapper = entry.getValue();
+					String nodeName = entry.getKey().getName();
+					switch(entry.getKey().getType()){
+						case "host":
+							g.drawImage(imgHost, wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight, this);
+							break;
+						case "APP_MODULE":
+							g.drawImage(imgAppModule, wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight, this);
+							g.drawString(nodeName, wrapper.getX() - f.stringWidth(nodeName) / 2, wrapper.getY() + nodeHeight);
+							break;
+						case "core":
+						case "edge":
+							g.drawImage(imgSwitch, wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight, this);
+							break;
+						case "FOG_DEVICE":
+							g.drawImage(imgHost, wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight, this);
+							g.drawString(nodeName, wrapper.getX() - f.stringWidth(nodeName) / 2, wrapper.getY() + nodeHeight);
+							break;
+						case "SENSOR":
+							g.drawImage(imgSensor, wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight, this);
+							g.drawString(nodeName, wrapper.getX() - f.stringWidth(nodeName) / 2, wrapper.getY() + nodeHeight);
+							break;
+						case "ACTUATOR":
+							g.drawImage(imgActuator, wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight, this);
+							g.drawString(nodeName, wrapper.getX() - f.stringWidth(nodeName) / 2, wrapper.getY() + nodeHeight);
+							break;
+						case "SENSOR_MODULE":
+							g.drawImage(imgSensorModule, wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight, this);
+							g.drawString(nodeName, wrapper.getX() - f.stringWidth(nodeName) / 2, wrapper.getY() + nodeHeight);
+							break;
+						case "ACTUATOR_MODULE":
+							g.drawImage(imgActuatorModule, wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight, this);
+							g.drawString(nodeName, wrapper.getX() - f.stringWidth(nodeName) / 2, wrapper.getY() + nodeHeight);
+							break;
+					}
+					//g.setColor(Color.white);
+					//g.fillOval(wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight);
+					//g.setColor(Color.black);
+					//g.drawOval(wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight);
+					//System.out.println((wrapper.getX())+" "+(wrapper.getY()));
+
+					//g.drawString(entry.getKey().getName(), wrapper.getX() - f.stringWidth(entry.getKey().getName()) / 2, wrapper.getY() + f.getHeight() / 2);
+
+				}
+
+				
+				
 				// draw edges first
 				// TODO: we draw one edge two times at the moment because we have an undirected graph. But this
 				// shouldn`t matter because we have the same edge costs and no one will see in. Perhaps refactor later.
@@ -138,16 +202,17 @@ public class GraphView extends JPanel {
 					Coordinates startNode = coordForNodes.get(entry.getKey());
 
 					for (Edge edge : entry.getValue()) {
-
+/*
 						// if other direction was drawn already continue
 						if (drawnList.containsKey(edge.getNode()) && drawnList.get(edge.getNode()).contains(entry.getKey())) {
 							continue;
 						}
-
+*/
 						Coordinates targetNode = coordForNodes.get(edge.getNode());
+						System.out.println("Target Node : "+edge.getNode().getName());
 						g.setColor(Color.RED);
-						g.drawLine(startNode.getX(), startNode.getY(), targetNode.getX(), targetNode.getY());
-
+						//g.drawLine(startNode.getX(), startNode.getY(), targetNode.getX(), targetNode.getY());
+						drawArrow(g, startNode.getX(), startNode.getY(), targetNode.getX(), targetNode.getY());
 						// add drawn edges to the drawnList
 						if (drawnList.containsKey(entry.getKey())) {
 							drawnList.get(entry.getKey()).add(edge.getNode());
@@ -200,44 +265,6 @@ public class GraphView extends JPanel {
 						//g.drawString(String.valueOf(edge.getInfo()), labelX - f.stringWidth(String.valueOf(edge.getInfo())) / 2, labelY + f.getHeight() / 2);
 					}
 				}
-
-				for (Entry<Node, Coordinates> entry : coordForNodes.entrySet()) {
-					// first paint a single node for testing.
-					g.setColor(Color.black);
-					// int nodeWidth = Math.max(width, f.stringWidth(entry.getKey().getNodeText()) + width / 2);
-
-					Coordinates wrapper = entry.getValue();
-					switch(entry.getKey().getType()){
-						case "host":
-							g.drawImage(imgHost, wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight, this);
-							break;
-						case "vm":
-							g.drawImage(imgVm, wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight, this);
-							break;
-						case "core":
-						case "edge":
-							g.drawImage(imgSwitch, wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight, this);
-							break;
-						case "FOG_DEVICE":
-							g.drawImage(imgHost, wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight, this);
-							break;
-						case "SENSOR":
-							g.drawImage(imgSensor, wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight, this);
-							break;
-						case "ACTUATOR":
-							g.drawImage(imgActuator, wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight, this);
-							break;
-					}
-				
-				     //g.setColor(Color.white);
-					//g.fillOval(wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight);
-					//g.setColor(Color.black);
-					//g.drawOval(wrapper.getX() - nodeWidth / 2, wrapper.getY() - nodeHeight / 2, nodeWidth, nodeHeight);
-					//System.out.println((wrapper.getX())+" "+(wrapper.getY()));
-
-					//g.drawString(entry.getKey().getName(), wrapper.getX() - f.stringWidth(entry.getKey().getName()) / 2, wrapper.getY() + f.getHeight() / 2);
-
-				}
 			}
 		};
 		JScrollPane scrollPane = new JScrollPane(canvas);
@@ -252,7 +279,7 @@ public class GraphView extends JPanel {
 
 	private void drawArrow(Graphics g1, int x1, int y1, int x2, int y2) {
 		Graphics2D g = (Graphics2D) g1.create();
-
+		System.out.println("Drawing arrow");
 		double dx = x2 - x1, dy = y2 - y1;
 		double angle = Math.atan2(dy, dx);
 		int len = (int) Math.sqrt(dx * dx + dy * dy);
@@ -261,7 +288,8 @@ public class GraphView extends JPanel {
 		g.transform(at);
 
 		// Draw horizontal arrow starting in (0, 0)
-		// g.drawLine(0, 0, len, 0);
+		QuadCurve2D.Double curve = new QuadCurve2D.Double(0,0,50+0.5*len,50,len,0);
+		g.draw(curve);
 		g.fillPolygon(new int[] { len, len - ARR_SIZE, len - ARR_SIZE, len }, new int[] { 0, -ARR_SIZE, ARR_SIZE, 0 }, 4);
 	}
 	

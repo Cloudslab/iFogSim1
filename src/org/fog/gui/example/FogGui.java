@@ -36,11 +36,15 @@ import org.fog.gui.core.Bridge;
 import org.fog.gui.core.Graph;
 import org.fog.gui.core.GraphView;
 import org.fog.gui.dialog.AddActuator;
+import org.fog.gui.dialog.AddActuatorModule;
+import org.fog.gui.dialog.AddAppEdge;
+import org.fog.gui.dialog.AddApplicationModule;
 import org.fog.gui.dialog.AddFogDevice;
 import org.fog.gui.dialog.AddLink;
 import org.fog.gui.dialog.AddPhysicalEdge;
 import org.fog.gui.dialog.AddPhysicalNode;
 import org.fog.gui.dialog.AddSensor;
+import org.fog.gui.dialog.AddSensorModule;
 import org.fog.gui.dialog.AddVirtualEdge;
 import org.fog.gui.dialog.AddVirtualNode;
 import org.fog.gui.dialog.SDNRun;
@@ -176,6 +180,32 @@ public class FogGui extends JFrame {
 		    }
 		};
 		
+		ActionListener addAppModuleActionListener = new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		    	openAddAppModuleDialog();
+		    }
+		};
+		
+		ActionListener addAppEdgeActionListener = new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		    	openAddAppEdgeDialog();
+		    }
+		};
+		
+		ActionListener addSensorModuleListener = new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		    	openAddSensorModuleDialog();
+		    }
+		};
+		
+		ActionListener addActuatorModuleListener = new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		    	openAddActuatorModuleDialog();
+		    }
+		};
+		
+		
+		
 		ActionListener addVirtualEdgeListener = new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
 		    	openAddVirtualEdgeDialog();
@@ -220,7 +250,7 @@ public class FogGui extends JFrame {
 				}
 		    }
 		};
-		     
+		
 		//---------- End ActionListener ----------
     	
         //---------- Start Creating project tool bar ----------
@@ -238,6 +268,16 @@ public class FogGui extends JFrame {
                 getClass().getResource("/images/openPhyTop.png"));
         ImageIcon iHSave = new ImageIcon(
                 getClass().getResource("/images/savePhyTop.png"));
+        
+        ImageIcon iSensorModule = new ImageIcon(
+                getClass().getResource("/images/sensorModule.png"));
+        ImageIcon iActuatorModule = new ImageIcon(
+                getClass().getResource("/images/actuatorModule.png"));
+        ImageIcon iModule = new ImageIcon(
+                getClass().getResource("/images/module.png"));
+        ImageIcon iEdge = new ImageIcon(
+                getClass().getResource("/images/edge.png"));
+        
         ImageIcon run = new ImageIcon(
                 getClass().getResource("/images/play.png"));
         ImageIcon exit = new ImageIcon(
@@ -259,6 +299,17 @@ public class FogGui extends JFrame {
         final JButton btnHsave = new JButton(iHSave);
         btnHsave.setToolTipText("Save Physical Topology");
         
+        final JButton btnSensorModule = new JButton(iSensorModule);
+        btnSensorModule.setToolTipText("Add Sensor Module");
+        final JButton btnActuatorModule = new JButton(iActuatorModule);
+        btnActuatorModule.setToolTipText("Add Actuator Module");
+        
+        final JButton btnModule = new JButton(iModule);
+        btnModule.setToolTipText("Add Application Module");
+        final JButton btnAppEdge = new JButton(iEdge);
+        btnAppEdge.setToolTipText("Add Application Edge");
+        
+        
         btnRun = new JButton(run);
         btnRun.setToolTipText("Start simulation");
         JButton btnExit = new JButton(exit);
@@ -272,6 +323,10 @@ public class FogGui extends JFrame {
         btnLink.addActionListener(addLinkListener);
         btnHopen.addActionListener(importPhyTopoListener);
         btnHsave.addActionListener(savePhyTopoListener);
+        btnSensorModule.addActionListener(addSensorModuleListener);
+        btnActuatorModule.addActionListener(addActuatorModuleListener);
+        btnModule.addActionListener(addAppModuleActionListener);
+        btnAppEdge.addActionListener(addAppEdgeActionListener);
         btnRun.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
             	if("i"==mode){
@@ -315,6 +370,16 @@ public class FogGui extends JFrame {
         toolbar.add(btnLink);
         toolbar.add(btnHopen);
         toolbar.add(btnHsave);
+        
+        toolbar.addSeparator();
+        
+        toolbar.add(btnSensorModule);
+        toolbar.add(btnActuatorModule);
+        toolbar.add(btnModule);
+        toolbar.add(btnAppEdge);
+        
+        toolbar.addSeparator();
+        
         toolbar.add(btnRun);
         toolbar.add(btnExit);
 
@@ -500,9 +565,29 @@ public class FogGui extends JFrame {
 
     }
 
+	protected void openAddActuatorModuleDialog() {
+		AddActuatorModule actuatorModule = new AddActuatorModule(virtualGraph, FogGui.this);
+		virtualCanvas.repaint();		
+	}
+
+	protected void openAddSensorModuleDialog() {
+		AddSensorModule sensorModule = new AddSensorModule(virtualGraph, FogGui.this);
+		virtualCanvas.repaint();
+	}
+
 	protected void openAddActuatorDialog() {
 		AddActuator actuator = new AddActuator(physicalGraph, FogGui.this);
 		physicalCanvas.repaint();
+	}
+	
+	protected void openAddAppModuleDialog() {
+		AddApplicationModule appModule = new AddApplicationModule(virtualGraph, FogGui.this);
+		virtualCanvas.repaint();
+	}
+	
+	protected void openAddAppEdgeDialog() {
+		AddAppEdge appEdge = new AddAppEdge(virtualGraph, FogGui.this);
+		virtualCanvas.repaint();
 	}
 	
 	protected void openAddLinkDialog() {

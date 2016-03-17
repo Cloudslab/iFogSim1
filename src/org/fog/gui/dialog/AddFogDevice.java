@@ -147,7 +147,7 @@ public class AddFogDevice extends JDialog {
 	private JPanel createInputPanelArea() { 
         //Create and populate the panel.
         JPanel springPanel = new JPanel(new SpringLayout());
-        springPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));		
+        //springPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));		
         
 		deviceNameLabel = new JLabel("Name: ");
 		springPanel.add(deviceNameLabel);

@@ -7,11 +7,13 @@ import java.util.Map;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEvent;
+import org.fog.application.AppLoop;
 import org.fog.application.AppModule;
 import org.fog.application.Application;
 import org.fog.entities.FogDevice;
 import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
+import org.fog.utils.TimeKeeper;
 
 public class Controller extends SimEntity{
 
@@ -58,6 +60,8 @@ public class Controller extends SimEntity{
 		}
 
 		send(getId(), RESOURCE_MANAGE_INTERVAL, FogEvents.CONTROLLER_RESOURCE_MANAGE);
+		
+		send(getId(), 100000, FogEvents.STOP_SIMULATION);
 	}
 
 	@Override
@@ -72,9 +76,39 @@ public class Controller extends SimEntity{
 		case FogEvents.CONTROLLER_RESOURCE_MANAGE:
 			manageResources();
 			break;
+		case FogEvents.STOP_SIMULATION:
+			CloudSim.stopSimulation();
+			printTimeDetails();
+			System.exit(0);
+			break;
 		}
 	}
 	
+	private String getStringForLoopId(int loopId){
+		for(String appId : getApplications().keySet()){
+			Application app = getApplications().get(appId);
+			for(AppLoop loop : app.getLoops()){
+				if(loop.getLoopId() == loopId)
+					return loop.getModules().toString();
+			}
+		}
+		return null;
+	}
+	private void printTimeDetails() {
+		for(Integer loopId : TimeKeeper.getInstance().getLoopIdToTupleIds().keySet()){
+			System.out.println(getStringForLoopId(loopId));
+			for(int tupleId : TimeKeeper.getInstance().getLoopIdToTupleIds().get(loopId)){
+				Double startTime = 	TimeKeeper.getInstance().getEmitTimes().get(tupleId);
+				Double endTime = 	TimeKeeper.getInstance().getEndTimes().get(tupleId);
+				if(startTime == null || endTime == null)
+					break;
+				System.out.println(endTime-startTime);
+			}
+			
+		}
+		System.out.println("=========================================");
+	}
+
 	protected void manageResources(){
 		send(getId(), RESOURCE_MANAGE_INTERVAL, FogEvents.CONTROLLER_RESOURCE_MANAGE);
 	}

@@ -2,10 +2,13 @@ package org.fog.application;
 
 import java.util.List;
 
-public class AppLoop {
+import org.fog.utils.TimeKeeper;
 
+public class AppLoop {
+	private int loopId;
 	private List<String> modules;
 	public AppLoop(List<String> modules){
+		setLoopId(TimeKeeper.getInstance().getUniqueId());
 		setModules(modules);
 	}
 	
@@ -54,6 +57,14 @@ public class AppLoop {
 	}
 	public void setModules(List<String> modules) {
 		this.modules = modules;
+	}
+
+	public int getLoopId() {
+		return loopId;
+	}
+
+	public void setLoopId(int loopId) {
+		this.loopId = loopId;
 	}
 	
 }

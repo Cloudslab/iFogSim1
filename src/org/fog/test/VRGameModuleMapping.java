@@ -53,7 +53,7 @@ public class VRGameModuleMapping {
 			
 			FogBroker broker = new FogBroker("broker");
 			
-			int transmitInterval = 1000;
+			int transmitInterval = 100;
 
 			Application application = createApplication(appId, broker.getId(), transmitInterval);
 
@@ -73,6 +73,7 @@ public class VRGameModuleMapping {
 			moduleMapping.addModuleToDevice("client", "gateway-1");
 			moduleMapping.addModuleToDevice("classifier", "gateway-0");
 			moduleMapping.addModuleToDevice("classifier", "gateway-1");
+			/*moduleMapping.addModuleToDevice("classifier", "cloud");*/
 			moduleMapping.addModuleToDevice("tuner", "cloud");
 			
 			Controller controller = new Controller("master-controller", fogDevices, moduleMapping);
@@ -81,9 +82,10 @@ public class VRGameModuleMapping {
 			s1.setControllerId(controller.getId());
 			s0.setApp(application);
 			s1.setApp(application);
+			actuator0.setApp(application);
+			actuator1.setApp(application);
 			
 			controller.submitApplication(application, 0);
-			
 			
 			CloudSim.startSimulation();
 
@@ -97,7 +99,7 @@ public class VRGameModuleMapping {
 	}
 
 	private static Sensor createSensor(String sensorName, Application app, int userId, int gatewayDeviceId, int transmitInterval, int tupleCpuSize, int tupleNwSize, String tupleType, String destOpId){
-		Sensor s = new Sensor(sensorName, userId, app.getAppId(), gatewayDeviceId, null, new DeterministicDistribution(transmitInterval), tupleCpuSize, tupleNwSize, tupleType, destOpId);
+		Sensor s = new Sensor(sensorName, userId, app.getAppId(), gatewayDeviceId, 10, null, new DeterministicDistribution(transmitInterval), tupleCpuSize, tupleNwSize, tupleType, destOpId);
 		return s;
 		//app.registerSensor(sensor0);
 	}
@@ -109,10 +111,10 @@ public class VRGameModuleMapping {
 	
 	@SuppressWarnings("serial")
 	private static List<FogDevice> createFogDevices(String appId, int userId, int transmitInterval) {
-		final FogDevice gw0 = createFogDevice("gateway-0", 10, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 10);
-		final FogDevice gw1 = createFogDevice("gateway-1", 10, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 10);
+		final FogDevice gw0 = createFogDevice("gateway-0", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 50, 10);
+		final FogDevice gw1 = createFogDevice("gateway-1", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 50, 10);
 		
-		final FogDevice cloud = createFogDevice("cloud", FogUtils.MAX, new GeoCoverage(-FogUtils.MAX, FogUtils.MAX, -FogUtils.MAX, FogUtils.MAX), FogUtils.MAX, 1000, 1);
+		final FogDevice cloud = createFogDevice("cloud", FogUtils.MAX, new GeoCoverage(-FogUtils.MAX, FogUtils.MAX, -FogUtils.MAX, FogUtils.MAX), FogUtils.MAX, 1000, 1, 1);
 		cloud.setChildrenIds(new ArrayList<Integer>(){{add(gw0.getId());add(gw1.getId());}});
 		
 		gw0.setParentId(cloud.getId());
@@ -130,7 +132,7 @@ public class VRGameModuleMapping {
 	 *
 	 * @return the datacenter
 	 */
-	private static FogDevice createFogDevice(String name, int mips, GeoCoverage geoCoverage, double uplinkBandwidth, double downlinkBandwidth, double latency) {
+	private static FogDevice createFogDevice(String name, int mips, GeoCoverage geoCoverage, double uplinkBandwidth, double downlinkBandwidth, double latency, double actuatorDelay) {
 
 		// 2. A Machine contains one or more PEs or CPUs/Cores.
 		// In this example, it will have only one core.
@@ -175,7 +177,7 @@ public class VRGameModuleMapping {
 		FogDevice fogdevice = null;
 		try {
 			fogdevice = new FogDevice(name, geoCoverage, characteristics, 
-					new AppModuleAllocationPolicy(hostList), storageList, 0, uplinkBandwidth, downlinkBandwidth, latency);
+					new AppModuleAllocationPolicy(hostList), storageList, 0, uplinkBandwidth, downlinkBandwidth, latency, actuatorDelay);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -220,7 +222,8 @@ public class VRGameModuleMapping {
 		add(edgeTuningParams);add(edgeActuator);}};
 		
 		final AppLoop loop1 = new AppLoop(new ArrayList<String>(){{add("SENSOR");add("client");add("classifier");add("client");add("ACTUATOR");}});
-		List<AppLoop> loops = new ArrayList<AppLoop>(){{add(loop1);}};
+		final AppLoop loop2 = new AppLoop(new ArrayList<String>(){{add("classifier");add("tuner");add("classifier");}});
+		List<AppLoop> loops = new ArrayList<AppLoop>(){{add(loop1);add(loop2);}};
 		
 		
 		

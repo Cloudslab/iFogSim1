@@ -23,6 +23,10 @@ public class TimeKeeper {
 		return count++;
 	}
 	
+	public Map<Integer, List<Integer>> loopIdToTupleIds(){
+		return getInstance().getLoopIdToTupleIds();
+	}
+	
 	private TimeKeeper(){
 		count = 1;
 		setEmitTimes(new HashMap<Integer, Double>());

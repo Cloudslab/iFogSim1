@@ -17,12 +17,14 @@ import org.cloudbus.cloudsim.VmAllocationPolicy;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.core.SimEvent;
+import org.fog.application.AppLoop;
 import org.fog.application.AppModule;
 import org.fog.application.Application;
 import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
 import org.fog.utils.GeoCoverage;
 import org.fog.utils.Logger;
+import org.fog.utils.TimeKeeper;
 
 public class FogDevice extends Datacenter {
 	private Queue<Tuple> northTupleQueue;
@@ -71,6 +73,8 @@ public class FogDevice extends Datacenter {
 	private double latency;
 	private List<Integer> associatedActuatorIds;
 	
+	private double actuatorDelay;
+	
 	public FogDevice(
 			String name, 
 			GeoCoverage geoCoverage,
@@ -78,7 +82,7 @@ public class FogDevice extends Datacenter {
 			VmAllocationPolicy vmAllocationPolicy,
 			List<Storage> storageList,
 			double schedulingInterval,
-			double uplinkBandwidth, double downlinkBandwidth, double latency) throws Exception {
+			double uplinkBandwidth, double downlinkBandwidth, double latency, double actuatorDelay) throws Exception {
 		super(name, characteristics, vmAllocationPolicy, storageList, schedulingInterval);
 		setGeoCoverage(geoCoverage);
 		setCharacteristics(characteristics);
@@ -100,7 +104,7 @@ public class FogDevice extends Datacenter {
 			throw new Exception(super.getName()
 					+ " : Error - this entity has no PEs. Therefore, can't process any Cloudlets.");
 		}
-
+		setActuatorDelay(actuatorDelay);
 		// stores id of this class
 		getCharacteristics().setId(super.getId());
 		
@@ -226,7 +230,7 @@ public class FogDevice extends Datacenter {
 						cloudletCompleted = true;
 						Tuple tuple = (Tuple)cl;
 						Application application = getApplicationMap().get(tuple.getAppId());
-						
+						Logger.debug(getName(), "Completed execution of tuple "+tuple.getCloudletId()+"on "+tuple.getDestModuleName());
 						List<Tuple> resultantTuples = application.getResultantTuples(tuple.getDestModuleName(), tuple, getId());
 						for(Tuple resTuple : resultantTuples){
 							resTuple.setModuleCopyMap(new HashMap<String, Integer>(tuple.getModuleCopyMap()));
@@ -246,7 +250,22 @@ public class FogDevice extends Datacenter {
 	private void updateTimingsOnSending(Tuple tuple, Tuple resTuple) {
 		// TODO ADD CODE FOR UPDATING TIMINGS WHEN A TUPLE IS GENERATED FROM A PREVIOUSLY RECIEVED TUPLE. 
 		// WILL NEED TO CHECK IF A NEW LOOP STARTS AND INSERT A UNIQUE TUPLE ID TO IT.
-		
+		String srcModule = resTuple.getSrcModuleName();
+		String destModule = resTuple.getDestModuleName();
+		for(AppLoop loop : getApplicationMap().get(tuple.getAppId()).getLoops()){
+			if(loop.hasEdge(srcModule, destModule) && loop.isStartModule(srcModule)){
+				int tupleId = TimeKeeper.getInstance().getUniqueId();
+				resTuple.setActualTupleId(tupleId);
+				
+				if(!TimeKeeper.getInstance().getLoopIdToTupleIds().containsKey(loop.getLoopId()))
+					TimeKeeper.getInstance().getLoopIdToTupleIds().put(loop.getLoopId(), new ArrayList<Integer>());
+				TimeKeeper.getInstance().getLoopIdToTupleIds().get(loop.getLoopId()).add(tupleId);
+				TimeKeeper.getInstance().getEmitTimes().put(tupleId, CloudSim.clock());
+				
+				//Logger.debug(getName(), "\tSENDING\t"+tuple.getActualTupleId()+"\tSrc:"+srcModule+"\tDest:"+destModule);
+				
+			}
+		}
 	}
 
 	protected int getChildIdWithRouteTo(int targetDeviceId){
@@ -311,8 +330,7 @@ public class FogDevice extends Datacenter {
 	private void sendTupleToActuator(Tuple tuple){
 		for(Integer actuatorId : getAssociatedActuatorIds()){
 			if(actuatorId == tuple.getActuatorId()){
-				//Logger.debug(getName(), "Sending tuple to associated actuator.");
-				sendNow(actuatorId, FogEvents.TUPLE_ARRIVAL, tuple);
+				send(actuatorId, actuatorDelay, FogEvents.TUPLE_ARRIVAL, tuple);
 				return;
 			}
 		}
@@ -330,8 +348,8 @@ public class FogDevice extends Datacenter {
 			//Logger.error(getName(), tuple.getTupleType());
 		}
 		
-		/*Logger.debug(getName(), "Received tuple with tupleType = "+tuple.getTupleType()+"\t| Source : "+
-		CloudSim.getEntityName(ev.getSource())+"|Dest : "+CloudSim.getEntityName(ev.getDestination())+"| ID : "+tuple.getCloudletId());*/
+		Logger.debug(getName(), "Received tuple "+tuple.getCloudletId()+"with tupleType = "+tuple.getTupleType()+"\t| Source : "+
+		CloudSim.getEntityName(ev.getSource())+"|Dest : "+CloudSim.getEntityName(ev.getDestination()));
 		send(ev.getSource(), CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ACK);
 		
 		if(FogUtils.appIdToGeoCoverageMap.containsKey(tuple.getAppId())){
@@ -375,7 +393,7 @@ public class FogDevice extends Datacenter {
 				tuple.setVmId(vmId);
 				//Logger.error(getName(), "Executing tuple for operator " + moduleName);
 				
-				updateTimingsOnReceipt(tuple.getSrcModuleName(), tuple.getDestModuleName());
+				updateTimingsOnReceipt(tuple);
 				
 				executeTuple(ev, tuple.getDestModuleName());
 			}else if(tuple.getDestModuleName()!=null){
@@ -398,10 +416,19 @@ public class FogDevice extends Datacenter {
 		}
 	}
 
-	private void updateTimingsOnReceipt(String srcModuleName,
-			String destModuleName) {
+	private void updateTimingsOnReceipt(Tuple tuple) {
 		// TODO NEED TO FILL THIS WITH CODE FOR UPDATING TIMINGS IN CASE A LOOP ENDS HERE
-		
+		Application app = getApplicationMap().get(tuple.getAppId());
+		String srcModule = tuple.getSrcModuleName();
+		String destModule = tuple.getDestModuleName();
+		List<AppLoop> loops = app.getLoops();
+		for(AppLoop loop : loops){
+			if(loop.hasEdge(srcModule, destModule) && loop.isEndModule(destModule)){
+				//Logger.debug(getName(), "\tRECEIVE\t"+tuple.getActualTupleId());
+				TimeKeeper.getInstance().getEndTimes().put(tuple.getActualTupleId(), CloudSim.clock());
+				break;
+			}
+		}
 	}
 
 	private void processSensorJoining(SimEvent ev){
@@ -603,5 +630,13 @@ public class FogDevice extends Datacenter {
 
 	public void setAssociatedActuatorIds(List<Integer> associatedActuatorIds) {
 		this.associatedActuatorIds = associatedActuatorIds;
+	}
+
+	public double getActuatorDelay() {
+		return actuatorDelay;
+	}
+
+	public void setActuatorDelay(double actuatorDelay) {
+		this.actuatorDelay = actuatorDelay;
 	}
 }

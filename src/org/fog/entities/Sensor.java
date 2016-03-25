@@ -1,5 +1,7 @@
 package org.fog.entities;
 
+import java.util.ArrayList;
+
 import org.cloudbus.cloudsim.UtilizationModelFull;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.SimEntity;
@@ -21,7 +23,6 @@ public class Sensor extends SimEntity{
 	private long length;
 	private long fileSize;
 	private long outputSize;
-	private double lastTransmitTime = -1;
 	private String appId;
 	private int userId;
 	private String tupleType;
@@ -32,8 +33,9 @@ public class Sensor extends SimEntity{
 	private Distribution transmitDistribution;
 	private int controllerId;
 	private Application app;
+	private double latency;
 	
-	public Sensor(String name, int userId, String appId, int gatewayDeviceId, GeoLocation geoLocation, 
+	public Sensor(String name, int userId, String appId, int gatewayDeviceId, double latency, GeoLocation geoLocation, 
 			Distribution transmitDistribution, int cpuLength, int nwLength, String tupleType, String destModuleName) {
 		super(name);
 		this.setAppId(appId);
@@ -49,6 +51,7 @@ public class Sensor extends SimEntity{
 		setDestModuleName(destModuleName);
 		setTupleType(tupleType);
 		setSensorName(tupleType);
+		setLatency(latency);
 	}
 	
 	public void transmit(double delay){
@@ -60,23 +63,27 @@ public class Sensor extends SimEntity{
 		
 		tuple.setDestModuleName(getDestModuleName());
 		tuple.setSrcModuleName(getSensorName());
-		System.out.println(getSensorName());
 		//Logger.debug(getName(), "Sending tuple with tupleId = "+tuple.getCloudletId());
-		
-		int actualTupleId = updateTimings(getSensorName(), getDestModuleName());
-		System.out.println(actualTupleId);
+		//Logger.debug(getName(), "Sending tuple "+tuple.getCloudletId()+"to "+tuple.getDestModuleName()+" with delay="+delay);
+
+		int actualTupleId = updateTimings(getSensorName(), getDestModuleName(), delay);
 		tuple.setActualTupleId(actualTupleId);
 		
-		send(gatewayDeviceId, delay, FogEvents.TUPLE_ARRIVAL,tuple);
 		
-		lastTransmitTime = CloudSim.clock();
+		send(gatewayDeviceId, delay+getLatency(), FogEvents.TUPLE_ARRIVAL,tuple);
+		
 	}
 	
-	private int updateTimings(String src, String dest){
+	private int updateTimings(String src, String dest, double delay){
 		Application application = getApp();
 		for(AppLoop loop : application.getLoops()){
 			if(loop.hasEdge(src, dest)){
-				return TimeKeeper.getInstance().getUniqueId();
+				int tupleId = TimeKeeper.getInstance().getUniqueId();
+				if(!TimeKeeper.getInstance().getLoopIdToTupleIds().containsKey(loop.getLoopId()))
+					TimeKeeper.getInstance().getLoopIdToTupleIds().put(loop.getLoopId(), new ArrayList<Integer>());
+				TimeKeeper.getInstance().getLoopIdToTupleIds().get(loop.getLoopId()).add(tupleId);
+				TimeKeeper.getInstance().getEmitTimes().put(tupleId, CloudSim.clock()+delay);
+				return tupleId;
 			}
 		}
 		return -1;
@@ -116,14 +123,6 @@ public class Sensor extends SimEntity{
 
 	public void setGeoLocation(GeoLocation geoLocation) {
 		this.geoLocation = geoLocation;
-	}
-
-	public double getLastTransmitTime() {
-		return lastTransmitTime;
-	}
-
-	public void setLastTransmitTime(double lastTransmitTime) {
-		this.lastTransmitTime = lastTransmitTime;
 	}
 
 	public int getUserId() {
@@ -204,6 +203,14 @@ public class Sensor extends SimEntity{
 
 	public void setApp(Application app) {
 		this.app = app;
+	}
+
+	public Double getLatency() {
+		return latency;
+	}
+
+	public void setLatency(Double latency) {
+		this.latency = latency;
 	}
 
 }

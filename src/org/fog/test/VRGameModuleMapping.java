@@ -17,6 +17,7 @@ import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
 import org.cloudbus.cloudsim.sdn.overbooking.BwProvisionerOverbooking;
 import org.cloudbus.cloudsim.sdn.overbooking.PeProvisionerOverbooking;
 import org.fog.application.AppEdge;
+import org.fog.application.AppLoop;
 import org.fog.application.AppModule;
 import org.fog.application.Application;
 import org.fog.entities.Actuator;
@@ -58,13 +59,13 @@ public class VRGameModuleMapping {
 
 			List<FogDevice> fogDevices = createFogDevices(appId, broker.getId(), transmitInterval);
 			
-			createSensor("EEGSensor-0", application, broker.getId(), CloudSim.getEntityId("gateway-0"), transmitInterval, 100, 100, "SENSOR", "client");
-			createSensor("EEGSensor-1", application, broker.getId(), CloudSim.getEntityId("gateway-1"), transmitInterval, 100, 100, "SENSOR", "client");
-			int actuator0Id = createActuator("Display-0", appId, broker.getId(), CloudSim.getEntityId("gateway-0"), "ACTUATOR", "client");
-			int actuator1Id = createActuator("Display-1", appId, broker.getId(), CloudSim.getEntityId("gateway-1"), "ACTUATOR", "client");
+			Sensor s0 = createSensor("EEGSensor-0", application, broker.getId(), CloudSim.getEntityId("gateway-0"), transmitInterval, 100, 100, "SENSOR", "client");
+			Sensor s1 = createSensor("EEGSensor-1", application, broker.getId(), CloudSim.getEntityId("gateway-1"), transmitInterval, 100, 100, "SENSOR", "client");
+			Actuator actuator0 = createActuator("Display-0", appId, broker.getId(), CloudSim.getEntityId("gateway-0"), "ACTUATOR", "client");
+			Actuator actuator1 = createActuator("Display-1", appId, broker.getId(), CloudSim.getEntityId("gateway-1"), "ACTUATOR", "client");
 			
-			application.getModuleByName("client").subscribeActuator(actuator0Id, "ACTUATOR");
-			application.getModuleByName("client").subscribeActuator(actuator1Id, "ACTUATOR");
+			application.getModuleByName("client").subscribeActuator(actuator0.getId(), "ACTUATOR");
+			application.getModuleByName("client").subscribeActuator(actuator1.getId(), "ACTUATOR");
 			
 			
 			ModuleMapping moduleMapping = ModuleMapping.createModuleMapping();
@@ -75,6 +76,11 @@ public class VRGameModuleMapping {
 			moduleMapping.addModuleToDevice("tuner", "cloud");
 			
 			Controller controller = new Controller("master-controller", fogDevices, moduleMapping);
+			
+			s0.setControllerId(controller.getId());
+			s1.setControllerId(controller.getId());
+			s0.setApp(application);
+			s1.setApp(application);
 			
 			controller.submitApplication(application, 0);
 			
@@ -90,13 +96,14 @@ public class VRGameModuleMapping {
 		}
 	}
 
-	private static void createSensor(String sensorName, Application app, int userId, int gatewayDeviceId, int transmitInterval, int tupleCpuSize, int tupleNwSize, String tupleType, String destOpId){
-		new Sensor(sensorName, userId, app.getAppId(), gatewayDeviceId, null, new DeterministicDistribution(transmitInterval), tupleCpuSize, tupleNwSize, tupleType, destOpId);
+	private static Sensor createSensor(String sensorName, Application app, int userId, int gatewayDeviceId, int transmitInterval, int tupleCpuSize, int tupleNwSize, String tupleType, String destOpId){
+		Sensor s = new Sensor(sensorName, userId, app.getAppId(), gatewayDeviceId, null, new DeterministicDistribution(transmitInterval), tupleCpuSize, tupleNwSize, tupleType, destOpId);
+		return s;
 		//app.registerSensor(sensor0);
 	}
-	private static int createActuator(String actuatorName, String appId, int userId, int gatewayDeviceId, String actuatorType, String srcModuleName){
+	private static Actuator createActuator(String actuatorName, String appId, int userId, int gatewayDeviceId, String actuatorType, String srcModuleName){
 		Actuator actuator = new Actuator(actuatorName, userId, appId, gatewayDeviceId, null, actuatorType, srcModuleName);
-		return actuator.getId();
+		return actuator;
 		//app.registerSensor(sensor0);
 	}
 	
@@ -212,8 +219,14 @@ public class VRGameModuleMapping {
 		List<AppEdge> edges = new ArrayList<AppEdge>(){{add(edgeSensor);add(edge_Sensor);add(edgeHistory);add(edgeClassification);
 		add(edgeTuningParams);add(edgeActuator);}};
 		
+		final AppLoop loop1 = new AppLoop(new ArrayList<String>(){{add("SENSOR");add("client");add("classifier");add("client");add("ACTUATOR");}});
+		List<AppLoop> loops = new ArrayList<AppLoop>(){{add(loop1);}};
+		
+		
+		
+		
 		GeoCoverage geoCoverage = new GeoCoverage(-100, 100, -100, 100);
-		Application app = new Application(appId, modules, edges, geoCoverage);
+		Application app = new Application(appId, modules, edges, loops, geoCoverage);
 		return app;
 	}
 }

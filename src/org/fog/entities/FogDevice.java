@@ -231,6 +231,7 @@ public class FogDevice extends Datacenter {
 						for(Tuple resTuple : resultantTuples){
 							resTuple.setModuleCopyMap(new HashMap<String, Integer>(tuple.getModuleCopyMap()));
 							resTuple.getModuleCopyMap().put(((AppModule)vm).getName(), vm.getId());
+							updateTimingsOnSending(tuple, resTuple);
 							sendToSelf(resTuple);
 						}
 						sendNow(cl.getUserId(), CloudSimTags.CLOUDLET_RETURN, cl);
@@ -242,6 +243,12 @@ public class FogDevice extends Datacenter {
 			updateAllocatedMips(null);
 	}
 	
+	private void updateTimingsOnSending(Tuple tuple, Tuple resTuple) {
+		// TODO ADD CODE FOR UPDATING TIMINGS WHEN A TUPLE IS GENERATED FROM A PREVIOUSLY RECIEVED TUPLE. 
+		// WILL NEED TO CHECK IF A NEW LOOP STARTS AND INSERT A UNIQUE TUPLE ID TO IT.
+		
+	}
+
 	protected int getChildIdWithRouteTo(int targetDeviceId){
 		for(Integer childId : getChildrenIds()){
 			if(targetDeviceId == childId)
@@ -304,7 +311,7 @@ public class FogDevice extends Datacenter {
 	private void sendTupleToActuator(Tuple tuple){
 		for(Integer actuatorId : getAssociatedActuatorIds()){
 			if(actuatorId == tuple.getActuatorId()){
-				Logger.debug(getName(), "Sending tuple to associated actuator.");
+				//Logger.debug(getName(), "Sending tuple to associated actuator.");
 				sendNow(actuatorId, FogEvents.TUPLE_ARRIVAL, tuple);
 				return;
 			}
@@ -319,12 +326,12 @@ public class FogDevice extends Datacenter {
 		
 		if(getName().equals("cloud")){
 			updateCloudTraffic();
-			Logger.error(getName(), tuple.getModuleCopyMap().toString());
-			Logger.error(getName(), tuple.getTupleType());
+			//Logger.error(getName(), tuple.getModuleCopyMap().toString());
+			//Logger.error(getName(), tuple.getTupleType());
 		}
 		
-		Logger.debug(getName(), "Received tuple with tupleType = "+tuple.getTupleType()+"\t| Source : "+
-		CloudSim.getEntityName(ev.getSource())+"|Dest : "+CloudSim.getEntityName(ev.getDestination())+"| ID : "+tuple.getCloudletId());
+		/*Logger.debug(getName(), "Received tuple with tupleType = "+tuple.getTupleType()+"\t| Source : "+
+		CloudSim.getEntityName(ev.getSource())+"|Dest : "+CloudSim.getEntityName(ev.getDestination())+"| ID : "+tuple.getCloudletId());*/
 		send(ev.getSource(), CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ACK);
 		
 		if(FogUtils.appIdToGeoCoverageMap.containsKey(tuple.getAppId())){
@@ -366,7 +373,10 @@ public class FogDevice extends Datacenter {
 					return;
 				}
 				tuple.setVmId(vmId);
-				Logger.error(getName(), "Executing tuple for operator " + moduleName);
+				//Logger.error(getName(), "Executing tuple for operator " + moduleName);
+				
+				updateTimingsOnReceipt(tuple.getSrcModuleName(), tuple.getDestModuleName());
+				
 				executeTuple(ev, tuple.getDestModuleName());
 			}else if(tuple.getDestModuleName()!=null){
 				if(tuple.getDirection() == Tuple.UP)
@@ -386,6 +396,12 @@ public class FogDevice extends Datacenter {
 					sendDown(tuple, childId);
 			}
 		}
+	}
+
+	private void updateTimingsOnReceipt(String srcModuleName,
+			String destModuleName) {
+		// TODO NEED TO FILL THIS WITH CODE FOR UPDATING TIMINGS IN CASE A LOOP ENDS HERE
+		
 	}
 
 	private void processSensorJoining(SimEvent ev){
@@ -436,7 +452,7 @@ public class FogDevice extends Datacenter {
 	
 	protected void sendUpFreeLink(Tuple tuple){
 		double networkDelay = tuple.getCloudletFileSize()/getUplinkBandwidth();
-		Logger.debug(getName(), "Sending tuple with tupleType = "+tuple.getTupleType()+" UP");
+		//Logger.debug(getName(), "Sending tuple with tupleType = "+tuple.getTupleType()+" UP");
 		setNorthLinkBusy(true);
 		send(getId(), networkDelay, FogEvents.UPDATE_NORTH_TUPLE_QUEUE);
 		send(parentId, networkDelay+latency, FogEvents.TUPLE_ARRIVAL, tuple);
@@ -464,7 +480,7 @@ public class FogDevice extends Datacenter {
 	
 	protected void sendDownFreeLink(Tuple tuple, int childId){
 		double networkDelay = tuple.getCloudletFileSize()/getDownlinkBandwidth();
-		Logger.debug(getName(), "Sending tuple with tupleType = "+tuple.getTupleType()+" DOWN");
+		//Logger.debug(getName(), "Sending tuple with tupleType = "+tuple.getTupleType()+" DOWN");
 		setSouthLinkBusy(true);
 		send(getId(), networkDelay, FogEvents.UPDATE_SOUTH_TUPLE_QUEUE);
 		send(childId, networkDelay+latency, FogEvents.TUPLE_ARRIVAL, tuple);

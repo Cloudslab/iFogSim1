@@ -15,13 +15,16 @@ public class Application {
 
 	private List<AppModule> modules;
 	private List<AppEdge> edges;
+	
+	private List<AppLoop> loops;
 
 	public Application(String appId, List<AppModule> modules,
-			List<AppEdge> edges, GeoCoverage geoCoverage) {
+			List<AppEdge> edges, List<AppLoop> loops, GeoCoverage geoCoverage) {
 		setAppId(appId);
 		setModules(modules);
 		setEdges(edges);
 		setGeoCoverage(geoCoverage);
+		setLoops(loops);
 	}
 
 	public AppModule getModuleByName(String name){
@@ -119,8 +122,11 @@ public class Application {
 		this.geoCoverage = geoCoverage;
 	}
 
-	
-	
-	
+	public List<AppLoop> getLoops() {
+		return loops;
+	}
 
+	public void setLoops(List<AppLoop> loops) {
+		this.loops = loops;
+	}
 }

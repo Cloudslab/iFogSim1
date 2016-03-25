@@ -41,7 +41,7 @@ public class Actuator extends SimEntity{
 
 	private void processTupleArrival(SimEvent ev) {
 		//Tuple tuple = (Tuple)ev.getData();
-		Logger.debug(getName(), "Tuple arrived.");
+		//Logger.debug(getName(), "Tuple arrived.");
 	}
 
 	@Override

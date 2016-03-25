@@ -4,10 +4,14 @@ import org.cloudbus.cloudsim.UtilizationModelFull;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEvent;
+import org.fog.application.AppLoop;
+import org.fog.application.Application;
+import org.fog.placement.Controller;
 import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
 import org.fog.utils.GeoLocation;
 import org.fog.utils.Logger;
+import org.fog.utils.TimeKeeper;
 import org.fog.utils.distribution.Distribution;
 
 public class Sensor extends SimEntity{
@@ -26,6 +30,8 @@ public class Sensor extends SimEntity{
 	private int tupleNwSize;
 	private String destModuleName;
 	private Distribution transmitDistribution;
+	private int controllerId;
+	private Application app;
 	
 	public Sensor(String name, int userId, String appId, int gatewayDeviceId, GeoLocation geoLocation, 
 			Distribution transmitDistribution, int cpuLength, int nwLength, String tupleType, String destModuleName) {
@@ -42,6 +48,7 @@ public class Sensor extends SimEntity{
 		setTupleNwSize(nwLength);
 		setDestModuleName(destModuleName);
 		setTupleType(tupleType);
+		setSensorName(tupleType);
 	}
 	
 	public void transmit(double delay){
@@ -50,15 +57,29 @@ public class Sensor extends SimEntity{
 				new UtilizationModelFull(), new UtilizationModelFull(), new UtilizationModelFull());
 		tuple.setUserId(getUserId());
 		tuple.setTupleType(getTupleType());
-		tuple.setActualTupleId(FogUtils.generateActualTupleId());
+		
 		tuple.setDestModuleName(getDestModuleName());
 		tuple.setSrcModuleName(getSensorName());
+		System.out.println(getSensorName());
+		//Logger.debug(getName(), "Sending tuple with tupleId = "+tuple.getCloudletId());
 		
-		Logger.debug(getName(), "Sending tuple with tupleId = "+tuple.getCloudletId());
+		int actualTupleId = updateTimings(getSensorName(), getDestModuleName());
+		System.out.println(actualTupleId);
+		tuple.setActualTupleId(actualTupleId);
 		
 		send(gatewayDeviceId, delay, FogEvents.TUPLE_ARRIVAL,tuple);
 		
 		lastTransmitTime = CloudSim.clock();
+	}
+	
+	private int updateTimings(String src, String dest){
+		Application application = getApp();
+		for(AppLoop loop : application.getLoops()){
+			if(loop.hasEdge(src, dest)){
+				return TimeKeeper.getInstance().getUniqueId();
+			}
+		}
+		return -1;
 	}
 	
 	@Override
@@ -167,6 +188,22 @@ public class Sensor extends SimEntity{
 
 	public void setTransmitDistribution(Distribution transmitDistribution) {
 		this.transmitDistribution = transmitDistribution;
+	}
+
+	public int getControllerId() {
+		return controllerId;
+	}
+
+	public void setControllerId(int controllerId) {
+		this.controllerId = controllerId;
+	}
+
+	public Application getApp() {
+		return app;
+	}
+
+	public void setApp(Application app) {
+		this.app = app;
 	}
 
 }

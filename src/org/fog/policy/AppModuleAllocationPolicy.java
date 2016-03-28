@@ -7,6 +7,7 @@ import java.util.Map;
 import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.VmAllocationPolicy;
+import org.fog.application.AppModule;
 
 public class AppModuleAllocationPolicy extends VmAllocationPolicy{
 
@@ -25,7 +26,6 @@ public class AppModuleAllocationPolicy extends VmAllocationPolicy{
 	public boolean allocateHostForVm(Vm vm) {
 		Host host = fogHost;
 		boolean result = host.vmCreate(vm);
-		//System.out.println("Trying to create "+((StreamOperator)vm).getName()+" in device "+host.getDatacenter().getName()+" ---> "+result);
 		if (result) { // if vm were succesfully created in the host
 			getAppModuleIdsIds().add(vm.getId());
 		}
@@ -36,7 +36,6 @@ public class AppModuleAllocationPolicy extends VmAllocationPolicy{
 	@Override
 	public boolean allocateHostForVm(Vm vm, Host host) {
 		boolean result = host.vmCreate(vm);
-
 		if (result) { // if vm were succesfully created in the host
 			getAppModuleIdsIds().add(vm.getId());
 		}

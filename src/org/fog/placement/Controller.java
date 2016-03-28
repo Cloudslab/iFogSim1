@@ -4,9 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEvent;
+import org.cloudbus.cloudsim.power.PowerVmAllocationPolicyMigrationAbstract;
 import org.fog.application.AppLoop;
 import org.fog.application.AppModule;
 import org.fog.application.Application;
@@ -61,7 +63,7 @@ public class Controller extends SimEntity{
 
 		send(getId(), RESOURCE_MANAGE_INTERVAL, FogEvents.CONTROLLER_RESOURCE_MANAGE);
 		
-		send(getId(), 100000, FogEvents.STOP_SIMULATION);
+		send(getId(), 10000, FogEvents.STOP_SIMULATION);
 	}
 
 	@Override
@@ -79,11 +81,19 @@ public class Controller extends SimEntity{
 		case FogEvents.STOP_SIMULATION:
 			CloudSim.stopSimulation();
 			printTimeDetails();
+			printPowerDetails();
 			System.exit(0);
 			break;
 		}
 	}
 	
+	private void printPowerDetails() {
+		// TODO Auto-generated method stub
+		for(FogDevice fogDevice : getFogDevices()){
+			
+		}
+	}
+
 	private String getStringForLoopId(int loopId){
 		for(String appId : getApplications().keySet()){
 			Application app = getApplications().get(appId);
@@ -146,7 +156,6 @@ public class Controller extends SimEntity{
 				
 		allocationMap = modulePlacement.getModuleToDeviceMap();
 		
-		System.out.println(allocationMap);
 		for(FogDevice fogDevice : fogDevices){
 			sendNow(fogDevice.getId(), FogEvents.ACTIVE_APP_UPDATE, application);
 		}
@@ -189,4 +198,128 @@ public class Controller extends SimEntity{
 	public void setModuleMapping(ModuleMapping moduleMapping) {
 		this.moduleMapping = moduleMapping;
 	}
+	
+	
+	/*public static void printResults() {
+		Log.enable();
+		
+
+		int numberOfHosts = hosts.size();
+		int numberOfVms = vms.size();
+
+		double totalSimulationTime = lastClock;
+		double energy = datacenter.getPower() / (3600 * 1000);
+		int numberOfMigrations = datacenter.getMigrationCount();
+
+		Map<String, Double> slaMetrics = getSlaMetrics(vms);
+
+		double slaOverall = slaMetrics.get("overall");
+		double slaAverage = slaMetrics.get("average");
+		double slaDegradationDueToMigration = slaMetrics.get("underallocated_migration");
+		// double slaTimePerVmWithMigration = slaMetrics.get("sla_time_per_vm_with_migration");
+		// double slaTimePerVmWithoutMigration =
+		// slaMetrics.get("sla_time_per_vm_without_migration");
+		// double slaTimePerHost = getSlaTimePerHost(hosts);
+		double slaTimePerActiveHost = getSlaTimePerActiveHost(hosts);
+
+		double sla = slaTimePerActiveHost * slaDegradationDueToMigration;
+
+		List<Double> timeBeforeHostShutdown = getTimesBeforeHostShutdown(hosts);
+
+		int numberOfHostShutdowns = timeBeforeHostShutdown.size();
+
+		double meanTimeBeforeHostShutdown = Double.NaN;
+		double stDevTimeBeforeHostShutdown = Double.NaN;
+		if (!timeBeforeHostShutdown.isEmpty()) {
+			meanTimeBeforeHostShutdown = MathUtil.mean(timeBeforeHostShutdown);
+			stDevTimeBeforeHostShutdown = MathUtil.stDev(timeBeforeHostShutdown);
+		}
+
+		List<Double> timeBeforeVmMigration = getTimesBeforeVmMigration(vms);
+		double meanTimeBeforeVmMigration = Double.NaN;
+		double stDevTimeBeforeVmMigration = Double.NaN;
+		if (!timeBeforeVmMigration.isEmpty()) {
+			meanTimeBeforeVmMigration = MathUtil.mean(timeBeforeVmMigration);
+			stDevTimeBeforeVmMigration = MathUtil.stDev(timeBeforeVmMigration);
+		}
+
+		Log.setDisabled(false);
+		Log.printLine();
+		Log.printLine(String.format("Number of hosts: " + numberOfHosts));
+		Log.printLine(String.format("Number of VMs: " + numberOfVms));
+		Log.printLine(String.format("Total simulation time: %.2f sec", totalSimulationTime));
+		Log.printLine(String.format("Energy consumption: %.2f kWh", energy));
+		Log.printLine(String.format("Number of VM migrations: %d", numberOfMigrations));
+		Log.printLine(String.format("SLA: %.5f%%", sla * 100));
+		Log.printLine(String.format(
+				"SLA perf degradation due to migration: %.2f%%",
+				slaDegradationDueToMigration * 100));
+		Log.printLine(String.format("SLA time per active host: %.2f%%", slaTimePerActiveHost * 100));
+		Log.printLine(String.format("Overall SLA violation: %.2f%%", slaOverall * 100));
+		Log.printLine(String.format("Average SLA violation: %.2f%%", slaAverage * 100));
+		// Log.printLine(String.format("SLA time per VM with migration: %.2f%%",
+		// slaTimePerVmWithMigration * 100));
+		// Log.printLine(String.format("SLA time per VM without migration: %.2f%%",
+		// slaTimePerVmWithoutMigration * 100));
+		// Log.printLine(String.format("SLA time per host: %.2f%%", slaTimePerHost * 100));
+		Log.printLine(String.format("Number of host shutdowns: %d", numberOfHostShutdowns));
+		Log.printLine(String.format(
+				"Mean time before a host shutdown: %.2f sec",
+				meanTimeBeforeHostShutdown));
+		Log.printLine(String.format(
+				"StDev time before a host shutdown: %.2f sec",
+				stDevTimeBeforeHostShutdown));
+		Log.printLine(String.format(
+				"Mean time before a VM migration: %.2f sec",
+				meanTimeBeforeVmMigration));
+		Log.printLine(String.format(
+				"StDev time before a VM migration: %.2f sec",
+				stDevTimeBeforeVmMigration));
+			if (datacenter.getVmAllocationPolicy() instanceof PowerVmAllocationPolicyMigrationAbstract) {
+			PowerVmAllocationPolicyMigrationAbstract vmAllocationPolicy = (PowerVmAllocationPolicyMigrationAbstract) datacenter
+					.getVmAllocationPolicy();
+				double executionTimeVmSelectionMean = MathUtil.mean(vmAllocationPolicy
+					.getExecutionTimeHistoryVmSelection());
+			double executionTimeVmSelectionStDev = MathUtil.stDev(vmAllocationPolicy
+					.getExecutionTimeHistoryVmSelection());
+			double executionTimeHostSelectionMean = MathUtil.mean(vmAllocationPolicy
+					.getExecutionTimeHistoryHostSelection());
+			double executionTimeHostSelectionStDev = MathUtil.stDev(vmAllocationPolicy
+					.getExecutionTimeHistoryHostSelection());
+			double executionTimeVmReallocationMean = MathUtil.mean(vmAllocationPolicy
+					.getExecutionTimeHistoryVmReallocation());
+			double executionTimeVmReallocationStDev = MathUtil.stDev(vmAllocationPolicy
+					.getExecutionTimeHistoryVmReallocation());
+			double executionTimeTotalMean = MathUtil.mean(vmAllocationPolicy
+					.getExecutionTimeHistoryTotal());
+			double executionTimeTotalStDev = MathUtil.stDev(vmAllocationPolicy
+					.getExecutionTimeHistoryTotal());
+			Log.printLine(String.format(
+					"Execution time - VM selection mean: %.5f sec",
+					executionTimeVmSelectionMean));
+			Log.printLine(String.format(
+					"Execution time - VM selection stDev: %.5f sec",
+					executionTimeVmSelectionStDev));
+			Log.printLine(String.format(
+					"Execution time - host selection mean: %.5f sec",
+					executionTimeHostSelectionMean));
+			Log.printLine(String.format(
+					"Execution time - host selection stDev: %.5f sec",
+					executionTimeHostSelectionStDev));
+			Log.printLine(String.format(
+					"Execution time - VM reallocation mean: %.5f sec",
+					executionTimeVmReallocationMean));
+			Log.printLine(String.format(
+						"Execution time - VM reallocation stDev: %.5f sec",
+						executionTimeVmReallocationStDev));
+			Log.printLine(String.format("Execution time - total mean: %.5f sec", executionTimeTotalMean));
+			Log.printLine(String
+					.format("Execution time - total stDev: %.5f sec", executionTimeTotalStDev));
+			}
+			Log.printLine();
+
+		Log.setDisabled(true);
+	}
+*/
+	
 }

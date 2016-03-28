@@ -64,7 +64,7 @@ public class Sensor extends SimEntity{
 		tuple.setDestModuleName(getDestModuleName());
 		tuple.setSrcModuleName(getSensorName());
 		//Logger.debug(getName(), "Sending tuple with tupleId = "+tuple.getCloudletId());
-		//Logger.debug(getName(), "Sending tuple "+tuple.getCloudletId()+"to "+tuple.getDestModuleName()+" with delay="+delay);
+//		Logger.debug(getName(), "Sending tuple "+tuple.getCloudletId()+"to "+tuple.getDestModuleName()+" with delay="+delay);
 
 		int actualTupleId = updateTimings(getSensorName(), getDestModuleName(), delay);
 		tuple.setActualTupleId(actualTupleId);

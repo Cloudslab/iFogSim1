@@ -317,7 +317,6 @@ public class CloudletSchedulerTimeShared extends CloudletScheduler {
 		double extraSize = getCapacity(getCurrentMipsShare()) * fileTransferTime;
 		long length = (long) (cloudlet.getCloudletLength() + extraSize);
 		cloudlet.setCloudletLength(length);
-		//System.out.println("MIPS Share->"+getCurrentMipsShare()+"\tCapacity->"+getCapacity(getCurrentMipsShare()));
 		return cloudlet.getCloudletLength() / getCapacity(getCurrentMipsShare());
 	}
 

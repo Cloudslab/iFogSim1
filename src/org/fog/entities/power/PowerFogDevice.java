@@ -1,4 +1,4 @@
-package org.fog.entities;
+package org.fog.entities.power;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,13 +20,17 @@ import org.cloudbus.cloudsim.power.PowerDatacenter;
 import org.fog.application.AppLoop;
 import org.fog.application.AppModule;
 import org.fog.application.Application;
+import org.fog.entities.Actuator;
+import org.fog.entities.FogDevice;
+import org.fog.entities.FogDeviceCharacteristics;
+import org.fog.entities.Tuple;
 import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
 import org.fog.utils.GeoCoverage;
 import org.fog.utils.Logger;
 import org.fog.utils.TimeKeeper;
 
-public class FogDevice extends PowerDatacenter {
+public class PowerFogDevice extends PowerDatacenter {
 	protected Queue<Tuple> northTupleQueue;
 	protected Queue<Pair<Tuple, Integer>> southTupleQueue;
 	
@@ -75,7 +79,7 @@ public class FogDevice extends PowerDatacenter {
 	
 	protected double actuatorDelay;
 	
-	public FogDevice(
+	public PowerFogDevice(
 			String name, 
 			GeoCoverage geoCoverage,
 			FogDeviceCharacteristics characteristics,
@@ -218,7 +222,6 @@ public class FogDevice extends PowerDatacenter {
 	}
 	
 	protected void checkCloudletCompletion() {
-		Logger.error(getName(), "Power = "+getPower());
 		boolean cloudletCompleted = false;
 		List<? extends Host> list = getVmAllocationPolicy().getHostList();
 		for (int i = 0; i < list.size(); i++) {
@@ -273,7 +276,7 @@ public class FogDevice extends PowerDatacenter {
 		for(Integer childId : getChildrenIds()){
 			if(targetDeviceId == childId)
 				return childId;
-			if(((FogDevice)CloudSim.getEntity(childId)).getChildIdWithRouteTo(targetDeviceId) != -1)
+			if(((PowerFogDevice)CloudSim.getEntity(childId)).getChildIdWithRouteTo(targetDeviceId) != -1)
 				return childId;
 		}
 		return -1;
@@ -297,7 +300,7 @@ public class FogDevice extends PowerDatacenter {
 			}else{
 				getHost().getVmScheduler().allocatePesForVm(vm, new ArrayList<Double>(){
 					protected static final long serialVersionUID = 1L;
-				{add(1.0);}});
+				{add(0.0);}});
 			}
 		}
 		for(final Vm vm : getHost().getVmList()){
@@ -305,11 +308,6 @@ public class FogDevice extends PowerDatacenter {
 			operator.updateVmProcessing(CloudSim.clock(), getVmAllocationPolicy().getHost(operator).getVmScheduler()
 					.getAllocatedMipsForVm(operator));
 		}
-		/*System.out.println("----");
-		for(final Vm vm : getHost().getVmList()){
-			System.out.println(getName()+"\t"+((AppModule)vm).getName());
-		}
-		System.out.println("----");*/
 	}
 	
 	protected void processAppSubmit(SimEvent ev) {
@@ -354,8 +352,8 @@ public class FogDevice extends PowerDatacenter {
 			//Logger.error(getName(), tuple.getTupleType());
 		}
 		
-		/*Logger.debug(getName(), "Received tuple "+tuple.getCloudletId()+"with tupleType = "+tuple.getTupleType()+"\t| Source : "+
-		CloudSim.getEntityName(ev.getSource())+"|Dest : "+CloudSim.getEntityName(ev.getDestination()));*/
+		Logger.debug(getName(), "Received tuple "+tuple.getCloudletId()+"with tupleType = "+tuple.getTupleType()+"\t| Source : "+
+		CloudSim.getEntityName(ev.getSource())+"|Dest : "+CloudSim.getEntityName(ev.getDestination()));
 		send(ev.getSource(), CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ACK);
 		
 		if(FogUtils.appIdToGeoCoverageMap.containsKey(tuple.getAppId())){
@@ -370,10 +368,8 @@ public class FogDevice extends PowerDatacenter {
 		}
 		
 		if(getHost().getVmList().size() > 0){
-			//System.out.println("YO inside processTupleArrival "+tuple.getCloudletId());
 			final AppModule operator = (AppModule)getHost().getVmList().get(0);
-			if(CloudSim.clock() > 0){
-				
+			if(CloudSim.clock() > 100){
 				getHost().getVmScheduler().deallocatePesForVm(operator);
 				getHost().getVmScheduler().allocatePesForVm(operator, new ArrayList<Double>(){
 					protected static final long serialVersionUID = 1L;
@@ -422,7 +418,6 @@ public class FogDevice extends PowerDatacenter {
 					sendDown(tuple, childId);
 			}
 		}
-		//System.out.println("After allocation : "+getHost().getVmList());
 	}
 
 	protected void updateTimingsOnReceipt(Tuple tuple) {
@@ -458,7 +453,7 @@ public class FogDevice extends PowerDatacenter {
 			appToModulesMap.put(appId, new ArrayList<String>());
 		}
 		appToModulesMap.get(appId).add(module.getName());
-		processVmCreate(ev, false);
+		getVmList().add(module);
 		if (module.isBeingInstantiated()) {
 			module.setBeingInstantiated(false);
 		}

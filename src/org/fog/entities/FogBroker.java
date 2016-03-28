@@ -1,11 +1,11 @@
 package org.fog.entities;
 
-import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEvent;
+import org.cloudbus.cloudsim.power.PowerDatacenterBroker;
 
-public class FogBroker extends SimEntity{
+public class FogBroker extends PowerDatacenterBroker{
 
-	public FogBroker(String name) {
+	public FogBroker(String name) throws Exception {
 		super(name);
 		// TODO Auto-generated constructor stub
 	}

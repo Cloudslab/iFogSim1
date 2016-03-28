@@ -13,6 +13,8 @@ import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.Pe;
 import org.cloudbus.cloudsim.Storage;
 import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.power.PowerHost;
+import org.cloudbus.cloudsim.power.models.PowerModelLinear;
 import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
 import org.cloudbus.cloudsim.sdn.overbooking.BwProvisionerOverbooking;
 import org.cloudbus.cloudsim.sdn.overbooking.PeProvisionerOverbooking;
@@ -59,8 +61,8 @@ public class VRGameModuleMapping {
 
 			List<FogDevice> fogDevices = createFogDevices(appId, broker.getId(), transmitInterval);
 			
-			Sensor s0 = createSensor("EEGSensor-0", application, broker.getId(), CloudSim.getEntityId("gateway-0"), transmitInterval, 100, 100, "SENSOR", "client");
-			Sensor s1 = createSensor("EEGSensor-1", application, broker.getId(), CloudSim.getEntityId("gateway-1"), transmitInterval, 100, 100, "SENSOR", "client");
+			Sensor s0 = createSensor("EEGSensor-0", application, broker.getId(), CloudSim.getEntityId("gateway-0"), transmitInterval, 2000, 100, "SENSOR", "client");
+			Sensor s1 = createSensor("EEGSensor-1", application, broker.getId(), CloudSim.getEntityId("gateway-1"), transmitInterval, 2000, 100, "SENSOR", "client");
 			Actuator actuator0 = createActuator("Display-0", appId, broker.getId(), CloudSim.getEntityId("gateway-0"), "ACTUATOR", "client");
 			Actuator actuator1 = createActuator("Display-1", appId, broker.getId(), CloudSim.getEntityId("gateway-1"), "ACTUATOR", "client");
 			
@@ -146,13 +148,14 @@ public class VRGameModuleMapping {
 		long storage = 1000000; // host storage
 		int bw = 10000;
 
-		Host host = new Host(
+		PowerHost host = new PowerHost(
 				hostId,
 				new RamProvisionerSimple(ram),
 				new BwProvisionerOverbooking(bw),
 				storage,
 				peList,
-				new StreamOperatorScheduler(peList)
+				new StreamOperatorScheduler(peList),
+				new PowerModelLinear(100, 40)
 			);
 
 		List<Host> hostList = new ArrayList<Host>();
@@ -177,7 +180,7 @@ public class VRGameModuleMapping {
 		FogDevice fogdevice = null;
 		try {
 			fogdevice = new FogDevice(name, geoCoverage, characteristics, 
-					new AppModuleAllocationPolicy(hostList), storageList, 0, uplinkBandwidth, downlinkBandwidth, latency, actuatorDelay);
+					new AppModuleAllocationPolicy(hostList), storageList, 10, uplinkBandwidth, downlinkBandwidth, latency, actuatorDelay);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

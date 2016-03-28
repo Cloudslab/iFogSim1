@@ -150,7 +150,6 @@ public class VmSchedulerTimeShared extends VmScheduler {
 						}
 						if (!peIterator.hasNext()) {
 							Log.printLine("There is no enough MIPS (" + mips + ") to accommodate VM " + vmUid);
-							// System.exit(0);
 						}
 						pe = peIterator.next();
 						peProvisioner = pe.getPeProvisioner();

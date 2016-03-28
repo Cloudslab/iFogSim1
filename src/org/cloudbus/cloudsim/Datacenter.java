@@ -122,7 +122,6 @@ public class Datacenter extends SimEntity {
 	@Override
 	public void processEvent(SimEvent ev) {
 		int srcId = -1;
-
 		switch (ev.getTag()) {
 		// Resource characteristics inquiry
 			case CloudSimTags.RESOURCE_CHARACTERISTICS:
@@ -449,7 +448,6 @@ public class Datacenter extends SimEntity {
 			if (vm.isBeingInstantiated()) {
 				vm.setBeingInstantiated(false);
 			}
-			
 			vm.updateVmProcessing(CloudSim.clock(), getVmAllocationPolicy().getHost(vm).getVmScheduler()
 					.getAllocatedMipsForVm(vm));
 		}
@@ -720,8 +718,8 @@ public class Datacenter extends SimEntity {
 			Host host = getVmAllocationPolicy().getHost(vmId, userId);
 			Vm vm = host.getVm(vmId, userId);
 			CloudletScheduler scheduler = vm.getCloudletScheduler();
-			
 			double estimatedFinishTime = scheduler.cloudletSubmit(cl, fileTransferTime);
+			System.out.println(estimatedFinishTime);
 			//System.out.println(CloudSim.clock()+" : Received tuple ID "+((Tuple)cl).getActualTupleId()+" estimated finish time "+estimatedFinishTime);
 
 			// if this cloudlet is in the exec queue
@@ -866,6 +864,7 @@ public class Datacenter extends SimEntity {
 	 * @post $none
 	 */
 	protected void updateCloudletProcessing() {
+
 		// if some time passed since last processing
 		// R: for term is to allow loop at simulation start. Otherwise, one initial
 		// simulation step is skipped and schedulers are not properly initialized

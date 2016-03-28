@@ -7,12 +7,12 @@ import java.util.Map;
 
 import org.apache.commons.math3.util.Pair;
 import org.cloudbus.cloudsim.CloudletScheduler;
-import org.cloudbus.cloudsim.Vm;
+import org.cloudbus.cloudsim.power.PowerVm;
 import org.fog.scheduler.TupleScheduler;
 import org.fog.utils.FogUtils;
 import org.fog.utils.GeoCoverage;
 
-public class AppModule extends Vm{
+public class AppModule extends PowerVm{
 
 	private String name;
 	private GeoCoverage geoCoverage;
@@ -37,7 +37,7 @@ public class AppModule extends Vm{
 			String vmm,
 			CloudletScheduler cloudletScheduler,
 			Map<Pair<String, String>, Double> selectivityMap) {
-		super(id, userId, mips, 1, ram, bw, size, vmm, cloudletScheduler);
+		super(id, userId, mips, 1, ram, bw, size, 1, vmm, cloudletScheduler, 300);
 		setName(name);
 		setId(id);
 		setGeoCoverage(geoCoverage);
@@ -61,7 +61,7 @@ public class AppModule extends Vm{
 		setActuatorSubscriptions(new HashMap<String, List<Integer>>());
 	}
 	public AppModule(AppModule operator) {
-		super(FogUtils.generateEntityId(), operator.getUserId(), operator.getMips(), 1, operator.getRam(), operator.getBw(), operator.getSize(), operator.getVmm(), new TupleScheduler(operator.getMips(), 1));
+		super(FogUtils.generateEntityId(), operator.getUserId(), operator.getMips(), 1, operator.getRam(), operator.getBw(), operator.getSize(), 1, operator.getVmm(), new TupleScheduler(operator.getMips(), 1), operator.getSchedulingInterval());
 		setName(operator.getName());
 		setGeoCoverage(operator.getGeoCoverage());
 		setAppId(operator.getAppId());

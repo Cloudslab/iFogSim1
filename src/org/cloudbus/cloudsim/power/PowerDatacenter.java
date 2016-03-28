@@ -90,14 +90,13 @@ public class PowerDatacenter extends Datacenter {
 			schedule(getId(), getSchedulingInterval(), CloudSimTags.VM_DATACENTER_EVENT);
 			return;
 		}
+		
 		double currentTime = CloudSim.clock();
 
 		// if some time passed since last processing
 		if (currentTime > getLastProcessTime()) {
-			System.out.print(currentTime + " ");
-
+			
 			double minTime = updateCloudetProcessingWithoutSchedulingFutureEventsForce();
-
 			if (!isDisableMigrations()) {
 				List<Map<String, Object>> migrationMap = getVmAllocationPolicy().optimizeAllocation(
 						getVmList());
@@ -231,14 +230,19 @@ public class PowerDatacenter extends Datacenter {
 		checkCloudletCompletion();
 
 		/** Remove completed VMs **/
-		for (PowerHost host : this.<PowerHost> getHostList()) {
+		
+		/**
+		 * HARSHIT GUPTA made this change
+		 */
+		/*for (PowerHost host : this.<PowerHost> getHostList()) {
 			for (Vm vm : host.getCompletedVms()) {
 				getVmAllocationPolicy().deallocateHostForVm(vm);
+				System.out.println("FUCKKKKKKKK !!!!!!!!!!");
 				getVmList().remove(vm);
 				Log.printLine("VM #" + vm.getId() + " has been deallocated from host #" + host.getId());
 			}
 		}
-
+*/
 		Log.printLine();
 
 		setLastProcessTime(currentTime);

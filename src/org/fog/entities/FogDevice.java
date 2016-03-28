@@ -17,6 +17,7 @@ import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.cloudbus.cloudsim.power.PowerDatacenter;
+import org.cloudbus.cloudsim.power.PowerHost;
 import org.fog.application.AppLoop;
 import org.fog.application.AppModule;
 import org.fog.application.Application;
@@ -75,6 +76,10 @@ public class FogDevice extends PowerDatacenter {
 	
 	protected double actuatorDelay;
 	
+	protected double energyConsumption;
+	protected double lastUtilizationUpdateTime;
+	protected double lastUtilization;
+	
 	public FogDevice(
 			String name, 
 			GeoCoverage geoCoverage,
@@ -123,6 +128,9 @@ public class FogDevice extends PowerDatacenter {
 		this.cloudTrafficMap = new HashMap<Integer, Integer>();
 		
 		this.lockTime = 0;
+		
+		this.energyConsumption = 0;
+		this.lastUtilization = 0;
 	}
 
 	/**
@@ -218,7 +226,6 @@ public class FogDevice extends PowerDatacenter {
 	}
 	
 	protected void checkCloudletCompletion() {
-		Logger.error(getName(), "Power = "+getPower());
 		boolean cloudletCompleted = false;
 		List<? extends Host> list = getVmAllocationPolicy().getHostList();
 		for (int i = 0; i < list.size(); i++) {
@@ -297,14 +304,26 @@ public class FogDevice extends PowerDatacenter {
 			}else{
 				getHost().getVmScheduler().allocatePesForVm(vm, new ArrayList<Double>(){
 					protected static final long serialVersionUID = 1L;
-				{add(1.0);}});
+				{add(0.0);}});
 			}
 		}
+		double totalMipsAllocated = 0;
 		for(final Vm vm : getHost().getVmList()){
 			AppModule operator = (AppModule)vm;
 			operator.updateVmProcessing(CloudSim.clock(), getVmAllocationPolicy().getHost(operator).getVmScheduler()
 					.getAllocatedMipsForVm(operator));
+			totalMipsAllocated += getHost().getTotalAllocatedMipsForVm(vm);
 		}
+		
+		double timeNow = CloudSim.clock();
+		double currentEnergyConsumption = getEnergyConsumption();
+		Logger.error(getName(), "Time Diff = "+(timeNow - lastUtilizationUpdateTime));
+		double newEnergyConsumption = currentEnergyConsumption + (timeNow-lastUtilizationUpdateTime)*getHost().getPowerModel().getPower(lastUtilization);
+		setEnergyConsumption(newEnergyConsumption);
+		
+		lastUtilization = Math.min(1, totalMipsAllocated/getHost().getTotalMips());
+		lastUtilizationUpdateTime = timeNow;
+		
 		/*System.out.println("----");
 		for(final Vm vm : getHost().getVmList()){
 			System.out.println(getName()+"\t"+((AppModule)vm).getName());
@@ -446,9 +465,13 @@ public class FogDevice extends PowerDatacenter {
 	}
 	
 	protected void executeTuple(SimEvent ev, String operatorId){
+		//TODO Power funda
 		updateAllocatedMips(operatorId);
 		processCloudletSubmit(ev, false);
 		updateAllocatedMips(operatorId);
+		for(Vm vm : getHost().getVmList()){
+			Logger.error(getName(), "MIPS allocated to "+((AppModule)vm).getName()+" = "+getHost().getTotalAllocatedMipsForVm(vm));
+		}
 	}
 	
 	protected void processModuleArrival(SimEvent ev){
@@ -537,8 +560,8 @@ public class FogDevice extends PowerDatacenter {
 	protected void sendToSelf(Tuple tuple){
 		send(getId(), CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ARRIVAL, tuple);
 	}
-	public Host getHost(){
-		return getHostList().get(0);
+	public PowerHost getHost(){
+		return (PowerHost) getHostList().get(0);
 	}
 	public int getParentId() {
 		return parentId;
@@ -648,4 +671,12 @@ public class FogDevice extends PowerDatacenter {
 	public void setActuatorDelay(double actuatorDelay) {
 		this.actuatorDelay = actuatorDelay;
 	}
+	public double getEnergyConsumption() {
+		return energyConsumption;
+	}
+
+	public void setEnergyConsumption(double energyConsumption) {
+		this.energyConsumption = energyConsumption;
+	}
+
 }

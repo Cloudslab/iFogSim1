@@ -73,9 +73,9 @@ public class VRGameModuleMapping {
 			ModuleMapping moduleMapping = ModuleMapping.createModuleMapping();
 			moduleMapping.addModuleToDevice("client", "gateway-0");
 			moduleMapping.addModuleToDevice("client", "gateway-1");
-			moduleMapping.addModuleToDevice("classifier", "gateway-0");
-			moduleMapping.addModuleToDevice("classifier", "gateway-1");
-			/*moduleMapping.addModuleToDevice("classifier", "cloud");*/
+			/*moduleMapping.addModuleToDevice("classifier", "gateway-0");
+			moduleMapping.addModuleToDevice("classifier", "gateway-1");*/
+			moduleMapping.addModuleToDevice("classifier", "cloud");
 			moduleMapping.addModuleToDevice("tuner", "cloud");
 			
 			Controller controller = new Controller("master-controller", fogDevices, moduleMapping);

@@ -15,6 +15,7 @@ import org.fog.application.Application;
 import org.fog.entities.FogDevice;
 import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
+import org.fog.utils.Logger;
 import org.fog.utils.TimeKeeper;
 
 public class Controller extends SimEntity{
@@ -90,7 +91,7 @@ public class Controller extends SimEntity{
 	private void printPowerDetails() {
 		// TODO Auto-generated method stub
 		for(FogDevice fogDevice : getFogDevices()){
-			
+			Logger.error(fogDevice.getName(), "Energy Consumed = "+fogDevice.getEnergyConsumption());
 		}
 	}
 

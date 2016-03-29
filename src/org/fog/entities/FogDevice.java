@@ -10,6 +10,7 @@ import java.util.Queue;
 import org.apache.commons.math3.util.Pair;
 import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.Host;
+import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.Storage;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.VmAllocationPolicy;
@@ -72,7 +73,7 @@ public class FogDevice extends PowerDatacenter {
 	
 	protected double uplinkBandwidth;
 	protected double downlinkBandwidth;
-	protected double latency;
+	protected double uplinkLatency;
 	protected List<Integer> associatedActuatorIds;
 	
 	protected double actuatorDelay;
@@ -88,7 +89,7 @@ public class FogDevice extends PowerDatacenter {
 			VmAllocationPolicy vmAllocationPolicy,
 			List<Storage> storageList,
 			double schedulingInterval,
-			double uplinkBandwidth, double downlinkBandwidth, double latency, double actuatorDelay) throws Exception {
+			double uplinkBandwidth, double downlinkBandwidth, double uplinkLatency, double actuatorDelay) throws Exception {
 		super(name, characteristics, vmAllocationPolicy, storageList, schedulingInterval);
 		setGeoCoverage(geoCoverage);
 		setCharacteristics(characteristics);
@@ -99,7 +100,7 @@ public class FogDevice extends PowerDatacenter {
 		setSchedulingInterval(schedulingInterval);
 		setUplinkBandwidth(uplinkBandwidth);
 		setDownlinkBandwidth(downlinkBandwidth);
-		setLatency(latency);
+		setUplinkLatency(uplinkLatency);
 		setAssociatedActuatorIds(new ArrayList<Integer>());
 		for (Host host : getCharacteristics().getHostList()) {
 			host.setDatacenter(this);
@@ -228,6 +229,91 @@ public class FogDevice extends PowerDatacenter {
 		return null;
 	}
 	
+	/**
+	 * Update cloudet processing without scheduling future events.
+	 * 
+	 * @return the double
+	 */
+	protected double updateCloudetProcessingWithoutSchedulingFutureEventsForce() {
+		double currentTime = CloudSim.clock();
+		double minTime = Double.MAX_VALUE;
+		double timeDiff = currentTime - getLastProcessTime();
+		double timeFrameDatacenterEnergy = 0.0;
+
+		for (PowerHost host : this.<PowerHost> getHostList()) {
+			Log.printLine();
+
+			double time = host.updateVmsProcessing(currentTime); // inform VMs to update processing
+			if (time < minTime) {
+				minTime = time;
+			}
+
+			Log.formatLine(
+					"%.2f: [Host #%d] utilization is %.2f%%",
+					currentTime,
+					host.getId(),
+					host.getUtilizationOfCpu() * 100);
+		}
+
+		if (timeDiff > 0) {
+			Log.formatLine(
+					"\nEnergy consumption for the last time frame from %.2f to %.2f:",
+					getLastProcessTime(),
+					currentTime);
+
+			for (PowerHost host : this.<PowerHost> getHostList()) {
+				double previousUtilizationOfCpu = host.getPreviousUtilizationOfCpu();
+				double utilizationOfCpu = host.getUtilizationOfCpu();
+				double timeFrameHostEnergy = host.getEnergyLinearInterpolation(
+						previousUtilizationOfCpu,
+						utilizationOfCpu,
+						timeDiff);
+				timeFrameDatacenterEnergy += timeFrameHostEnergy;
+
+				Log.printLine();
+				Log.formatLine(
+						"%.2f: [Host #%d] utilization at %.2f was %.2f%%, now is %.2f%%",
+						currentTime,
+						host.getId(),
+						getLastProcessTime(),
+						previousUtilizationOfCpu * 100,
+						utilizationOfCpu * 100);
+				Log.formatLine(
+						"%.2f: [Host #%d] energy is %.2f W*sec",
+						currentTime,
+						host.getId(),
+						timeFrameHostEnergy);
+			}
+
+			Log.formatLine(
+					"\n%.2f: Data center's energy is %.2f W*sec\n",
+					currentTime,
+					timeFrameDatacenterEnergy);
+		}
+
+		setPower(getPower() + timeFrameDatacenterEnergy);
+
+		checkCloudletCompletion();
+
+		/** Remove completed VMs **/
+		/**
+		 * Change made by HARSHIT GUPTA
+		 */
+		/*for (PowerHost host : this.<PowerHost> getHostList()) {
+			for (Vm vm : host.getCompletedVms()) {
+				getVmAllocationPolicy().deallocateHostForVm(vm);
+				getVmList().remove(vm);
+				Log.printLine("VM #" + vm.getId() + " has been deallocated from host #" + host.getId());
+			}
+		}*/
+		
+		Log.printLine();
+
+		setLastProcessTime(currentTime);
+		return minTime;
+	}
+
+	
 	protected void checkCloudletCompletion() {
 		boolean cloudletCompleted = false;
 		List<? extends Host> list = getVmAllocationPolicy().getHostList();
@@ -320,18 +406,11 @@ public class FogDevice extends PowerDatacenter {
 		
 		double timeNow = CloudSim.clock();
 		double currentEnergyConsumption = getEnergyConsumption();
-		Logger.error(getName(), "Time Diff = "+(timeNow - lastUtilizationUpdateTime));
 		double newEnergyConsumption = currentEnergyConsumption + (timeNow-lastUtilizationUpdateTime)*getHost().getPowerModel().getPower(lastUtilization);
 		setEnergyConsumption(newEnergyConsumption);
 		
 		lastUtilization = Math.min(1, totalMipsAllocated/getHost().getTotalMips());
 		lastUtilizationUpdateTime = timeNow;
-		
-		/*System.out.println("----");
-		for(final Vm vm : getHost().getVmList()){
-			System.out.println(getName()+"\t"+((AppModule)vm).getName());
-		}
-		System.out.println("----");*/
 	}
 	
 	protected void processAppSubmit(SimEvent ev) {
@@ -372,12 +451,10 @@ public class FogDevice extends PowerDatacenter {
 		
 		if(getName().equals("cloud")){
 			updateCloudTraffic();
-			//Logger.error(getName(), tuple.getModuleCopyMap().toString());
-			//Logger.error(getName(), tuple.getTupleType());
 		}
 		
-		/*Logger.debug(getName(), "Received tuple "+tuple.getCloudletId()+"with tupleType = "+tuple.getTupleType()+"\t| Source : "+
-		CloudSim.getEntityName(ev.getSource())+"|Dest : "+CloudSim.getEntityName(ev.getDestination()));*/
+		Logger.debug(getName(), "Received tuple "+tuple.getCloudletId()+"with tupleType = "+tuple.getTupleType()+"\t| Source : "+
+		CloudSim.getEntityName(ev.getSource())+"|Dest : "+CloudSim.getEntityName(ev.getDestination()));
 		send(ev.getSource(), CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ACK);
 		
 		if(FogUtils.appIdToGeoCoverageMap.containsKey(tuple.getAppId())){
@@ -392,16 +469,15 @@ public class FogDevice extends PowerDatacenter {
 		}
 		
 		if(getHost().getVmList().size() > 0){
-			//System.out.println("YO inside processTupleArrival "+tuple.getCloudletId());
 			final AppModule operator = (AppModule)getHost().getVmList().get(0);
 			if(CloudSim.clock() > 0){
-				
 				getHost().getVmScheduler().deallocatePesForVm(operator);
 				getHost().getVmScheduler().allocatePesForVm(operator, new ArrayList<Double>(){
 					protected static final long serialVersionUID = 1L;
 				{add((double) getHost().getTotalMips());}});
 			}
 		}
+		
 		
 		if(getName().equals("cloud") && tuple.getDestModuleName()==null){
 			sendNow(getControllerId(), FogEvents.TUPLE_FINISHED, null);
@@ -472,6 +548,8 @@ public class FogDevice extends PowerDatacenter {
 		updateAllocatedMips(operatorId);
 		processCloudletSubmit(ev, false);
 		updateAllocatedMips(operatorId);
+		Logger.error(getName(), "Executing "+operatorId);
+		Logger.error(getName(), "VM LIST : "+getHost().getVmList());
 		for(Vm vm : getHost().getVmList()){
 			Logger.error(getName(), "MIPS allocated to "+((AppModule)vm).getName()+" = "+getHost().getTotalAllocatedMipsForVm(vm));
 		}
@@ -514,10 +592,9 @@ public class FogDevice extends PowerDatacenter {
 	
 	protected void sendUpFreeLink(Tuple tuple){
 		double networkDelay = tuple.getCloudletFileSize()/getUplinkBandwidth();
-		//Logger.debug(getName(), "Sending tuple with tupleType = "+tuple.getTupleType()+" UP");
 		setNorthLinkBusy(true);
 		send(getId(), networkDelay, FogEvents.UPDATE_NORTH_TUPLE_QUEUE);
-		send(parentId, networkDelay+latency, FogEvents.TUPLE_ARRIVAL, tuple);
+		send(parentId, networkDelay+getUplinkLatency(), FogEvents.TUPLE_ARRIVAL, tuple);
 	}
 	
 	protected void sendUp(Tuple tuple){
@@ -591,11 +668,11 @@ public class FogDevice extends PowerDatacenter {
 	public void setUplinkBandwidth(double uplinkBandwidth) {
 		this.uplinkBandwidth = uplinkBandwidth;
 	}
-	public double getLatency() {
-		return latency;
+	public double getUplinkLatency() {
+		return uplinkLatency;
 	}
-	public void setLatency(double latency) {
-		this.latency = latency;
+	public void setUplinkLatency(double uplinkLatency) {
+		this.uplinkLatency = uplinkLatency;
 	}
 	public boolean isSouthLinkBusy() {
 		return isSouthLinkBusy;

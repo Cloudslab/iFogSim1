@@ -4,18 +4,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEvent;
-import org.cloudbus.cloudsim.power.PowerVmAllocationPolicyMigrationAbstract;
 import org.fog.application.AppLoop;
 import org.fog.application.AppModule;
 import org.fog.application.Application;
 import org.fog.entities.FogDevice;
 import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
-import org.fog.utils.Logger;
 import org.fog.utils.TimeKeeper;
 
 public class Controller extends SimEntity{
@@ -67,7 +64,8 @@ public class Controller extends SimEntity{
 			FogDevice parent = getFogDeviceById(fogDevice.getParentId());
 			if(parent == null)
 				continue;
-			double latency = fogDevice.getLatency();
+			//System.out.println("Parent for "+fogDevice.getName()+" = "+parent.getName());
+			double latency = fogDevice.getUplinkLatency();
 			parent.getChildToLatencyMap().put(fogDevice.getId(), latency);
 		}
 	}
@@ -174,13 +172,9 @@ public class Controller extends SimEntity{
 		FogUtils.appIdToGeoCoverageMap.put(application.getAppId(), application.getGeoCoverage());
 		getApplications().put(application.getAppId(), application);
 		
-		Map<String, List<Integer>> allocationMap = null;
-		
 		ModulePlacement modulePlacement = (getModuleMapping()==null)?
 				(new ModulePlacementOnlyCloud(getFogDevices(), application))
 				:(new ModulePlacementMapping(getFogDevices(), application, getModuleMapping()));
-				
-		allocationMap = modulePlacement.getModuleToDeviceMap();
 		
 		for(FogDevice fogDevice : fogDevices){
 			sendNow(fogDevice.getId(), FogEvents.ACTIVE_APP_UPDATE, application);

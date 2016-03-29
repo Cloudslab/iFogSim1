@@ -91,7 +91,7 @@ public class Sensor extends SimEntity{
 	
 	@Override
 	public void startEntity() {
-		send(gatewayDeviceId, Math.random()*10+CloudSim.getMinTimeBetweenEvents(), FogEvents.SENSOR_JOINED, geoLocation);
+		send(gatewayDeviceId, CloudSim.getMinTimeBetweenEvents(), FogEvents.SENSOR_JOINED, geoLocation);
 	}
 
 	@Override

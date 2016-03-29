@@ -3,21 +3,12 @@ package org.fog.test;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.math3.util.Pair;
-import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Log;
-import org.cloudbus.cloudsim.Pe;
-import org.cloudbus.cloudsim.Storage;
 import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.power.PowerHost;
-import org.cloudbus.cloudsim.power.models.PowerModelLinear;
-import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
-import org.cloudbus.cloudsim.sdn.overbooking.BwProvisionerOverbooking;
-import org.cloudbus.cloudsim.sdn.overbooking.PeProvisionerOverbooking;
 import org.fog.application.AppEdge;
 import org.fog.application.AppLoop;
 import org.fog.application.AppModule;
@@ -25,19 +16,17 @@ import org.fog.application.Application;
 import org.fog.entities.Actuator;
 import org.fog.entities.FogBroker;
 import org.fog.entities.FogDevice;
-import org.fog.entities.FogDeviceCharacteristics;
 import org.fog.entities.Sensor;
 import org.fog.entities.Tuple;
 import org.fog.placement.Controller;
 import org.fog.placement.ModuleMapping;
-import org.fog.policy.AppModuleAllocationPolicy;
-import org.fog.scheduler.StreamOperatorScheduler;
 import org.fog.scheduler.TupleScheduler;
+import org.fog.utils.FogEntityFactory;
 import org.fog.utils.FogUtils;
 import org.fog.utils.GeoCoverage;
 import org.fog.utils.distribution.DeterministicDistribution;
 
-public class VRGameModuleMapping {
+public class VRGameNoDelay {
 
 	public static void main(String[] args) {
 
@@ -55,7 +44,7 @@ public class VRGameModuleMapping {
 			
 			FogBroker broker = new FogBroker("broker");
 			
-			int transmitInterval = 100;
+			int transmitInterval = 1000;
 
 			Application application = createApplication(appId, broker.getId(), transmitInterval);
 
@@ -104,7 +93,7 @@ public class VRGameModuleMapping {
 	}
 
 	private static Sensor createSensor(String sensorName, Application app, int userId, int gatewayDeviceId, int transmitInterval, int tupleCpuSize, int tupleNwSize, String tupleType, String destOpId){
-		Sensor s = new Sensor(sensorName, userId, app.getAppId(), gatewayDeviceId, 10, null, new DeterministicDistribution(transmitInterval), tupleCpuSize, tupleNwSize, tupleType, destOpId);
+		Sensor s = new Sensor(sensorName, userId, app.getAppId(), gatewayDeviceId, 0, null, new DeterministicDistribution(transmitInterval), tupleCpuSize, tupleNwSize, tupleType, destOpId);
 		return s;
 		//app.registerSensor(sensor0);
 	}
@@ -116,10 +105,10 @@ public class VRGameModuleMapping {
 	
 	@SuppressWarnings("serial")
 	private static List<FogDevice> createFogDevices(String appId, int userId, int transmitInterval) {
-		final FogDevice gw0 = createFogDevice("gateway-0", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 50, 10);
-		final FogDevice gw1 = createFogDevice("gateway-1", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 50, 10);
+		final FogDevice gw0 = FogEntityFactory.createFogDevice("gateway-0", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 0, 0);
+		final FogDevice gw1 = FogEntityFactory.createFogDevice("gateway-1", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 0, 0);
 		
-		final FogDevice cloud = createFogDevice("cloud", FogUtils.MAX, new GeoCoverage(-FogUtils.MAX, FogUtils.MAX, -FogUtils.MAX, FogUtils.MAX), FogUtils.MAX, 1000, 1, 1);
+		final FogDevice cloud = FogEntityFactory.createFogDevice("cloud", FogUtils.MAX, new GeoCoverage(-FogUtils.MAX, FogUtils.MAX, -FogUtils.MAX, FogUtils.MAX), FogUtils.MAX, 1000, 0, 0);
 		cloud.setChildrenIds(new ArrayList<Integer>(){{add(gw0.getId());add(gw1.getId());}});
 		
 		gw0.setParentId(cloud.getId());
@@ -128,67 +117,6 @@ public class VRGameModuleMapping {
 
 		List<FogDevice> fogDevices = new ArrayList<FogDevice>(){{add(gw0);add(gw1);add(cloud);}};
 		return fogDevices;
-	}
-
-	/**
-	 * Creates the datacenter.
-	 *
-	 * @param name the name
-	 *
-	 * @return the datacenter
-	 */
-	private static FogDevice createFogDevice(String name, int mips, GeoCoverage geoCoverage, double uplinkBandwidth, double downlinkBandwidth, double latency, double actuatorDelay) {
-
-		// 2. A Machine contains one or more PEs or CPUs/Cores.
-		// In this example, it will have only one core.
-		List<Pe> peList = new ArrayList<Pe>();
-
-		// 3. Create PEs and add these into a list.
-		peList.add(new Pe(0, new PeProvisionerOverbooking(mips))); // need to store Pe id and MIPS Rating
-
-		int hostId = FogUtils.generateEntityId();
-		int ram = 2048; // host memory (MB)
-		long storage = 1000000; // host storage
-		int bw = 10000;
-
-		PowerHost host = new PowerHost(
-				hostId,
-				new RamProvisionerSimple(ram),
-				new BwProvisionerOverbooking(bw),
-				storage,
-				peList,
-				new StreamOperatorScheduler(peList),
-				new PowerModelLinear(100, 40)
-			);
-
-		List<Host> hostList = new ArrayList<Host>();
-		hostList.add(host);
-
-		String arch = "x86"; // system architecture
-		String os = "Linux"; // operating system
-		String vmm = "Xen";
-		double time_zone = 10.0; // time zone this resource located
-		double cost = 3.0; // the cost of using processing in this resource
-		double costPerMem = 0.05; // the cost of using memory in this resource
-		double costPerStorage = 0.001; // the cost of using storage in this
-										// resource
-		double costPerBw = 0.0; // the cost of using bw in this resource
-		LinkedList<Storage> storageList = new LinkedList<Storage>(); // we are not adding SAN
-													// devices by now
-
-		FogDeviceCharacteristics characteristics = new FogDeviceCharacteristics(
-				arch, os, vmm, host, time_zone, cost, costPerMem,
-				costPerStorage, costPerBw, geoCoverage);
-
-		FogDevice fogdevice = null;
-		try {
-			fogdevice = new FogDevice(name, geoCoverage, characteristics, 
-					new AppModuleAllocationPolicy(hostList), storageList, 10, uplinkBandwidth, downlinkBandwidth, latency, actuatorDelay);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return fogdevice;
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked", "serial" })
@@ -207,7 +135,7 @@ public class VRGameModuleMapping {
 		
 		Map<Pair<String, String>, Double> classifierSelectivityMap = new HashMap<Pair<String, String>, Double>();
 		classifierSelectivityMap.put(new Pair("_SENSOR", "CLASSIFICATION"),  1.0);
-		classifierSelectivityMap.put(new Pair("_SENSOR", "HISTORY"), 1.0);
+		classifierSelectivityMap.put(new Pair("_SENSOR", "HISTORY"), 0.2);
 		final AppModule classifier = new AppModule(FogUtils.generateEntityId(), "classifier", null, appId, userId, 
 				mips, ram, bw, size, vmm, new TupleScheduler(mips, 1), classifierSelectivityMap);
 
@@ -230,9 +158,6 @@ public class VRGameModuleMapping {
 		final AppLoop loop1 = new AppLoop(new ArrayList<String>(){{add("SENSOR");add("client");add("classifier");add("client");add("ACTUATOR");}});
 		final AppLoop loop2 = new AppLoop(new ArrayList<String>(){{add("classifier");add("tuner");add("classifier");}});
 		List<AppLoop> loops = new ArrayList<AppLoop>(){{add(loop1);add(loop2);}};
-		
-		
-		
 		
 		GeoCoverage geoCoverage = new GeoCoverage(-100, 100, -100, 100);
 		Application app = new Application(appId, modules, edges, loops, geoCoverage);

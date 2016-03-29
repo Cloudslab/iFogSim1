@@ -13,10 +13,13 @@ import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.Pe;
 import org.cloudbus.cloudsim.Storage;
 import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.power.PowerHost;
+import org.cloudbus.cloudsim.power.models.PowerModelLinear;
 import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
 import org.cloudbus.cloudsim.sdn.overbooking.BwProvisionerOverbooking;
 import org.cloudbus.cloudsim.sdn.overbooking.PeProvisionerOverbooking;
 import org.fog.application.AppEdge;
+import org.fog.application.AppLoop;
 import org.fog.application.AppModule;
 import org.fog.application.Application;
 import org.fog.entities.Actuator;
@@ -26,6 +29,7 @@ import org.fog.entities.FogDeviceCharacteristics;
 import org.fog.entities.Sensor;
 import org.fog.entities.Tuple;
 import org.fog.placement.Controller;
+import org.fog.placement.ModuleMapping;
 import org.fog.policy.AppModuleAllocationPolicy;
 import org.fog.scheduler.StreamOperatorScheduler;
 import org.fog.scheduler.TupleScheduler;
@@ -33,7 +37,7 @@ import org.fog.utils.FogUtils;
 import org.fog.utils.GeoCoverage;
 import org.fog.utils.distribution.DeterministicDistribution;
 
-public class VRGame {
+public class VRGameMobileModuleMapping {
 
 	public static void main(String[] args) {
 
@@ -51,23 +55,44 @@ public class VRGame {
 			
 			FogBroker broker = new FogBroker("broker");
 			
-			int transmitInterval = 10;
+			int transmitInterval = 1000;
 
 			Application application = createApplication(appId, broker.getId(), transmitInterval);
 
 			List<FogDevice> fogDevices = createFogDevices(appId, broker.getId(), transmitInterval);
 			
-			createSensor("EEGSensor", application, broker.getId(), CloudSim.getEntityId("gateway-0"), transmitInterval, 1, 100, "SENSOR", "client");
-			int actuator1Id = createActuator("Display-1", appId, broker.getId(), CloudSim.getEntityId("gateway-0"), "ACTUATOR", "client");
-			int actuator2Id = createActuator("Display-2", appId, broker.getId(), CloudSim.getEntityId("gateway-0"), "ACTUATOR", "client");
+			Sensor s0 = createSensor("EEGSensor-0", application, broker.getId(), CloudSim.getEntityId("mobile-0"), transmitInterval, 2000, 100, "SENSOR", "client");
+			Sensor s1 = createSensor("EEGSensor-1", application, broker.getId(), CloudSim.getEntityId("mobile-1"), transmitInterval, 2000, 100, "SENSOR", "client");
+			Actuator actuator0 = createActuator("Display-0", appId, broker.getId(), CloudSim.getEntityId("mobile-0"), "ACTUATOR", "client");
+			Actuator actuator1 = createActuator("Display-1", appId, broker.getId(), CloudSim.getEntityId("mobile-1"), "ACTUATOR", "client");
 			
-			application.getModuleByName("client").subscribeActuator(actuator1Id, "ACTUATOR");
-			application.getModuleByName("client").subscribeActuator(actuator2Id, "ACTUATOR");
+			application.getModuleByName("client").subscribeActuator(actuator0.getId(), "ACTUATOR");
+			application.getModuleByName("client").subscribeActuator(actuator1.getId(), "ACTUATOR");
 			
-			Controller controller = new Controller("master-controller", fogDevices);
+			ModuleMapping moduleMapping = ModuleMapping.createModuleMapping();
+			moduleMapping.addModuleToDevice("client", "mobile-0");
+			moduleMapping.addModuleToDevice("client", "mobile-1");
+			
+			//moduleMapping.addModuleToDevice("client", "cloud");
+			
+			//moduleMapping.addModuleToDevice("classifier", "gateway-0");
+			//moduleMapping.addModuleToDevice("classifier", "gateway-1");
+			
+			moduleMapping.addModuleToDevice("classifier", "router");
+			
+			//moduleMapping.addModuleToDevice("classifier", "cloud");
+			moduleMapping.addModuleToDevice("tuner", "cloud");
+			
+			Controller controller = new Controller("master-controller", fogDevices, moduleMapping);
+			
+			s0.setControllerId(controller.getId());
+			s1.setControllerId(controller.getId());
+			s0.setApp(application);
+			s1.setApp(application);
+			actuator0.setApp(application);
+			actuator1.setApp(application);
 			
 			controller.submitApplication(application, 0);
-			
 			
 			CloudSim.startSimulation();
 
@@ -80,26 +105,34 @@ public class VRGame {
 		}
 	}
 
-	private static void createSensor(String sensorName, Application app, int userId, int gatewayDeviceId, int transmitInterval, int tupleCpuSize, int tupleNwSize, String tupleType, String destOpId){
-		new Sensor(sensorName, userId, app.getAppId(), gatewayDeviceId, null, new DeterministicDistribution(transmitInterval), tupleCpuSize, tupleNwSize, tupleType, destOpId);
+	private static Sensor createSensor(String sensorName, Application app, int userId, int gatewayDeviceId, int transmitInterval, int tupleCpuSize, int tupleNwSize, String tupleType, String destOpId){
+		Sensor s = new Sensor(sensorName, userId, app.getAppId(), gatewayDeviceId, 2, null, new DeterministicDistribution(transmitInterval), tupleCpuSize, tupleNwSize, tupleType, destOpId);
+		return s;
 		//app.registerSensor(sensor0);
 	}
-	private static int createActuator(String actuatorName, String appId, int userId, int gatewayDeviceId, String actuatorType, String srcModuleName){
+	private static Actuator createActuator(String actuatorName, String appId, int userId, int gatewayDeviceId, String actuatorType, String srcModuleName){
 		Actuator actuator = new Actuator(actuatorName, userId, appId, gatewayDeviceId, null, actuatorType, srcModuleName);
-		return actuator.getId();
+		return actuator;
 		//app.registerSensor(sensor0);
 	}
 	
 	@SuppressWarnings("serial")
 	private static List<FogDevice> createFogDevices(String appId, int userId, int transmitInterval) {
-		final FogDevice gw0 = createFogDevice("gateway-0", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 1);
+		final FogDevice gw0 = createFogDevice("mobile-0", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 10, 2);
+		final FogDevice gw1 = createFogDevice("mobile-1", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 10, 2);
 		
-		final FogDevice cloud = createFogDevice("cloud", FogUtils.MAX, new GeoCoverage(-FogUtils.MAX, FogUtils.MAX, -FogUtils.MAX, FogUtils.MAX), FogUtils.MAX, 1000, 1);
+		final FogDevice mid = createFogDevice("router", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 50, 10);
 		
-		gw0.setParentId(cloud.getId());
+		final FogDevice cloud = createFogDevice("cloud", FogUtils.MAX, new GeoCoverage(-FogUtils.MAX, FogUtils.MAX, -FogUtils.MAX, FogUtils.MAX), FogUtils.MAX, 1000, 1, 1);
+		cloud.setChildrenIds(new ArrayList<Integer>(){{add(mid.getId());}});
+		mid.setChildrenIds(new ArrayList<Integer>(){{add(gw1.getId());add(gw0.getId());}});
+		
+		gw0.setParentId(mid.getId());
+		gw1.setParentId(mid.getId());
+		mid.setParentId(cloud.getId());
 		cloud.setParentId(-1);
 
-		List<FogDevice> fogDevices = new ArrayList<FogDevice>(){{add(gw0);add(cloud);}};
+		List<FogDevice> fogDevices = new ArrayList<FogDevice>(){{add(gw0);add(gw1);add(mid);add(cloud);}};
 		return fogDevices;
 	}
 
@@ -110,7 +143,7 @@ public class VRGame {
 	 *
 	 * @return the datacenter
 	 */
-	private static FogDevice createFogDevice(String name, int mips, GeoCoverage geoCoverage, double uplinkBandwidth, double downlinkBandwidth, double latency) {
+	private static FogDevice createFogDevice(String name, int mips, GeoCoverage geoCoverage, double uplinkBandwidth, double downlinkBandwidth, double latency, double actuatorDelay) {
 
 		// 2. A Machine contains one or more PEs or CPUs/Cores.
 		// In this example, it will have only one core.
@@ -124,13 +157,14 @@ public class VRGame {
 		long storage = 1000000; // host storage
 		int bw = 10000;
 
-		Host host = new Host(
+		PowerHost host = new PowerHost(
 				hostId,
 				new RamProvisionerSimple(ram),
 				new BwProvisionerOverbooking(bw),
 				storage,
 				peList,
-				new StreamOperatorScheduler(peList)
+				new StreamOperatorScheduler(peList),
+				new PowerModelLinear(100, 40)
 			);
 
 		List<Host> hostList = new ArrayList<Host>();
@@ -155,7 +189,7 @@ public class VRGame {
 		FogDevice fogdevice = null;
 		try {
 			fogdevice = new FogDevice(name, geoCoverage, characteristics, 
-					new AppModuleAllocationPolicy(hostList), storageList, 0, uplinkBandwidth, downlinkBandwidth, latency);
+					new AppModuleAllocationPolicy(hostList), storageList, 10, uplinkBandwidth, downlinkBandwidth, latency, actuatorDelay);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -190,17 +224,24 @@ public class VRGame {
 		
 		List<AppModule> modules = new ArrayList<AppModule>(){{add(client);add(classifier);add(tuner);}};
 		
-		final AppEdge edgeSensor = new AppEdge("SENSOR", "client", 100, 100, "SENSOR", Tuple.UP, AppEdge.SENSOR);
-		final AppEdge edge_Sensor = new AppEdge("client", "classifier", 100, 100, "_SENSOR", Tuple.UP, AppEdge.MODULE);
-		final AppEdge edgeHistory = new AppEdge("classifier", "tuner", 100, 100, "HISTORY", Tuple.UP, AppEdge.MODULE);
-		final AppEdge edgeClassification = new AppEdge("classifier", "client", 100, 100, "CLASSIFICATION", Tuple.DOWN, AppEdge.MODULE);
-		final AppEdge edgeTuningParams = new AppEdge("tuner", "classifier", 100, 100, "TUNING_PARAMS", Tuple.DOWN, AppEdge.MODULE);
-		final AppEdge edgeActuator = new AppEdge("client", "ACTUATOR", 100, 100, "ACTUATOR", Tuple.DOWN, AppEdge.ACTUATOR);
+		final AppEdge edgeSensor = new AppEdge("SENSOR", "client", 1000, 100, "SENSOR", Tuple.UP, AppEdge.SENSOR);
+		final AppEdge edge_Sensor = new AppEdge("client", "classifier", 1000, 100, "_SENSOR", Tuple.UP, AppEdge.MODULE);
+		final AppEdge edgeHistory = new AppEdge("classifier", "tuner", 1000, 100, "HISTORY", Tuple.UP, AppEdge.MODULE);
+		final AppEdge edgeClassification = new AppEdge("classifier", "client", 1000, 100, "CLASSIFICATION", Tuple.DOWN, AppEdge.MODULE);
+		final AppEdge edgeTuningParams = new AppEdge("tuner", "classifier", 1000, 100, "TUNING_PARAMS", Tuple.DOWN, AppEdge.MODULE);
+		final AppEdge edgeActuator = new AppEdge("client", "ACTUATOR", 1000, 100, "ACTUATOR", Tuple.DOWN, AppEdge.ACTUATOR);
 		List<AppEdge> edges = new ArrayList<AppEdge>(){{add(edgeSensor);add(edge_Sensor);add(edgeHistory);add(edgeClassification);
 		add(edgeTuningParams);add(edgeActuator);}};
 		
+		final AppLoop loop1 = new AppLoop(new ArrayList<String>(){{add("SENSOR");add("client");add("classifier");add("client");add("ACTUATOR");}});
+		final AppLoop loop2 = new AppLoop(new ArrayList<String>(){{add("classifier");add("tuner");add("classifier");}});
+		List<AppLoop> loops = new ArrayList<AppLoop>(){{add(loop1);add(loop2);}};
+		
+		
+		
+		
 		GeoCoverage geoCoverage = new GeoCoverage(-100, 100, -100, 100);
-		Application app = new Application(appId, modules, edges, geoCoverage);
+		Application app = new Application(appId, modules, edges, loops, geoCoverage);
 		return app;
 	}
 }

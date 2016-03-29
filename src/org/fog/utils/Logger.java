@@ -12,7 +12,7 @@ public class Logger {
 	public static int LOG_LEVEL = Logger.DEBUG;
 	private static DecimalFormat df = new DecimalFormat("#.00"); 
 
-	public static boolean ENABLED = false;
+	public static boolean ENABLED = true;
 	
 	public static void setLogLevel(int level){
 		Logger.LOG_LEVEL = level;

@@ -31,7 +31,7 @@ public class Controller extends SimEntity{
 	private Map<String, Integer> appLaunchDelays;
 	private ModuleMapping moduleMapping;
 
-	public Controller(String name, List<FogDevice> fogDevices) {
+	/*public Controller(String name, List<FogDevice> fogDevices) {
 		super(name);
 		this.applications = new HashMap<String, Application>();
 		this.setAppLaunchDelays(new HashMap<String, Integer>());
@@ -40,7 +40,7 @@ public class Controller extends SimEntity{
 			fogDevice.setControllerId(getId());
 		}
 		setFogDevices(fogDevices);
-	}
+	}*/
 	
 	public Controller(String name, List<FogDevice> fogDevices, ModuleMapping moduleMapping) {
 		super(name);
@@ -51,8 +51,27 @@ public class Controller extends SimEntity{
 			fogDevice.setControllerId(getId());
 		}
 		setFogDevices(fogDevices);
+		connectWithLatencies();
 	}
 
+	private FogDevice getFogDeviceById(int id){
+		for(FogDevice fogDevice : getFogDevices()){
+			if(id==fogDevice.getId())
+				return fogDevice;
+		}
+		return null;
+	}
+	
+	private void connectWithLatencies(){
+		for(FogDevice fogDevice : getFogDevices()){
+			FogDevice parent = getFogDeviceById(fogDevice.getParentId());
+			if(parent == null)
+				continue;
+			double latency = fogDevice.getLatency();
+			parent.getChildToLatencyMap().put(fogDevice.getId(), latency);
+		}
+	}
+	
 	@Override
 	public void startEntity() {
 		for(String appId : applications.keySet()){
@@ -91,7 +110,7 @@ public class Controller extends SimEntity{
 	private void printPowerDetails() {
 		// TODO Auto-generated method stub
 		for(FogDevice fogDevice : getFogDevices()){
-			Logger.error(fogDevice.getName(), "Energy Consumed = "+fogDevice.getEnergyConsumption());
+			System.out.println(fogDevice.getName() + " : Energy Consumed = "+fogDevice.getEnergyConsumption());
 		}
 	}
 
@@ -106,15 +125,21 @@ public class Controller extends SimEntity{
 		return null;
 	}
 	private void printTimeDetails() {
+		System.out.println("=========================================");
+		System.out.println("============== RESULTS ==================");
+		System.out.println("=========================================");
 		for(Integer loopId : TimeKeeper.getInstance().getLoopIdToTupleIds().keySet()){
-			System.out.println(getStringForLoopId(loopId));
+			double average = 0, count = 0;
 			for(int tupleId : TimeKeeper.getInstance().getLoopIdToTupleIds().get(loopId)){
 				Double startTime = 	TimeKeeper.getInstance().getEmitTimes().get(tupleId);
 				Double endTime = 	TimeKeeper.getInstance().getEndTimes().get(tupleId);
 				if(startTime == null || endTime == null)
 					break;
-				System.out.println(endTime-startTime);
+				average += endTime-startTime;
+				count += 1;
+				//System.out.println(endTime-startTime);
 			}
+			System.out.println(getStringForLoopId(loopId) + " ---> "+(average/count));
 			
 		}
 		System.out.println("=========================================");

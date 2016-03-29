@@ -69,12 +69,15 @@ public class VRGameModuleMapping {
 			application.getModuleByName("client").subscribeActuator(actuator0.getId(), "ACTUATOR");
 			application.getModuleByName("client").subscribeActuator(actuator1.getId(), "ACTUATOR");
 			
-			
 			ModuleMapping moduleMapping = ModuleMapping.createModuleMapping();
 			moduleMapping.addModuleToDevice("client", "gateway-0");
 			moduleMapping.addModuleToDevice("client", "gateway-1");
+			
+			//moduleMapping.addModuleToDevice("client", "cloud");
+			
 			/*moduleMapping.addModuleToDevice("classifier", "gateway-0");
-			moduleMapping.addModuleToDevice("classifier", "gateway-1");*/
+			moduleMapping.addModuleToDevice("classifier", "gateway-1");
+			*/
 			moduleMapping.addModuleToDevice("classifier", "cloud");
 			moduleMapping.addModuleToDevice("tuner", "cloud");
 			

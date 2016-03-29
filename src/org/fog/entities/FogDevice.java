@@ -36,7 +36,8 @@ public class FogDevice extends PowerDatacenter {
 	protected Map<String, Application> applicationMap;
 	protected Map<String, List<String>> appToModulesMap;
 	protected GeoCoverage geoCoverage;
-	
+	protected Map<Integer, Double> childToLatencyMap;
+
 	protected Map<String, Queue<Double>> utilization; 
 	
 	protected Map<Integer, Integer> cloudTrafficMap;
@@ -131,6 +132,8 @@ public class FogDevice extends PowerDatacenter {
 		
 		this.energyConsumption = 0;
 		this.lastUtilization = 0;
+		
+		setChildToLatencyMap(new HashMap<Integer, Double>());
 	}
 
 	/**
@@ -541,6 +544,7 @@ public class FogDevice extends PowerDatacenter {
 		double networkDelay = tuple.getCloudletFileSize()/getDownlinkBandwidth();
 		//Logger.debug(getName(), "Sending tuple with tupleType = "+tuple.getTupleType()+" DOWN");
 		setSouthLinkBusy(true);
+		double latency = getChildToLatencyMap().get(childId);
 		send(getId(), networkDelay, FogEvents.UPDATE_SOUTH_TUPLE_QUEUE);
 		send(childId, networkDelay+latency, FogEvents.TUPLE_ARRIVAL, tuple);
 		
@@ -677,6 +681,13 @@ public class FogDevice extends PowerDatacenter {
 
 	public void setEnergyConsumption(double energyConsumption) {
 		this.energyConsumption = energyConsumption;
+	}
+	public Map<Integer, Double> getChildToLatencyMap() {
+		return childToLatencyMap;
+	}
+
+	public void setChildToLatencyMap(Map<Integer, Double> childToLatencyMap) {
+		this.childToLatencyMap = childToLatencyMap;
 	}
 
 }

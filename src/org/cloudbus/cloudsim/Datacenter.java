@@ -719,9 +719,7 @@ public class Datacenter extends SimEntity {
 			Vm vm = host.getVm(vmId, userId);
 			CloudletScheduler scheduler = vm.getCloudletScheduler();
 			double estimatedFinishTime = scheduler.cloudletSubmit(cl, fileTransferTime);
-			System.out.println(estimatedFinishTime);
-			//System.out.println(CloudSim.clock()+" : Received tuple ID "+((Tuple)cl).getActualTupleId()+" estimated finish time "+estimatedFinishTime);
-
+			
 			// if this cloudlet is in the exec queue
 			if (estimatedFinishTime > 0.0 && !Double.isInfinite(estimatedFinishTime)) {
 				estimatedFinishTime += fileTransferTime;

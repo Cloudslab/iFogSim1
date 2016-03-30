@@ -19,6 +19,7 @@ import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.cloudbus.cloudsim.power.PowerDatacenter;
 import org.cloudbus.cloudsim.power.PowerHost;
+import org.fog.application.AppEdge;
 import org.fog.application.AppLoop;
 import org.fog.application.AppModule;
 import org.fog.application.Application;
@@ -164,6 +165,9 @@ public class FogDevice extends PowerDatacenter {
 		case FogEvents.SENSOR_JOINED:
 			processSensorJoining(ev);
 			break;
+		case FogEvents.SEND_PERIODIC_TUPLE:
+			sendPeriodicTuple(ev);
+			break;
 		case FogEvents.APP_SUBMIT:
 			processAppSubmit(ev);
 			break;
@@ -184,6 +188,27 @@ public class FogDevice extends PowerDatacenter {
 		}
 	}
 	
+	private void sendPeriodicTuple(SimEvent ev) {
+		// TODO Auto-generated method stub
+		AppEdge edge = (AppEdge)ev.getData();
+		String srcModule = edge.getSource();
+		AppModule module = null;
+		for(Vm vm : getHost().getVmList()){
+			if(((AppModule)vm).getName().equals(srcModule)){
+				module=(AppModule)vm;
+				break;
+			}
+		}
+		if(module == null)
+			return;
+		
+		Tuple tuple = applicationMap.get(module.getAppId()).createTuple(edge, getId());
+		updateTimingsOnSending(tuple);
+		
+		sendToSelf(tuple);
+		send(getId(), edge.getPeriodicity(), FogEvents.SEND_PERIODIC_TUPLE, edge);
+	}
+
 	protected void processActuatorJoined(SimEvent ev) {
 		getAssociatedActuatorIds().add(ev.getSource());
 	}
@@ -332,7 +357,7 @@ public class FogDevice extends PowerDatacenter {
 						for(Tuple resTuple : resultantTuples){
 							resTuple.setModuleCopyMap(new HashMap<String, Integer>(tuple.getModuleCopyMap()));
 							resTuple.getModuleCopyMap().put(((AppModule)vm).getName(), vm.getId());
-							updateTimingsOnSending(tuple, resTuple);
+							updateTimingsOnSending(resTuple);
 							sendToSelf(resTuple);
 						}
 						sendNow(cl.getUserId(), CloudSimTags.CLOUDLET_RETURN, cl);
@@ -344,12 +369,12 @@ public class FogDevice extends PowerDatacenter {
 			updateAllocatedMips(null);
 	}
 	
-	protected void updateTimingsOnSending(Tuple tuple, Tuple resTuple) {
+	protected void updateTimingsOnSending(Tuple resTuple) {
 		// TODO ADD CODE FOR UPDATING TIMINGS WHEN A TUPLE IS GENERATED FROM A PREVIOUSLY RECIEVED TUPLE. 
 		// WILL NEED TO CHECK IF A NEW LOOP STARTS AND INSERT A UNIQUE TUPLE ID TO IT.
 		String srcModule = resTuple.getSrcModuleName();
 		String destModule = resTuple.getDestModuleName();
-		for(AppLoop loop : getApplicationMap().get(tuple.getAppId()).getLoops()){
+		for(AppLoop loop : getApplicationMap().get(resTuple.getAppId()).getLoops()){
 			if(loop.hasEdge(srcModule, destModule) && loop.isStartModule(srcModule)){
 				int tupleId = TimeKeeper.getInstance().getUniqueId();
 				resTuple.setActualTupleId(tupleId);
@@ -567,10 +592,25 @@ public class FogDevice extends PowerDatacenter {
 			module.setBeingInstantiated(false);
 		}
 		utilization.put(module.getName(), new LinkedList<Double>());
+		
+		initializePeriodicTuples(module);
+		
 		module.updateVmProcessing(CloudSim.clock(), getVmAllocationPolicy().getHost(module).getVmScheduler()
 				.getAllocatedMipsForVm(module));
 	}
 	
+	
+	
+	private void initializePeriodicTuples(AppModule module) {
+		// TODO Auto-generated method stub
+		String appId = module.getAppId();
+		Application app = getApplicationMap().get(appId);
+		List<AppEdge> periodicEdges = app.getPeriodicEdges(module.getName());
+		for(AppEdge edge : periodicEdges){
+			send(getId(), edge.getPeriodicity(), FogEvents.SEND_PERIODIC_TUPLE, edge);
+		}
+	}
+
 	protected void processOperatorRelease(SimEvent ev){
 		this.processVmMigrate(ev, false);
 	}

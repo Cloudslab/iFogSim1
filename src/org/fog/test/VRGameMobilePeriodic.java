@@ -37,7 +37,7 @@ import org.fog.utils.FogUtils;
 import org.fog.utils.GeoCoverage;
 import org.fog.utils.distribution.DeterministicDistribution;
 
-public class VRGameMobileModuleMapping {
+public class VRGameMobilePeriodic {
 
 	public static void main(String[] args) {
 
@@ -213,7 +213,7 @@ public class VRGameMobileModuleMapping {
 		
 		Map<Pair<String, String>, Double> classifierSelectivityMap = new HashMap<Pair<String, String>, Double>();
 		classifierSelectivityMap.put(new Pair("_SENSOR", "CLASSIFICATION"),  1.0);
-		classifierSelectivityMap.put(new Pair("_SENSOR", "HISTORY"), 1.0);
+		//classifierSelectivityMap.put(new Pair("_SENSOR", "HISTORY"), 1.0);
 		final AppModule classifier = new AppModule(FogUtils.generateEntityId(), "classifier", null, appId, userId, 
 				mips, ram, bw, size, vmm, new TupleScheduler(mips, 1), classifierSelectivityMap);
 
@@ -226,7 +226,7 @@ public class VRGameMobileModuleMapping {
 		
 		final AppEdge edgeSensor = new AppEdge("SENSOR", "client", 1000, 100, "SENSOR", Tuple.UP, AppEdge.SENSOR);
 		final AppEdge edge_Sensor = new AppEdge("client", "classifier", 1000, 100, "_SENSOR", Tuple.UP, AppEdge.MODULE);
-		final AppEdge edgeHistory = new AppEdge("classifier", "tuner", 1000, 100, "HISTORY", Tuple.UP, AppEdge.MODULE);
+		final AppEdge edgeHistory = new AppEdge("classifier", "tuner", 400, 1000, 100, "HISTORY", Tuple.UP, AppEdge.MODULE);
 		final AppEdge edgeClassification = new AppEdge("classifier", "client", 1000, 100, "CLASSIFICATION", Tuple.DOWN, AppEdge.MODULE);
 		final AppEdge edgeTuningParams = new AppEdge("tuner", "classifier", 1000, 100, "TUNING_PARAMS", Tuple.DOWN, AppEdge.MODULE);
 		final AppEdge edgeActuator = new AppEdge("client", "ACTUATOR", 1000, 100, "ACTUATOR", Tuple.DOWN, AppEdge.ACTUATOR);

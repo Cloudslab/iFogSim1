@@ -13,6 +13,8 @@ public class AppEdge {
 	private String tupleType;
 	private int direction;
 	private int edgeType;
+	private double periodicity;
+	private boolean isPeriodic;
 	
 	public AppEdge(){
 		
@@ -27,6 +29,20 @@ public class AppEdge {
 		setTupleType(tupleType);
 		setDirection(direction);
 		setEdgeType(edgeType);
+		setPeriodic(false);
+	}
+	
+	public AppEdge(String source, String destination, double periodicity, double tupleCpuLength, 
+			double tupleNwLength, String tupleType, int direction, int edgeType){
+		setSource(source);
+		setDestination(destination);
+		setTupleCpuLength(tupleCpuLength);
+		setTupleNwLength(tupleNwLength);
+		setTupleType(tupleType);
+		setDirection(direction);
+		setEdgeType(edgeType);
+		setPeriodic(true);
+		setPeriodicity(periodicity);
 	}
 	
 	public String getSource() {
@@ -74,5 +90,21 @@ public class AppEdge {
 
 	public void setEdgeType(int edgeType) {
 		this.edgeType = edgeType;
+	}
+
+	public double getPeriodicity() {
+		return periodicity;
+	}
+
+	public void setPeriodicity(double periodicity) {
+		this.periodicity = periodicity;
+	}
+
+	public boolean isPeriodic() {
+		return isPeriodic;
+	}
+
+	public void setPeriodic(boolean isPeriodic) {
+		this.isPeriodic = isPeriodic;
 	}
 }

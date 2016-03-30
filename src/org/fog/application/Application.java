@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.math3.util.Pair;
+import org.cloudbus.cloudsim.UtilizationModelFull;
 import org.fog.entities.Tuple;
 import org.fog.utils.FogUtils;
 import org.fog.utils.GeoCoverage;
@@ -11,6 +12,7 @@ import org.fog.utils.GeoCoverage;
 public class Application {
 	
 	private String appId;
+	private int userId;
 	private GeoCoverage geoCoverage;
 
 	private List<AppModule> modules;
@@ -18,6 +20,15 @@ public class Application {
 	
 	private List<AppLoop> loops;
 
+	public List<AppEdge> getPeriodicEdges(String srcModule){
+		List<AppEdge> result = new ArrayList<AppEdge>();
+		for(AppEdge edge : edges){
+			if(edge.isPeriodic() && edge.getSource().equals(srcModule))
+				result.add(edge);
+		}
+		return result;
+	}
+	
 	public Application(String appId, List<AppModule> modules,
 			List<AppEdge> edges, List<AppLoop> loops, GeoCoverage geoCoverage) {
 		setAppId(appId);
@@ -96,6 +107,51 @@ public class Application {
 		return tuples;
 	}
 	
+	public Tuple createTuple(AppEdge edge, int sourceDeviceId){
+		AppModule module = getModuleByName(edge.getSource());
+		if(edge.getEdgeType() == AppEdge.ACTUATOR){
+			for(Integer actuatorId : module.getActuatorSubscriptions().get(edge.getTupleType())){
+				Tuple tuple = new Tuple(appId, FogUtils.generateTupleId(), edge.getDirection(),  
+						(long) (edge.getTupleCpuLength()),
+						1,
+						(long) (edge.getTupleNwLength()),
+						100,
+						new UtilizationModelFull(), 
+						new UtilizationModelFull(), 
+						new UtilizationModelFull()
+						);
+				tuple.setUserId(getUserId());
+				tuple.setAppId(getAppId());
+				tuple.setDestModuleName(edge.getDestination());
+				tuple.setSrcModuleName(edge.getSource());
+				tuple.setDirection(Tuple.ACTUATOR);
+				tuple.setTupleType(edge.getTupleType());
+				tuple.setSourceDeviceId(sourceDeviceId);
+				tuple.setActuatorId(actuatorId);
+				
+				return tuple;
+			}
+		}else{
+			Tuple tuple = new Tuple(appId, FogUtils.generateTupleId(), edge.getDirection(),  
+					(long) (edge.getTupleCpuLength()),
+					1,
+					(long) (edge.getTupleNwLength()),
+					100,
+					new UtilizationModelFull(), 
+					new UtilizationModelFull(), 
+					new UtilizationModelFull()
+					);
+			//tuple.setActualTupleId(inputTuple.getActualTupleId());
+			tuple.setUserId(getUserId());
+			tuple.setAppId(getAppId());
+			tuple.setDestModuleName(edge.getDestination());
+			tuple.setSrcModuleName(edge.getSource());
+			tuple.setDirection(edge.getDirection());
+			tuple.setTupleType(edge.getTupleType());
+			return tuple;
+		}
+		return null;
+	}
 	
 	public String getAppId() {
 		return appId;
@@ -128,5 +184,13 @@ public class Application {
 
 	public void setLoops(List<AppLoop> loops) {
 		this.loops = loops;
+	}
+
+	public int getUserId() {
+		return userId;
+	}
+
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 }

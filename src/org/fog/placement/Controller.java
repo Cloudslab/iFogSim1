@@ -7,10 +7,13 @@ import java.util.Map;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEvent;
+import org.fog.application.AppEdge;
 import org.fog.application.AppLoop;
 import org.fog.application.AppModule;
 import org.fog.application.Application;
+import org.fog.entities.Actuator;
 import org.fog.entities.FogDevice;
+import org.fog.entities.Sensor;
 import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
 import org.fog.utils.TimeKeeper;
@@ -23,23 +26,14 @@ public class Controller extends SimEntity{
 	public static boolean ONLY_CLOUD = false;
 		
 	private List<FogDevice> fogDevices;
+	private List<Sensor> sensors;
+	private List<Actuator> actuators;
 	
 	private Map<String, Application> applications;
 	private Map<String, Integer> appLaunchDelays;
 	private ModuleMapping moduleMapping;
 
-	/*public Controller(String name, List<FogDevice> fogDevices) {
-		super(name);
-		this.applications = new HashMap<String, Application>();
-		this.setAppLaunchDelays(new HashMap<String, Integer>());
-		this.setModuleMapping(null);
-		for(FogDevice fogDevice : fogDevices){
-			fogDevice.setControllerId(getId());
-		}
-		setFogDevices(fogDevices);
-	}*/
-	
-	public Controller(String name, List<FogDevice> fogDevices, ModuleMapping moduleMapping) {
+	public Controller(String name, List<FogDevice> fogDevices, List<Sensor> sensors, List<Actuator> actuators, ModuleMapping moduleMapping) {
 		super(name);
 		this.applications = new HashMap<String, Application>();
 		this.setAppLaunchDelays(new HashMap<String, Integer>());
@@ -48,8 +42,12 @@ public class Controller extends SimEntity{
 			fogDevice.setControllerId(getId());
 		}
 		setFogDevices(fogDevices);
+		setActuators(actuators);
+		setSensors(sensors);
 		connectWithLatencies();
 	}
+
+	
 
 	private FogDevice getFogDeviceById(int id){
 		for(FogDevice fogDevice : getFogDevices()){
@@ -81,7 +79,7 @@ public class Controller extends SimEntity{
 
 		send(getId(), RESOURCE_MANAGE_INTERVAL, FogEvents.CONTROLLER_RESOURCE_MANAGE);
 		
-		send(getId(), 10000, FogEvents.STOP_SIMULATION);
+		send(getId(), 100000, FogEvents.STOP_SIMULATION);
 	}
 
 	@Override
@@ -160,7 +158,26 @@ public class Controller extends SimEntity{
 		FogUtils.appIdToGeoCoverageMap.put(application.getAppId(), application.getGeoCoverage());
 		getApplications().put(application.getAppId(), application);
 		getAppLaunchDelays().put(application.getAppId(), delay);
+		for(Sensor sensor : sensors){
+			sensor.setApp(application);
+		}
+		for(Actuator ac : actuators){
+			ac.setApp(application);
+		}
+		
+		for(AppEdge edge : application.getEdges()){
+			if(edge.getEdgeType() == AppEdge.ACTUATOR){
+				String moduleName = edge.getSource();
+				for(Actuator actuator : getActuators()){
+					if(actuator.getActuatorType().equalsIgnoreCase(edge.getDestination()))
+						application.getModuleByName(moduleName).subscribeActuator(actuator.getId(), edge.getTupleType());
+				}
+			}
+		}
+		
 	}
+	
+	
 	
 	private void processAppSubmit(SimEvent ev){
 		Application app = (Application) ev.getData();
@@ -217,6 +234,24 @@ public class Controller extends SimEntity{
 	}
 	public void setModuleMapping(ModuleMapping moduleMapping) {
 		this.moduleMapping = moduleMapping;
+	}
+
+	public List<Sensor> getSensors() {
+		return sensors;
+	}
+
+	public void setSensors(List<Sensor> sensors) {
+		for(Sensor sensor : sensors)
+			sensor.setControllerId(getId());
+		this.sensors = sensors;
+	}
+
+	public List<Actuator> getActuators() {
+		return actuators;
+	}
+
+	public void setActuators(List<Actuator> actuators) {
+		this.actuators = actuators;
 	}
 	
 	

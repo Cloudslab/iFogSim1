@@ -18,7 +18,7 @@ import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.UIManager;
 
-import org.fog.gui.core.Actuator;
+import org.fog.gui.core.ActuatorGui;
 import org.fog.gui.core.Graph;
 import org.fog.gui.core.SpringUtilities;
 
@@ -29,6 +29,7 @@ public class AddActuator extends JDialog {
 	private final Graph graph;
 	
 	private JTextField actuatorName;
+	private JTextField actuatorType;
 	
 	/**
 	 * Constructor.
@@ -74,7 +75,8 @@ public class AddActuator extends JDialog {
 					prompt("Please type Actuator name", "Error");
 				} else {
 					if(!catchedError){
-						Actuator actuator = new Actuator(actuatorName.getText());
+						ActuatorGui actuator = new ActuatorGui(actuatorName.getText(), 
+								actuatorType.getText().toString());
 							graph.addNode(actuator);
 							setVisible(false);
 					}
@@ -102,10 +104,16 @@ public class AddActuator extends JDialog {
 		lName.setLabelFor(actuatorName);
 		springPanel.add(actuatorName);
 		
+		JLabel lType = new JLabel("Actuator Type : ");
+		springPanel.add(lType);
+		actuatorType = new JTextField();
+		lName.setLabelFor(actuatorType);
+		springPanel.add(actuatorType);
+		
 							
        //Lay out the panel.
         SpringUtilities.makeCompactGrid(springPanel,
-                                        1, 2,        //rows, columns
+                                        2, 2,        //rows, columns
                                         6, 6,        //initX, initY
                                         6, 6);       //xPad, yPad
 		return springPanel;

@@ -7,7 +7,7 @@ import org.fog.utils.distribution.Distribution;
 import org.fog.utils.distribution.NormalDistribution;
 import org.fog.utils.distribution.UniformDistribution;
 
-public class Sensor extends Node implements Serializable{
+public class SensorGui extends Node implements Serializable{
 
 	private static final long serialVersionUID = 4087896123649020073L;
 
@@ -16,14 +16,14 @@ public class Sensor extends Node implements Serializable{
 	
 	private Distribution distribution;
 	
-	public Sensor(String name, String type, Distribution distribution){
+	public SensorGui(String name, String type, Distribution distribution){
 		super(name, "SENSOR");
 		setName(name);
 		setSensorType(type);
 		setDistribution(distribution);
 	}
 
-	public Sensor(String name, String sensorType, String selectedItem, double normalMean_,
+	public SensorGui(String name, String sensorType, String selectedItem, double normalMean_,
 			double normalStdDev_, double uniformLow_, double uniformUp_,
 			double deterministicVal_) {
 		super(name, "SENSOR");

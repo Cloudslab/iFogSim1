@@ -61,10 +61,13 @@ public class VRGameMobileModuleMapping {
 			application.setUserId(broker.getId());
 			List<FogDevice> fogDevices = createFogDevices(appId, broker.getId(), transmitInterval);
 			
-			Sensor s0 = createSensor("EEGSensor-0", application, broker.getId(), CloudSim.getEntityId("mobile-0"), transmitInterval, 2000, 100, "SENSOR", "client");
-			Sensor s1 = createSensor("EEGSensor-1", application, broker.getId(), CloudSim.getEntityId("mobile-1"), transmitInterval, 2000, 100, "SENSOR", "client");
-			Actuator actuator0 = createActuator("Display-0", appId, broker.getId(), CloudSim.getEntityId("mobile-0"), "ACTUATOR", "client");
-			Actuator actuator1 = createActuator("Display-1", appId, broker.getId(), CloudSim.getEntityId("mobile-1"), "ACTUATOR", "client");
+			final Sensor s0 = createSensor("EEGSensor-0", application, broker.getId(), CloudSim.getEntityId("mobile-0"), transmitInterval, 2000, 100, "SENSOR", "client");
+			final Sensor s1 = createSensor("EEGSensor-1", application, broker.getId(), CloudSim.getEntityId("mobile-1"), transmitInterval, 2000, 100, "SENSOR", "client");
+			final Actuator actuator0 = createActuator("Display-0", appId, broker.getId(), CloudSim.getEntityId("mobile-0"), "ACTUATOR", "client");
+			final Actuator actuator1 = createActuator("Display-1", appId, broker.getId(), CloudSim.getEntityId("mobile-1"), "ACTUATOR", "client");
+			
+			List<Sensor> sensors = new ArrayList<Sensor>(){{add(s0);add(s1);}};
+			List<Actuator> actuators = new ArrayList<Actuator>(){{add(actuator0);add(actuator1);}};
 			
 			application.getModuleByName("client").subscribeActuator(actuator0.getId(), "ACTUATOR");
 			application.getModuleByName("client").subscribeActuator(actuator1.getId(), "ACTUATOR");
@@ -83,7 +86,7 @@ public class VRGameMobileModuleMapping {
 			//moduleMapping.addModuleToDevice("classifier", "cloud");
 			moduleMapping.addModuleToDevice("tuner", "cloud");
 			
-			Controller controller = new Controller("master-controller", fogDevices, moduleMapping);
+			Controller controller = new Controller("master-controller", fogDevices, sensors, actuators, moduleMapping);
 			
 			s0.setControllerId(controller.getId());
 			s1.setControllerId(controller.getId());
@@ -111,19 +114,19 @@ public class VRGameMobileModuleMapping {
 		//app.registerSensor(sensor0);
 	}
 	private static Actuator createActuator(String actuatorName, String appId, int userId, int gatewayDeviceId, String actuatorType, String srcModuleName){
-		Actuator actuator = new Actuator(actuatorName, userId, appId, gatewayDeviceId, null, actuatorType, srcModuleName);
+		Actuator actuator = new Actuator(actuatorName, userId, appId, gatewayDeviceId, 2, null, actuatorType, srcModuleName);
 		return actuator;
 		//app.registerSensor(sensor0);
 	}
 	
 	@SuppressWarnings("serial")
 	private static List<FogDevice> createFogDevices(String appId, int userId, int transmitInterval) {
-		final FogDevice gw0 = createFogDevice("mobile-0", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 10, 2);
-		final FogDevice gw1 = createFogDevice("mobile-1", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 10, 2);
+		final FogDevice gw0 = createFogDevice("mobile-0", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 10);
+		final FogDevice gw1 = createFogDevice("mobile-1", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 10);
 		
-		final FogDevice mid = createFogDevice("router", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 50, 10);
+		final FogDevice mid = createFogDevice("router", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 50);
 		
-		final FogDevice cloud = createFogDevice("cloud", FogUtils.MAX, new GeoCoverage(-FogUtils.MAX, FogUtils.MAX, -FogUtils.MAX, FogUtils.MAX), FogUtils.MAX, 1000, 1, 1);
+		final FogDevice cloud = createFogDevice("cloud", FogUtils.MAX, new GeoCoverage(-FogUtils.MAX, FogUtils.MAX, -FogUtils.MAX, FogUtils.MAX), FogUtils.MAX, 1000, 1);
 		cloud.setChildrenIds(new ArrayList<Integer>(){{add(mid.getId());}});
 		mid.setChildrenIds(new ArrayList<Integer>(){{add(gw1.getId());add(gw0.getId());}});
 		
@@ -143,7 +146,7 @@ public class VRGameMobileModuleMapping {
 	 *
 	 * @return the datacenter
 	 */
-	private static FogDevice createFogDevice(String name, int mips, GeoCoverage geoCoverage, double uplinkBandwidth, double downlinkBandwidth, double latency, double actuatorDelay) {
+	private static FogDevice createFogDevice(String name, int mips, GeoCoverage geoCoverage, double uplinkBandwidth, double downlinkBandwidth, double latency) {
 
 		// 2. A Machine contains one or more PEs or CPUs/Cores.
 		// In this example, it will have only one core.
@@ -189,7 +192,7 @@ public class VRGameMobileModuleMapping {
 		FogDevice fogdevice = null;
 		try {
 			fogdevice = new FogDevice(name, geoCoverage, characteristics, 
-					new AppModuleAllocationPolicy(hostList), storageList, 10, uplinkBandwidth, downlinkBandwidth, latency, actuatorDelay);
+					new AppModuleAllocationPolicy(hostList), storageList, 10, uplinkBandwidth, downlinkBandwidth, latency);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -3,7 +3,6 @@ package org.fog.gui.example;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,7 +11,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -36,17 +34,11 @@ import org.fog.gui.core.Bridge;
 import org.fog.gui.core.Graph;
 import org.fog.gui.core.GraphView;
 import org.fog.gui.dialog.AddActuator;
-import org.fog.gui.dialog.AddActuatorModule;
-import org.fog.gui.dialog.AddAppEdge;
-import org.fog.gui.dialog.AddApplicationModule;
 import org.fog.gui.dialog.AddFogDevice;
 import org.fog.gui.dialog.AddLink;
 import org.fog.gui.dialog.AddPhysicalEdge;
 import org.fog.gui.dialog.AddPhysicalNode;
 import org.fog.gui.dialog.AddSensor;
-import org.fog.gui.dialog.AddSensorModule;
-import org.fog.gui.dialog.AddVirtualEdge;
-import org.fog.gui.dialog.AddVirtualNode;
 import org.fog.gui.dialog.SDNRun;
 
 
@@ -65,9 +57,9 @@ public class FogGui extends JFrame {
 	private JPanel graph;
 	
 	private Graph physicalGraph;
-	private Graph virtualGraph;
+	//private Graph virtualGraph;
 	private GraphView physicalCanvas;
-	private GraphView virtualCanvas;
+	//private GraphView virtualCanvas;
 	
 	private JButton btnRun;
 	
@@ -157,11 +149,11 @@ public class FogGui extends JFrame {
 		    	openAddPhysicalNodeDialog();
 		    }
 		};
-		ActionListener addVirtualNodeListener = new ActionListener() {
+		/*ActionListener addVirtualNodeListener = new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
 		    	openAddVirtualNodeDialog();
 		    }
-		};
+		};*/
 		ActionListener addPhysicalEdgeListener = new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
 		    	openAddPhysicalEdgeDialog();
@@ -180,7 +172,7 @@ public class FogGui extends JFrame {
 		    }
 		};
 		
-		ActionListener addAppModuleActionListener = new ActionListener() {
+		/*ActionListener addAppModuleActionListener = new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
 		    	openAddAppModuleDialog();
 		    }
@@ -204,13 +196,12 @@ public class FogGui extends JFrame {
 		    }
 		};
 		
-		
-		
 		ActionListener addVirtualEdgeListener = new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
 		    	openAddVirtualEdgeDialog();
 		    }
-		};
+		};*/
+		
 		ActionListener addSensorListener = new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
 		    	openAddSensorDialog();
@@ -225,13 +216,7 @@ public class FogGui extends JFrame {
 		    	physicalCanvas.repaint();
 		    }
 		};
-		ActionListener importVirTopoListener = new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
-		    	String fileName = importFile("josn");
-		    	Graph virGraph= Bridge.jsonToGraph(fileName, 1);
-		    	virtualCanvas.setGraph(virGraph);
-		    }
-		};
+		
 		ActionListener savePhyTopoListener = new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
 		    	try {
@@ -239,6 +224,13 @@ public class FogGui extends JFrame {
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
+		    }
+		};
+		/*ActionListener importVirTopoListener = new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		    	String fileName = importFile("josn");
+		    	Graph virGraph= Bridge.jsonToGraph(fileName, 1);
+		    	virtualCanvas.setGraph(virGraph);
 		    }
 		};
 		ActionListener saveVirTopoListener = new ActionListener() {
@@ -249,7 +241,7 @@ public class FogGui extends JFrame {
 					e1.printStackTrace();
 				}
 		    }
-		};
+		};*/
 		
 		//---------- End ActionListener ----------
     	
@@ -269,14 +261,14 @@ public class FogGui extends JFrame {
         ImageIcon iHSave = new ImageIcon(
                 getClass().getResource("/images/savePhyTop.png"));
         
-        ImageIcon iSensorModule = new ImageIcon(
+        /*ImageIcon iSensorModule = new ImageIcon(
                 getClass().getResource("/images/sensorModule.png"));
         ImageIcon iActuatorModule = new ImageIcon(
                 getClass().getResource("/images/actuatorModule.png"));
         ImageIcon iModule = new ImageIcon(
                 getClass().getResource("/images/module.png"));
         ImageIcon iEdge = new ImageIcon(
-                getClass().getResource("/images/edge.png"));
+                getClass().getResource("/images/edge.png"));*/
         
         ImageIcon run = new ImageIcon(
                 getClass().getResource("/images/play.png"));
@@ -299,15 +291,15 @@ public class FogGui extends JFrame {
         final JButton btnHsave = new JButton(iHSave);
         btnHsave.setToolTipText("Save Physical Topology");
         
-        final JButton btnSensorModule = new JButton(iSensorModule);
+        /*final JButton btnSensorModule = new JButton(iSensorModule);
         btnSensorModule.setToolTipText("Add Sensor Module");
         final JButton btnActuatorModule = new JButton(iActuatorModule);
-        btnActuatorModule.setToolTipText("Add Actuator Module");
+        btnActuatorModule.setToolTipText("Add Actuator Module");*/
         
-        final JButton btnModule = new JButton(iModule);
+        /*final JButton btnModule = new JButton(iModule);
         btnModule.setToolTipText("Add Application Module");
         final JButton btnAppEdge = new JButton(iEdge);
-        btnAppEdge.setToolTipText("Add Application Edge");
+        btnAppEdge.setToolTipText("Add Application Edge");*/
         
         
         btnRun = new JButton(run);
@@ -323,10 +315,10 @@ public class FogGui extends JFrame {
         btnLink.addActionListener(addLinkListener);
         btnHopen.addActionListener(importPhyTopoListener);
         btnHsave.addActionListener(savePhyTopoListener);
-        btnSensorModule.addActionListener(addSensorModuleListener);
+        /*btnSensorModule.addActionListener(addSensorModuleListener);
         btnActuatorModule.addActionListener(addActuatorModuleListener);
         btnModule.addActionListener(addAppModuleActionListener);
-        btnAppEdge.addActionListener(addAppEdgeActionListener);
+        btnAppEdge.addActionListener(addAppEdgeActionListener);*/
         btnRun.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
             	if("i"==mode){
@@ -373,10 +365,10 @@ public class FogGui extends JFrame {
         
         toolbar.addSeparator();
         
-        toolbar.add(btnSensorModule);
+        /*toolbar.add(btnSensorModule);
         toolbar.add(btnActuatorModule);
         toolbar.add(btnModule);
-        toolbar.add(btnAppEdge);
+        toolbar.add(btnAppEdge);*/
         
         toolbar.addSeparator();
         
@@ -414,7 +406,7 @@ public class FogGui extends JFrame {
         MuPhy.add(MiPhyEdge);
         MuPhy.add(MiPhyOpen);
         MuPhy.add(MiPhySave);
-        final JMenu MuVir = new JMenu("Virtual");
+        /*final JMenu MuVir = new JMenu("Virtual");
         JMenuItem MiVirNode = new JMenuItem("Add Node");
         JMenuItem MiVirEdge = new JMenuItem("Add Edge");
         JMenuItem MiVirOpen = new JMenuItem("Import Virtual Topology");
@@ -422,7 +414,7 @@ public class FogGui extends JFrame {
         MuVir.add(MiVirNode);
         MuVir.add(MiVirEdge);  
         MuVir.add(MiVirOpen);
-        MuVir.add(MiVirSave);
+        MuVir.add(MiVirSave);*/
         
         
         MiPhy.addActionListener(readPhyTopoListener);
@@ -434,15 +426,15 @@ public class FogGui extends JFrame {
         MiPhyEdge.addActionListener(addPhysicalEdgeListener);
         MiPhyOpen.addActionListener(importPhyTopoListener);
         MiPhySave.addActionListener(savePhyTopoListener);
-        MiVirNode.addActionListener(addVirtualNodeListener);
+        /*MiVirNode.addActionListener(addVirtualNodeListener);
         MiVirEdge.addActionListener(addVirtualEdgeListener);
         MiVirOpen.addActionListener(importVirTopoListener);
-        MiVirSave.addActionListener(saveVirTopoListener);
+        MiVirSave.addActionListener(saveVirTopoListener);*/
 
         graph.add(MuPhy);
-        graph.add(MuVir);
+        //graph.add(MuVir);
         graph.add(MiPhy);
-        graph.add(MiVir);
+        //graph.add(MiVir);
         graph.add(MiWl1);
         graph.add(MiWl2);
 
@@ -468,7 +460,7 @@ public class FogGui extends JFrame {
 		    	    	MiWl1.setVisible(false);
 		    	    	MiWl2.setVisible(false);
 		    	    	MuPhy.setVisible(true);
-		    	    	MuVir.setVisible(true);
+		    	    	//MuVir.setVisible(true);
 		    	    	
 		    	    	btnRun.setVisible(false);
 		    	    	btnRun.setEnabled(false);
@@ -488,7 +480,7 @@ public class FogGui extends JFrame {
 		    	    	MiWl1.setVisible(true);
 		    	    	MiWl2.setVisible(true);
 		    	    	MuPhy.setVisible(false);
-		    	    	MuVir.setVisible(false);
+		    	    	//MuVir.setVisible(false);
 		    	    	
 		    	    	btnRun.setVisible(true);
 		    	    	btnRun.setEnabled(false);
@@ -557,7 +549,7 @@ public class FogGui extends JFrame {
     	MiWl1.setVisible(false);
     	MiWl2.setVisible(false);
     	MuPhy.setVisible(true);
-    	MuVir.setVisible(true);
+    	//MuVir.setVisible(true);
     	
     	btnRun.setVisible(false);
     	btnRun.setEnabled(false);
@@ -565,7 +557,12 @@ public class FogGui extends JFrame {
 
     }
 
-	protected void openAddActuatorModuleDialog() {
+	protected void openAddActuatorDialog() {
+		AddActuator actuator = new AddActuator(physicalGraph, FogGui.this);
+		physicalCanvas.repaint();
+	}
+	
+	/*protected void openAddActuatorModuleDialog() {
 		AddActuatorModule actuatorModule = new AddActuatorModule(virtualGraph, FogGui.this);
 		virtualCanvas.repaint();		
 	}
@@ -573,14 +570,9 @@ public class FogGui extends JFrame {
 	protected void openAddSensorModuleDialog() {
 		AddSensorModule sensorModule = new AddSensorModule(virtualGraph, FogGui.this);
 		virtualCanvas.repaint();
-	}
-
-	protected void openAddActuatorDialog() {
-		AddActuator actuator = new AddActuator(physicalGraph, FogGui.this);
-		physicalCanvas.repaint();
-	}
+	}*/
 	
-	protected void openAddAppModuleDialog() {
+	/*protected void openAddAppModuleDialog() {
 		AddApplicationModule appModule = new AddApplicationModule(virtualGraph, FogGui.this);
 		virtualCanvas.repaint();
 	}
@@ -588,7 +580,7 @@ public class FogGui extends JFrame {
 	protected void openAddAppEdgeDialog() {
 		AddAppEdge appEdge = new AddAppEdge(virtualGraph, FogGui.this);
 		virtualCanvas.repaint();
-	}
+	}*/
 	
 	protected void openAddLinkDialog() {
 		AddLink phyEdge = new AddLink(physicalGraph, FogGui.this);
@@ -605,13 +597,13 @@ public class FogGui extends JFrame {
 	/** initialize Canvas */
     private void initGraph(){
     	physicalGraph = new Graph();
-    	virtualGraph = new Graph();
+    	//virtualGraph = new Graph();
     	
     	physicalCanvas = new GraphView(physicalGraph);
-    	virtualCanvas = new GraphView(virtualGraph);
+    	//virtualCanvas = new GraphView(virtualGraph);
     	
 		graph.add(physicalCanvas);
-		graph.add(virtualCanvas);
+		//graph.add(virtualCanvas);
 		contentPane.add(graph, BorderLayout.CENTER);
     }
     
@@ -625,14 +617,14 @@ public class FogGui extends JFrame {
     	AddPhysicalEdge phyEdge = new AddPhysicalEdge(physicalGraph, FogGui.this);
     	physicalCanvas.repaint();
     }
-    private void openAddVirtualNodeDialog(){
+    /*private void openAddVirtualNodeDialog(){
     	AddVirtualNode vmNode = new AddVirtualNode(virtualGraph, FogGui.this);
     	virtualCanvas.repaint();  	
     }
     private void openAddVirtualEdgeDialog(){
     	AddVirtualEdge phyNode = new AddVirtualEdge(virtualGraph, FogGui.this);
     	virtualCanvas.repaint();
-    }
+    }*/
     protected void openAddSensorDialog() {
 		AddSensor sensor = new AddSensor(physicalGraph, FogGui.this);
 		physicalCanvas.repaint();

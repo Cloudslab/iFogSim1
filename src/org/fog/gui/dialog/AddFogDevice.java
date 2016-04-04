@@ -18,7 +18,7 @@ import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.UIManager;
 
-import org.fog.gui.core.FogDevice;
+import org.fog.gui.core.FogDeviceGui;
 import org.fog.gui.core.Graph;
 import org.fog.gui.core.SpringUtilities;
 
@@ -109,7 +109,7 @@ public class AddFogDevice extends JDialog {
 					prompt("Input should be numerical character", "Error");
 				}
 				if(!catchedError){
-					FogDevice fogDevice = new FogDevice(deviceName.getText().toString(), mips_, ram_, upBw_, downBw_, level_);
+					FogDeviceGui fogDevice = new FogDeviceGui(deviceName.getText().toString(), mips_, ram_, upBw_, downBw_, level_);
 					graph.addNode(fogDevice);
 					setVisible(false);								
 				}

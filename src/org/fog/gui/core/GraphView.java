@@ -83,7 +83,7 @@ public class GraphView extends JPanel {
 				List<Node> endpoints = new ArrayList<Node>(); 
 				for (Node node : graph.getAdjacencyList().keySet()) {
 					if(node.getType().equals("FOG_DEVICE")){
-						int level = ((FogDevice)node).getLevel();
+						int level = ((FogDeviceGui)node).getLevel();
 						if(!levelMap.containsKey(level))
 							levelMap.put(level, new ArrayList<Node>());
 						levelMap.get(level).add(node);

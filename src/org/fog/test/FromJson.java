@@ -37,7 +37,7 @@ import org.fog.utils.FogUtils;
 import org.fog.utils.GeoCoverage;
 import org.fog.utils.distribution.DeterministicDistribution;
 
-public class VRGameModuleMapping {
+public class FromJson {
 
 	public static void main(String[] args) {
 
@@ -55,33 +55,38 @@ public class VRGameModuleMapping {
 			
 			FogBroker broker = new FogBroker("broker");
 			
-			int transmitInterval = 100;
+			int transmitInterval = 1000;
 
 			Application application = createApplication(appId, broker.getId(), transmitInterval);
-
+			application.setUserId(broker.getId());
 			List<FogDevice> fogDevices = createFogDevices(appId, broker.getId(), transmitInterval);
 			
-			Sensor s0 = createSensor("EEGSensor-0", application, broker.getId(), CloudSim.getEntityId("gateway-0"), transmitInterval, 2000, 100, "SENSOR", "client");
-			Sensor s1 = createSensor("EEGSensor-1", application, broker.getId(), CloudSim.getEntityId("gateway-1"), transmitInterval, 2000, 100, "SENSOR", "client");
-			Actuator actuator0 = createActuator("Display-0", appId, broker.getId(), CloudSim.getEntityId("gateway-0"), "ACTUATOR", "client");
-			Actuator actuator1 = createActuator("Display-1", appId, broker.getId(), CloudSim.getEntityId("gateway-1"), "ACTUATOR", "client");
+			final Sensor s0 = createSensor("EEGSensor-0", application, broker.getId(), CloudSim.getEntityId("mobile-0"), transmitInterval, 2000, 100, "SENSOR", "client");
+			final Sensor s1 = createSensor("EEGSensor-1", application, broker.getId(), CloudSim.getEntityId("mobile-1"), transmitInterval, 2000, 100, "SENSOR", "client");
+			final Actuator actuator0 = createActuator("Display-0", appId, broker.getId(), CloudSim.getEntityId("mobile-0"), "ACTUATOR", "client");
+			final Actuator actuator1 = createActuator("Display-1", appId, broker.getId(), CloudSim.getEntityId("mobile-1"), "ACTUATOR", "client");
+			
+			List<Sensor> sensors = new ArrayList<Sensor>(){{add(s0);add(s1);}};
+			List<Actuator> actuators = new ArrayList<Actuator>(){{add(actuator0);add(actuator1);}};
 			
 			application.getModuleByName("client").subscribeActuator(actuator0.getId(), "ACTUATOR");
 			application.getModuleByName("client").subscribeActuator(actuator1.getId(), "ACTUATOR");
 			
 			ModuleMapping moduleMapping = ModuleMapping.createModuleMapping();
-			moduleMapping.addModuleToDevice("client", "gateway-0");
-			moduleMapping.addModuleToDevice("client", "gateway-1");
+			moduleMapping.addModuleToDevice("client", "mobile-0");
+			moduleMapping.addModuleToDevice("client", "mobile-1");
 			
 			//moduleMapping.addModuleToDevice("client", "cloud");
 			
-			moduleMapping.addModuleToDevice("classifier", "gateway-0");
-			moduleMapping.addModuleToDevice("classifier", "gateway-1");
+			//moduleMapping.addModuleToDevice("classifier", "gateway-0");
+			//moduleMapping.addModuleToDevice("classifier", "gateway-1");
+			
+			moduleMapping.addModuleToDevice("classifier", "router");
 			
 			//moduleMapping.addModuleToDevice("classifier", "cloud");
 			moduleMapping.addModuleToDevice("tuner", "cloud");
 			
-			Controller controller = new Controller("master-controller", fogDevices, moduleMapping);
+			Controller controller = new Controller("master-controller", fogDevices, sensors, actuators, moduleMapping);
 			
 			s0.setControllerId(controller.getId());
 			s1.setControllerId(controller.getId());
@@ -104,7 +109,7 @@ public class VRGameModuleMapping {
 	}
 
 	private static Sensor createSensor(String sensorName, Application app, int userId, int gatewayDeviceId, int transmitInterval, int tupleCpuSize, int tupleNwSize, String tupleType, String destOpId){
-		Sensor s = new Sensor(sensorName, userId, app.getAppId(), gatewayDeviceId, 10, null, new DeterministicDistribution(transmitInterval), tupleCpuSize, tupleNwSize, tupleType, destOpId);
+		Sensor s = new Sensor(sensorName, userId, app.getAppId(), gatewayDeviceId, 2, null, new DeterministicDistribution(transmitInterval), tupleCpuSize, tupleNwSize, tupleType, destOpId);
 		return s;
 		//app.registerSensor(sensor0);
 	}
@@ -116,17 +121,21 @@ public class VRGameModuleMapping {
 	
 	@SuppressWarnings("serial")
 	private static List<FogDevice> createFogDevices(String appId, int userId, int transmitInterval) {
-		final FogDevice gw0 = createFogDevice("gateway-0", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 50, 10);
-		final FogDevice gw1 = createFogDevice("gateway-1", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 50, 10);
+		final FogDevice gw0 = createFogDevice("mobile-0", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 10);
+		final FogDevice gw1 = createFogDevice("mobile-1", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 10);
 		
-		final FogDevice cloud = createFogDevice("cloud", FogUtils.MAX, new GeoCoverage(-FogUtils.MAX, FogUtils.MAX, -FogUtils.MAX, FogUtils.MAX), FogUtils.MAX, 1000, 1, 1);
-		cloud.setChildrenIds(new ArrayList<Integer>(){{add(gw0.getId());add(gw1.getId());}});
+		final FogDevice mid = createFogDevice("router", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 50);
 		
-		gw0.setParentId(cloud.getId());
-		gw1.setParentId(cloud.getId());
+		final FogDevice cloud = createFogDevice("cloud", FogUtils.MAX, new GeoCoverage(-FogUtils.MAX, FogUtils.MAX, -FogUtils.MAX, FogUtils.MAX), FogUtils.MAX, 1000, 1);
+		cloud.setChildrenIds(new ArrayList<Integer>(){{add(mid.getId());}});
+		mid.setChildrenIds(new ArrayList<Integer>(){{add(gw1.getId());add(gw0.getId());}});
+		
+		gw0.setParentId(mid.getId());
+		gw1.setParentId(mid.getId());
+		mid.setParentId(cloud.getId());
 		cloud.setParentId(-1);
 
-		List<FogDevice> fogDevices = new ArrayList<FogDevice>(){{add(gw0);add(gw1);add(cloud);}};
+		List<FogDevice> fogDevices = new ArrayList<FogDevice>(){{add(gw0);add(gw1);add(mid);add(cloud);}};
 		return fogDevices;
 	}
 
@@ -137,7 +146,7 @@ public class VRGameModuleMapping {
 	 *
 	 * @return the datacenter
 	 */
-	private static FogDevice createFogDevice(String name, int mips, GeoCoverage geoCoverage, double uplinkBandwidth, double downlinkBandwidth, double latency, double actuatorDelay) {
+	private static FogDevice createFogDevice(String name, int mips, GeoCoverage geoCoverage, double uplinkBandwidth, double downlinkBandwidth, double latency) {
 
 		// 2. A Machine contains one or more PEs or CPUs/Cores.
 		// In this example, it will have only one core.

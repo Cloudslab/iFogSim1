@@ -98,7 +98,7 @@ public class VRGameNoDelay {
 		//app.registerSensor(sensor0);
 	}
 	private static Actuator createActuator(String actuatorName, String appId, int userId, int gatewayDeviceId, String actuatorType, String srcModuleName){
-		Actuator actuator = new Actuator(actuatorName, userId, appId, gatewayDeviceId, null, actuatorType, srcModuleName);
+		Actuator actuator = new Actuator(actuatorName, userId, appId, gatewayDeviceId, 2,  null, actuatorType, srcModuleName);
 		return actuator;
 		//app.registerSensor(sensor0);
 	}

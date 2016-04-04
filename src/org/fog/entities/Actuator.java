@@ -7,12 +7,12 @@ import org.fog.application.AppLoop;
 import org.fog.application.Application;
 import org.fog.utils.FogEvents;
 import org.fog.utils.GeoLocation;
-import org.fog.utils.Logger;
 import org.fog.utils.TimeKeeper;
 
 public class Actuator extends SimEntity{
 
 	private int gatewayDeviceId;
+	private double latency;
 	private GeoLocation geoLocation;
 	private String appId;
 	private int userId;
@@ -20,7 +20,7 @@ public class Actuator extends SimEntity{
 	private String srcModuleName;
 	private Application app;
 	
-	public Actuator(String name, int userId, String appId, int gatewayDeviceId, GeoLocation geoLocation, String actuatorType, String srcModuleName) {
+	public Actuator(String name, int userId, String appId, int gatewayDeviceId, double latency, GeoLocation geoLocation, String actuatorType, String srcModuleName) {
 		super(name);
 		this.setAppId(appId);
 		this.gatewayDeviceId = gatewayDeviceId;
@@ -28,11 +28,19 @@ public class Actuator extends SimEntity{
 		setUserId(userId);
 		setActuatorType(actuatorType);
 		setSrcModuleName(srcModuleName);
+		setLatency(latency);
+	}
+	
+	public Actuator(String name, int userId, String appId, String actuatorType) {
+		super(name);
+		this.setAppId(appId);
+		setUserId(userId);
+		setActuatorType(actuatorType);
 	}
 
 	@Override
 	public void startEntity() {
-		sendNow(gatewayDeviceId, FogEvents.ACTUATOR_JOINED);
+		sendNow(gatewayDeviceId, FogEvents.ACTUATOR_JOINED, getLatency());
 	}
 
 	@Override
@@ -58,9 +66,6 @@ public class Actuator extends SimEntity{
 				break;
 			}
 		}
-		
-		
-		
 	}
 
 	@Override
@@ -122,6 +127,14 @@ public class Actuator extends SimEntity{
 
 	public void setApp(Application app) {
 		this.app = app;
+	}
+
+	public double getLatency() {
+		return latency;
+	}
+
+	public void setLatency(double latency) {
+		this.latency = latency;
 	}
 
 }

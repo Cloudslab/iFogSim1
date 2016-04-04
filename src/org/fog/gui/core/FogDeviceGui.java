@@ -4,7 +4,7 @@ package org.fog.gui.core;
  * The model that represents virtual machine node for the graph.
  * 
  */
-public class FogDevice extends Node {
+public class FogDeviceGui extends Node {
 	private static final long serialVersionUID = -8635044061126993668L;
 	
 	private int level;
@@ -14,10 +14,10 @@ public class FogDevice extends Node {
 	private long upBw;
 	private long downBw;
 
-	public FogDevice() {
+	public FogDeviceGui() {
 	}
 
-	public FogDevice(String name, long mips, int ram, long upBw, long downBw, int level) {
+	public FogDeviceGui(String name, long mips, int ram, long upBw, long downBw, int level) {
 		super(name, "FOG_DEVICE");
 		this.name = name;
 		this.mips = mips;

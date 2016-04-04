@@ -6,13 +6,12 @@ import org.cloudbus.cloudsim.UtilizationModelFull;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEvent;
+import org.fog.application.AppEdge;
 import org.fog.application.AppLoop;
 import org.fog.application.Application;
-import org.fog.placement.Controller;
 import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
 import org.fog.utils.GeoLocation;
-import org.fog.utils.Logger;
 import org.fog.utils.TimeKeeper;
 import org.fog.utils.distribution.Distribution;
 
@@ -54,14 +53,53 @@ public class Sensor extends SimEntity{
 		setLatency(latency);
 	}
 	
+	public Sensor(String name, int userId, String appId, int gatewayDeviceId, double latency, GeoLocation geoLocation, 
+			Distribution transmitDistribution, String tupleType) {
+		super(name);
+		this.setAppId(appId);
+		this.gatewayDeviceId = gatewayDeviceId;
+		this.geoLocation = geoLocation;
+		this.outputSize = 3;
+		this.setTransmitDistribution(transmitDistribution);
+		setUserId(userId);
+		setTupleType(tupleType);
+		setSensorName(tupleType);
+		setLatency(latency);
+	}
+	
+	/**
+	 * This constructor is called from the code that generates PhysicalTopology from JSON
+	 * @param name
+	 * @param tupleType
+	 * @param userId
+	 * @param appId
+	 * @param transmitDistribution
+	 */
+	public Sensor(String name, String tupleType, int userId, String appId, Distribution transmitDistribution) {
+		super(name);
+		this.setAppId(appId);
+		this.setTransmitDistribution(transmitDistribution);
+		setTupleType(tupleType);
+		setSensorName(tupleType);
+		setUserId(userId);
+	}
+	
 	public void transmit(double delay){
+		AppEdge _edge = null;
+		for(AppEdge edge : getApp().getEdges()){
+			if(edge.getSource().equals(getTupleType()))
+				_edge = edge;
+		}
 		
-		Tuple tuple = new Tuple(getAppId(), FogUtils.generateTupleId(), Tuple.UP, length, 1, fileSize, outputSize, 
+		long cpuLength = (long) _edge.getTupleCpuLength();
+		long nwLength = (long) _edge.getTupleNwLength();
+		
+		Tuple tuple = new Tuple(getAppId(), FogUtils.generateTupleId(), Tuple.UP, cpuLength, 1, nwLength, outputSize, 
 				new UtilizationModelFull(), new UtilizationModelFull(), new UtilizationModelFull());
 		tuple.setUserId(getUserId());
 		tuple.setTupleType(getTupleType());
 		
-		tuple.setDestModuleName(getDestModuleName());
+		tuple.setDestModuleName(_edge.getDestination());
 		tuple.setSrcModuleName(getSensorName());
 		//Logger.debug(getName(), "Sending tuple with tupleId = "+tuple.getCloudletId());
 //		Logger.debug(getName(), "Sending tuple "+tuple.getCloudletId()+"to "+tuple.getDestModuleName()+" with delay="+delay);

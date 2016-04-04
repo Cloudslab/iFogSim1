@@ -111,7 +111,7 @@ public class VRGameMobilePeriodic {
 		//app.registerSensor(sensor0);
 	}
 	private static Actuator createActuator(String actuatorName, String appId, int userId, int gatewayDeviceId, String actuatorType, String srcModuleName){
-		Actuator actuator = new Actuator(actuatorName, userId, appId, gatewayDeviceId, null, actuatorType, srcModuleName);
+		Actuator actuator = new Actuator(actuatorName, userId, appId, gatewayDeviceId, 2, null, actuatorType, srcModuleName);
 		return actuator;
 		//app.registerSensor(sensor0);
 	}
@@ -189,7 +189,7 @@ public class VRGameMobilePeriodic {
 		FogDevice fogdevice = null;
 		try {
 			fogdevice = new FogDevice(name, geoCoverage, characteristics, 
-					new AppModuleAllocationPolicy(hostList), storageList, 10, uplinkBandwidth, downlinkBandwidth, latency, actuatorDelay);
+					new AppModuleAllocationPolicy(hostList), storageList, 10, uplinkBandwidth, downlinkBandwidth, latency);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -236,8 +236,6 @@ public class VRGameMobilePeriodic {
 		final AppLoop loop1 = new AppLoop(new ArrayList<String>(){{add("SENSOR");add("client");add("classifier");add("client");add("ACTUATOR");}});
 		final AppLoop loop2 = new AppLoop(new ArrayList<String>(){{add("classifier");add("tuner");add("classifier");}});
 		List<AppLoop> loops = new ArrayList<AppLoop>(){{add(loop1);add(loop2);}};
-		
-		
 		
 		
 		GeoCoverage geoCoverage = new GeoCoverage(-100, 100, -100, 100);

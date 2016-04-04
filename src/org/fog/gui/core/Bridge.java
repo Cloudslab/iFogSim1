@@ -73,7 +73,7 @@ public class Bridge {
 						long downBw = new BigDecimal((Long)node.get("downBw")).intValueExact();
 						int level = new BigDecimal((Long)node.get("level")).intValue();
 						
-						Node fogDevice = new FogDevice(nodeName, mips, ram, upBw, downBw, level);
+						Node fogDevice = new FogDeviceGui(nodeName, mips, ram, upBw, downBw, level);
 						graph.addNode(fogDevice);
  
 					} else if(nodeType.equals("SENSOR")){
@@ -90,10 +90,11 @@ public class Bridge {
 									new BigDecimal((Double)node.get("max")).doubleValue());
 						}
 						System.out.println("Sensor type : "+sensorType);
-						Node sensor = new Sensor(nodeName, sensorType, distribution);
+						Node sensor = new SensorGui(nodeName, sensorType, distribution);
 						graph.addNode(sensor);
 					} else if(nodeType.equals("ACTUATOR")){
-						Node actuator = new Actuator(nodeName);
+						String actuatorType = node.get("actuatorType").toString(); 
+						Node actuator = new ActuatorGui(nodeName, actuatorType);
 						graph.addNode(actuator);
 					} else {   //switch
 						int bw = new BigDecimal((Long)node.get("bw")).intValueExact();
@@ -198,12 +199,12 @@ public class Bridge {
 			JSONObject jobj = new JSONObject();
 			switch(srcNode.getType()){
 				case "ACTUATOR":
-					Actuator actuator = (Actuator)srcNode;
+					ActuatorGui actuator = (ActuatorGui)srcNode;
 					jobj.put("name", actuator.getName());
 					jobj.put("type", actuator.getType());
 					break;
 				case "SENSOR":
-					Sensor sensor = (Sensor)srcNode;
+					SensorGui sensor = (SensorGui)srcNode;
 					jobj.put("name", sensor.getName());
 					jobj.put("sensorType", sensor.getSensorType());
 					jobj.put("type", sensor.getType());
@@ -219,7 +220,7 @@ public class Bridge {
 					}
 					break;
 				case "FOG_DEVICE":
-					FogDevice fogDevice = (FogDevice)srcNode;
+					FogDeviceGui fogDevice = (FogDeviceGui)srcNode;
 					jobj.put("name", fogDevice.getName());
 					jobj.put("type", fogDevice.getType());
 					jobj.put("mips", fogDevice.getMips());

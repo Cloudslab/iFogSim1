@@ -11,6 +11,7 @@ import org.apache.commons.math3.util.Pair;
 import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Log;
+import org.cloudbus.cloudsim.Pe;
 import org.cloudbus.cloudsim.Storage;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.VmAllocationPolicy;
@@ -19,10 +20,16 @@ import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.cloudbus.cloudsim.power.PowerDatacenter;
 import org.cloudbus.cloudsim.power.PowerHost;
+import org.cloudbus.cloudsim.power.models.PowerModelLinear;
+import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
+import org.cloudbus.cloudsim.sdn.overbooking.BwProvisionerOverbooking;
+import org.cloudbus.cloudsim.sdn.overbooking.PeProvisionerOverbooking;
 import org.fog.application.AppEdge;
 import org.fog.application.AppLoop;
 import org.fog.application.AppModule;
 import org.fog.application.Application;
+import org.fog.policy.AppModuleAllocationPolicy;
+import org.fog.scheduler.StreamOperatorScheduler;
 import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
 import org.fog.utils.GeoCoverage;
@@ -75,13 +82,12 @@ public class FogDevice extends PowerDatacenter {
 	protected double uplinkBandwidth;
 	protected double downlinkBandwidth;
 	protected double uplinkLatency;
-	protected List<Integer> associatedActuatorIds;
-	
-	protected double actuatorDelay;
+	protected List<Pair<Integer, Double>> associatedActuatorIds;
 	
 	protected double energyConsumption;
 	protected double lastUtilizationUpdateTime;
 	protected double lastUtilization;
+	private int level;
 	
 	public FogDevice(
 			String name, 
@@ -90,7 +96,7 @@ public class FogDevice extends PowerDatacenter {
 			VmAllocationPolicy vmAllocationPolicy,
 			List<Storage> storageList,
 			double schedulingInterval,
-			double uplinkBandwidth, double downlinkBandwidth, double uplinkLatency, double actuatorDelay) throws Exception {
+			double uplinkBandwidth, double downlinkBandwidth, double uplinkLatency) throws Exception {
 		super(name, characteristics, vmAllocationPolicy, storageList, schedulingInterval);
 		setGeoCoverage(geoCoverage);
 		setCharacteristics(characteristics);
@@ -102,7 +108,7 @@ public class FogDevice extends PowerDatacenter {
 		setUplinkBandwidth(uplinkBandwidth);
 		setDownlinkBandwidth(downlinkBandwidth);
 		setUplinkLatency(uplinkLatency);
-		setAssociatedActuatorIds(new ArrayList<Integer>());
+		setAssociatedActuatorIds(new ArrayList<Pair<Integer, Double>>());
 		for (Host host : getCharacteristics().getHostList()) {
 			host.setDatacenter(this);
 		}
@@ -112,7 +118,6 @@ public class FogDevice extends PowerDatacenter {
 			throw new Exception(super.getName()
 					+ " : Error - this entity has no PEs. Therefore, can't process any Cloudlets.");
 		}
-		setActuatorDelay(actuatorDelay);
 		// stores id of this class
 		getCharacteristics().setId(super.getId());
 		
@@ -138,6 +143,98 @@ public class FogDevice extends PowerDatacenter {
 		setChildToLatencyMap(new HashMap<Integer, Double>());
 	}
 
+	public FogDevice(
+			String name, long mips, int ram, 
+			double uplinkBandwidth, double downlinkBandwidth, int level) throws Exception {
+		super(name, null, null, new LinkedList<Storage>(), 0);
+		
+		setLevel(level);
+		
+		List<Pe> peList = new ArrayList<Pe>();
+
+		// 3. Create PEs and add these into a list.
+		peList.add(new Pe(0, new PeProvisionerOverbooking(mips))); // need to store Pe id and MIPS Rating
+
+		int hostId = FogUtils.generateEntityId();
+		long storage = 1000000; // host storage
+		int bw = 10000;
+
+		PowerHost host = new PowerHost(
+				hostId,
+				new RamProvisionerSimple(ram),
+				new BwProvisionerOverbooking(bw),
+				storage,
+				peList,
+				new StreamOperatorScheduler(peList),
+				new PowerModelLinear(100, 40)
+			);
+
+		List<Host> hostList = new ArrayList<Host>();
+		hostList.add(host);
+
+		setVmAllocationPolicy(new AppModuleAllocationPolicy(hostList));
+		
+		String arch = "x86"; // system architecture
+		String os = "Linux"; // operating system
+		String vmm = "Xen";
+		double time_zone = 10.0; // time zone this resource located
+		double cost = 3.0; // the cost of using processing in this resource
+		double costPerMem = 0.05; // the cost of using memory in this resource
+		double costPerStorage = 0.001; // the cost of using storage in this
+										// resource
+		double costPerBw = 0.0; // the cost of using bw in this resource
+		LinkedList<Storage> storageList = new LinkedList<Storage>(); // we are not adding SAN
+													// devices by now
+
+		FogDeviceCharacteristics characteristics = new FogDeviceCharacteristics(
+				arch, os, vmm, host, time_zone, cost, costPerMem,
+				costPerStorage, costPerBw, geoCoverage);
+
+		setCharacteristics(characteristics);
+		
+		setLastProcessTime(0.0);
+		setVmList(new ArrayList<Vm>());
+		setUplinkBandwidth(uplinkBandwidth);
+		setDownlinkBandwidth(downlinkBandwidth);
+		setUplinkLatency(uplinkLatency);
+		setAssociatedActuatorIds(new ArrayList<Pair<Integer, Double>>());
+		for (Host host1 : getCharacteristics().getHostList()) {
+			host1.setDatacenter(this);
+		}
+		setActiveApplications(new ArrayList<String>());
+		if (getCharacteristics().getNumberOfPes() == 0) {
+			throw new Exception(super.getName()
+					+ " : Error - this entity has no PEs. Therefore, can't process any Cloudlets.");
+		}
+		
+		
+		getCharacteristics().setId(super.getId());
+		
+		
+		
+		
+		applicationMap = new HashMap<String, Application>();
+		appToModulesMap = new HashMap<String, List<String>>();
+		northTupleQueue = new LinkedList<Tuple>();
+		southTupleQueue = new LinkedList<Pair<Tuple, Integer>>();
+		setNorthLinkBusy(false);
+		setSouthLinkBusy(false);
+		
+		this.utilization = new HashMap<String, Queue<Double>>();
+		
+		setChildrenIds(new ArrayList<Integer>());
+		setChildToOperatorsMap(new HashMap<Integer, List<String>>());
+		
+		this.cloudTrafficMap = new HashMap<Integer, Integer>();
+		
+		this.lockTime = 0;
+		
+		this.energyConsumption = 0;
+		this.lastUtilization = 0;
+		
+		setChildToLatencyMap(new HashMap<Integer, Double>());
+	}
+	
 	/**
 	 * Overrides this method when making a new and different type of resource. <br>
 	 * <b>NOTE:</b> You do not need to override {@link #body()} method, if you use this method.
@@ -210,7 +307,9 @@ public class FogDevice extends PowerDatacenter {
 	}
 
 	protected void processActuatorJoined(SimEvent ev) {
-		getAssociatedActuatorIds().add(ev.getSource());
+		int actuatorId = ev.getSource();
+		double delay = (double)ev.getData();
+		getAssociatedActuatorIds().add(new Pair<Integer, Double>(actuatorId, delay));
 	}
 
 	/**
@@ -460,9 +559,11 @@ public class FogDevice extends PowerDatacenter {
 	}
 	
 	protected void sendTupleToActuator(Tuple tuple){
-		for(Integer actuatorId : getAssociatedActuatorIds()){
+		for(Pair<Integer, Double> actuatorAssociation : getAssociatedActuatorIds()){
+			int actuatorId = actuatorAssociation.getFirst();
+			double delay = actuatorAssociation.getSecond();
 			if(actuatorId == tuple.getActuatorId()){
-				send(actuatorId, actuatorDelay, FogEvents.TUPLE_ARRIVAL, tuple);
+				send(actuatorId, delay, FogEvents.TUPLE_ARRIVAL, tuple);
 				return;
 			}
 		}
@@ -777,21 +878,14 @@ public class FogDevice extends PowerDatacenter {
 		this.downlinkBandwidth = downlinkBandwidth;
 	}
 
-	public List<Integer> getAssociatedActuatorIds() {
+	public List<Pair<Integer, Double>> getAssociatedActuatorIds() {
 		return associatedActuatorIds;
 	}
 
-	public void setAssociatedActuatorIds(List<Integer> associatedActuatorIds) {
+	public void setAssociatedActuatorIds(List<Pair<Integer, Double>> associatedActuatorIds) {
 		this.associatedActuatorIds = associatedActuatorIds;
 	}
-
-	public double getActuatorDelay() {
-		return actuatorDelay;
-	}
-
-	public void setActuatorDelay(double actuatorDelay) {
-		this.actuatorDelay = actuatorDelay;
-	}
+	
 	public double getEnergyConsumption() {
 		return energyConsumption;
 	}
@@ -805,6 +899,14 @@ public class FogDevice extends PowerDatacenter {
 
 	public void setChildToLatencyMap(Map<Integer, Double> childToLatencyMap) {
 		this.childToLatencyMap = childToLatencyMap;
+	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
 	}
 
 }

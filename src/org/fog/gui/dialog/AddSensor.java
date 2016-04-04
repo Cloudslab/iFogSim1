@@ -21,8 +21,9 @@ import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.UIManager;
 
+import org.fog.entities.Sensor;
 import org.fog.gui.core.Graph;
-import org.fog.gui.core.Sensor;
+import org.fog.gui.core.SensorGui;
 import org.fog.gui.core.SpringUtilities;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -104,7 +105,7 @@ public class AddSensor extends JDialog {
 							prompt("Input should be numerical character", "Error");
 						}
 						if(!catchedError){
-							Sensor sensor = new Sensor(sensorName.getText().toString(), _sensorType, (String)distribution.getSelectedItem(),
+							SensorGui sensor = new SensorGui(sensorName.getText().toString(), _sensorType, (String)distribution.getSelectedItem(),
 											normalMean_, normalStdDev_, uniformLow_, uniformUp_, deterministicVal_);
 							graph.addNode(sensor);
 							setVisible(false);
@@ -118,7 +119,7 @@ public class AddSensor extends JDialog {
 							prompt("Input should be numerical character", "Error");
 						}
 						if(!catchedError){
-							Sensor sensor = new Sensor(sensorName.getText().toString(), _sensorType, (String)distribution.getSelectedItem(),
+							SensorGui sensor = new SensorGui(sensorName.getText().toString(), _sensorType, (String)distribution.getSelectedItem(),
 									normalMean_, normalStdDev_, uniformLow_, uniformUp_, deterministicVal_);
 							graph.addNode(sensor);
 							setVisible(false);
@@ -131,7 +132,7 @@ public class AddSensor extends JDialog {
 							prompt("Input should be numerical character", "Error");
 						}
 						if(!catchedError){
-							Sensor sensor = new Sensor(sensorName.getText().toString(), _sensorType, (String)distribution.getSelectedItem(),
+							SensorGui sensor = new SensorGui(sensorName.getText().toString(), _sensorType, (String)distribution.getSelectedItem(),
 									normalMean_, normalStdDev_, uniformLow_, uniformUp_, deterministicVal_);
 							graph.addNode(sensor);
 							setVisible(false);

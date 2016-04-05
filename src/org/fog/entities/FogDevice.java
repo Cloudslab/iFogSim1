@@ -585,8 +585,8 @@ public class FogDevice extends PowerDatacenter {
 		
 		if(FogUtils.appIdToGeoCoverageMap.containsKey(tuple.getAppId())){
 			GeoCoverage geo = FogUtils.appIdToGeoCoverageMap.get(tuple.getAppId());
-			if(!(getGeoCoverage().covers(geo) || geo.covers(geoCoverage)))
-				return;
+			//if(!(getGeoCoverage().covers(geo) || geo.covers(geoCoverage)))
+			//	return;
 		}
 		
 		if(tuple.getDirection() == Tuple.ACTUATOR){
@@ -676,9 +676,9 @@ public class FogDevice extends PowerDatacenter {
 		updateAllocatedMips(operatorId);
 		Logger.error(getName(), "Executing "+operatorId);
 		Logger.error(getName(), "VM LIST : "+getHost().getVmList());
-		for(Vm vm : getHost().getVmList()){
+		/*for(Vm vm : getHost().getVmList()){
 			Logger.error(getName(), "MIPS allocated to "+((AppModule)vm).getName()+" = "+getHost().getTotalAllocatedMipsForVm(vm));
-		}
+		}*/
 	}
 	
 	protected void processModuleArrival(SimEvent ev){
@@ -765,7 +765,6 @@ public class FogDevice extends PowerDatacenter {
 		double latency = getChildToLatencyMap().get(childId);
 		send(getId(), networkDelay, FogEvents.UPDATE_SOUTH_TUPLE_QUEUE);
 		send(childId, networkDelay+latency, FogEvents.TUPLE_ARRIVAL, tuple);
-		
 	}
 	
 	protected void sendDown(Tuple tuple, int childId){

@@ -62,9 +62,10 @@ public class Controller extends SimEntity{
 			FogDevice parent = getFogDeviceById(fogDevice.getParentId());
 			if(parent == null)
 				continue;
-			//System.out.println("Parent for "+fogDevice.getName()+" = "+parent.getName());
+			System.out.println("Parent for "+fogDevice.getName()+" = "+parent.getName());
 			double latency = fogDevice.getUplinkLatency();
 			parent.getChildToLatencyMap().put(fogDevice.getId(), latency);
+			parent.getChildrenIds().add(fogDevice.getId());
 		}
 	}
 	
@@ -79,7 +80,7 @@ public class Controller extends SimEntity{
 
 		send(getId(), RESOURCE_MANAGE_INTERVAL, FogEvents.CONTROLLER_RESOURCE_MANAGE);
 		
-		send(getId(), 100000, FogEvents.STOP_SIMULATION);
+		send(getId(), 10000, FogEvents.STOP_SIMULATION);
 	}
 
 	@Override
@@ -125,6 +126,7 @@ public class Controller extends SimEntity{
 		System.out.println("============== RESULTS ==================");
 		System.out.println("=========================================");
 		for(Integer loopId : TimeKeeper.getInstance().getLoopIdToTupleIds().keySet()){
+			System.out.println(loopId);
 			double average = 0, count = 0;
 			for(int tupleId : TimeKeeper.getInstance().getLoopIdToTupleIds().get(loopId)){
 				Double startTime = 	TimeKeeper.getInstance().getEmitTimes().get(tupleId);

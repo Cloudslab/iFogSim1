@@ -26,6 +26,7 @@ import org.fog.entities.Actuator;
 import org.fog.entities.FogBroker;
 import org.fog.entities.FogDevice;
 import org.fog.entities.FogDeviceCharacteristics;
+import org.fog.entities.PhysicalTopology;
 import org.fog.entities.Sensor;
 import org.fog.entities.Tuple;
 import org.fog.placement.Controller;
@@ -35,6 +36,7 @@ import org.fog.scheduler.StreamOperatorScheduler;
 import org.fog.scheduler.TupleScheduler;
 import org.fog.utils.FogUtils;
 import org.fog.utils.GeoCoverage;
+import org.fog.utils.JsonToTopology;
 import org.fog.utils.distribution.DeterministicDistribution;
 
 public class FromJson {
@@ -59,19 +61,19 @@ public class FromJson {
 
 			Application application = createApplication(appId, broker.getId(), transmitInterval);
 			application.setUserId(broker.getId());
-			List<FogDevice> fogDevices = createFogDevices(appId, broker.getId(), transmitInterval);
+			//List<FogDevice> fogDevices = createFogDevices(appId, broker.getId(), transmitInterval);
 			
-			final Sensor s0 = createSensor("EEGSensor-0", application, broker.getId(), CloudSim.getEntityId("mobile-0"), transmitInterval, 2000, 100, "SENSOR", "client");
+			/*final Sensor s0 = createSensor("EEGSensor-0", application, broker.getId(), CloudSim.getEntityId("mobile-0"), transmitInterval, 2000, 100, "SENSOR", "client");
 			final Sensor s1 = createSensor("EEGSensor-1", application, broker.getId(), CloudSim.getEntityId("mobile-1"), transmitInterval, 2000, 100, "SENSOR", "client");
 			final Actuator actuator0 = createActuator("Display-0", appId, broker.getId(), CloudSim.getEntityId("mobile-0"), "ACTUATOR", "client");
 			final Actuator actuator1 = createActuator("Display-1", appId, broker.getId(), CloudSim.getEntityId("mobile-1"), "ACTUATOR", "client");
+			*/
 			
-			List<Sensor> sensors = new ArrayList<Sensor>(){{add(s0);add(s1);}};
-			List<Actuator> actuators = new ArrayList<Actuator>(){{add(actuator0);add(actuator1);}};
+			PhysicalTopology physicalTopology = JsonToTopology.getPhysicalTopology(broker.getId(), appId, "C:\\Users\\hp\\Documents\\topology_new");
 			
-			application.getModuleByName("client").subscribeActuator(actuator0.getId(), "ACTUATOR");
-			application.getModuleByName("client").subscribeActuator(actuator1.getId(), "ACTUATOR");
-			
+			/*List<Sensor> sensors = new ArrayList<Sensor>(){{add(s0);add(s1);}};
+			List<Actuator> actuators = new ArrayList<Actuator>(){{add(actuator0);add(actuator1);}};*/
+						
 			ModuleMapping moduleMapping = ModuleMapping.createModuleMapping();
 			moduleMapping.addModuleToDevice("client", "mobile-0");
 			moduleMapping.addModuleToDevice("client", "mobile-1");
@@ -86,14 +88,15 @@ public class FromJson {
 			//moduleMapping.addModuleToDevice("classifier", "cloud");
 			moduleMapping.addModuleToDevice("tuner", "cloud");
 			
-			Controller controller = new Controller("master-controller", fogDevices, sensors, actuators, moduleMapping);
+			Controller controller = new Controller("master-controller", physicalTopology.getFogDevices(), physicalTopology.getSensors(), 
+					physicalTopology.getActuators(), null);
 			
-			s0.setControllerId(controller.getId());
+			/*s0.setControllerId(controller.getId());
 			s1.setControllerId(controller.getId());
 			s0.setApp(application);
 			s1.setApp(application);
 			actuator0.setApp(application);
-			actuator1.setApp(application);
+			actuator1.setApp(application);*/
 			
 			controller.submitApplication(application, 0);
 			
@@ -204,7 +207,7 @@ public class FromJson {
 	private static Application createApplication(String appId, int userId, int transmitInterval){
 		int mips = 1000;
 		long size = 10000; // image size (MB)
-		int ram = 512; // vm memory (MB)
+		int ram = 5; // vm memory (MB)
 		long bw = 1000;
 		String vmm = "Xen"; // VMM name
 		

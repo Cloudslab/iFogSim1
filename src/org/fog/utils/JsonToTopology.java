@@ -5,10 +5,20 @@ import java.io.FileReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
+import org.cloudbus.cloudsim.Host;
+import org.cloudbus.cloudsim.Pe;
+import org.cloudbus.cloudsim.Storage;
+import org.cloudbus.cloudsim.power.PowerHost;
+import org.cloudbus.cloudsim.power.models.PowerModelLinear;
+import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
+import org.cloudbus.cloudsim.sdn.overbooking.BwProvisionerOverbooking;
+import org.cloudbus.cloudsim.sdn.overbooking.PeProvisionerOverbooking;
 import org.fog.entities.Actuator;
 import org.fog.entities.FogDevice;
+import org.fog.entities.FogDeviceCharacteristics;
 import org.fog.entities.PhysicalTopology;
 import org.fog.entities.Sensor;
 import org.fog.gui.core.ActuatorGui;
@@ -16,6 +26,8 @@ import org.fog.gui.core.Edge;
 import org.fog.gui.core.FogDeviceGui;
 import org.fog.gui.core.Node;
 import org.fog.gui.core.SensorGui;
+import org.fog.policy.AppModuleAllocationPolicy;
+import org.fog.scheduler.StreamOperatorScheduler;
 import org.fog.utils.distribution.DeterministicDistribution;
 import org.fog.utils.distribution.Distribution;
 import org.fog.utils.distribution.NormalDistribution;
@@ -80,7 +92,7 @@ public class JsonToTopology {
 		return null;
 	}
 	
-	public static PhysicalTopology getFogDevices(int userId, String appId, String physicalTopologyFile) throws Exception{
+	public static PhysicalTopology getPhysicalTopology(int userId, String appId, String physicalTopologyFile) throws Exception{
 				
 		fogDevices = new ArrayList<FogDevice>();
 		sensors = new ArrayList<Sensor>();
@@ -104,7 +116,9 @@ public class JsonToTopology {
 					long downBw = new BigDecimal((Long)node.get("downBw")).intValueExact();
 					int level = new BigDecimal((Long)node.get("level")).intValue();
 					
-					fogDevices.add(new FogDevice(nodeName, mips, ram, upBw, downBw, level));
+					FogDevice fogDevice = createFogDevice(nodeName, mips, ram, upBw, downBw, level);
+					
+					fogDevices.add(fogDevice);
 
 				} else if(nodeType.equals("SENSOR")){
 					String sensorType = node.get("sensorType").toString();
@@ -122,7 +136,7 @@ public class JsonToTopology {
 					System.out.println("Sensor type : "+sensorType);
 					sensors.add(new Sensor(nodeName, sensorType, userId, appId, distribution));
 				} else if(nodeType.equals("ACTUATOR")){
-					String actuatorType = node.get("actuatorType").toString();
+					String actuatorType = node.get("type").toString();
 					actuators.add(new Actuator(nodeName, userId, appId, actuatorType));
 				}
 			}
@@ -147,12 +161,68 @@ public class JsonToTopology {
 		physicalTopology.setSensors(sensors);
 		return physicalTopology;
 	}
+	private static FogDevice createFogDevice(String nodeName, long mips,
+			int ram, long upBw, long downBw, int level) {
+		
+		List<Pe> peList = new ArrayList<Pe>();
+
+		// 3. Create PEs and add these into a list.
+		peList.add(new Pe(0, new PeProvisionerOverbooking(mips))); // need to store Pe id and MIPS Rating
+
+		int hostId = FogUtils.generateEntityId();
+		long storage = 1000000; // host storage
+		int bw = 10000;
+
+		PowerHost host = new PowerHost(
+				hostId,
+				new RamProvisionerSimple(ram),
+				new BwProvisionerOverbooking(bw),
+				storage,
+				peList,
+				new StreamOperatorScheduler(peList),
+				new PowerModelLinear(100, 40)
+			);
+
+		List<Host> hostList = new ArrayList<Host>();
+		hostList.add(host);
+
+		String arch = "x86"; // system architecture
+		String os = "Linux"; // operating system
+		String vmm = "Xen";
+		double time_zone = 10.0; // time zone this resource located
+		double cost = 3.0; // the cost of using processing in this resource
+		double costPerMem = 0.05; // the cost of using memory in this resource
+		double costPerStorage = 0.001; // the cost of using storage in this
+										// resource
+		double costPerBw = 0.0; // the cost of using bw in this resource
+		LinkedList<Storage> storageList = new LinkedList<Storage>(); // we are not adding SAN
+													// devices by now
+
+		FogDeviceCharacteristics characteristics = new FogDeviceCharacteristics(
+				arch, os, vmm, host, time_zone, cost, costPerMem,
+				costPerStorage, costPerBw, null);
+
+		FogDevice fogdevice = null;
+		try {
+			fogdevice = new FogDevice(nodeName, null, characteristics, 
+					new AppModuleAllocationPolicy(hostList), storageList, 10, upBw, downBw, 0);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		fogdevice.setLevel(level);
+		
+		return fogdevice;
+	}
+
 	private static void connectEntities(String src, String dst, double lat) {
 		if(isFogDevice(src) && isFogDevice(dst)){
 			FogDevice srcDev = getFogDevice(src);
 			FogDevice destDev = getFogDevice(dst);
 			FogDevice southernDev = (srcDev.getLevel() > destDev.getLevel())?srcDev:destDev;
+			FogDevice northernDev = (srcDev.getLevel() > destDev.getLevel())?destDev:srcDev;
 			southernDev.setUplinkLatency(lat);
+			southernDev.setParentId(northernDev.getId());
 		} else if(isFogDevice(src) && isSensor(dst)){
 			FogDevice srcDev = getFogDevice(src);
 			Sensor sensor = getSensor(dst);

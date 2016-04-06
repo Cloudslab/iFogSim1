@@ -211,8 +211,8 @@ public class GraphView extends JPanel {
 						Coordinates targetNode = coordForNodes.get(edge.getNode());
 						System.out.println("Target Node : "+edge.getNode().getName());
 						g.setColor(Color.RED);
-						//g.drawLine(startNode.getX(), startNode.getY(), targetNode.getX(), targetNode.getY());
-						drawArrow(g, startNode.getX(), startNode.getY(), targetNode.getX(), targetNode.getY());
+						g.drawLine(startNode.getX(), startNode.getY(), targetNode.getX(), targetNode.getY());
+						//drawArrow(g, startNode.getX(), startNode.getY(), targetNode.getX(), targetNode.getY());
 						// add drawn edges to the drawnList
 						if (drawnList.containsKey(entry.getKey())) {
 							drawnList.get(entry.getKey()).add(edge.getNode());

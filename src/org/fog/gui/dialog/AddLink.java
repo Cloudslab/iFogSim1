@@ -113,12 +113,16 @@ public class AddLink extends JDialog {
 					for (Edge edge : edgesForSelectedNode) {
 						nodesInEdges.add(edge.getNode());
 					}
-
-					for (Node node : allNodes) {
-						if (!node.equals(selectedNode) && !nodesInEdges.contains(node)) {
-							nodesToDisplay.add(node);
-						}
+					if(!(selectedNode.getType().equals("SENSOR")||selectedNode.getType().equals("ACTUATOR")) || edgesForSelectedNode.size()==0){
+						for (Node node : allNodes) {
+							if((selectedNode.getType().equals("SENSOR")||selectedNode.getType().equals("ACTUATOR")) && !node.getType().equals("FOG_DEVICE"))
+								continue;
+							if (!node.equals(selectedNode) && !nodesInEdges.contains(node)) {
+								nodesToDisplay.add(node);
+							}
+						}						
 					}
+					
 
 					ComboBoxModel targetNodeModel = new DefaultComboBoxModel(nodesToDisplay.toArray());
 					targetNode.setModel(targetNodeModel);
@@ -127,7 +131,7 @@ public class AddLink extends JDialog {
 		});
 
 		inputPanel.add(sourceNode);
-		inputPanel.add(new Label("    ��"));
+		inputPanel.add(new Label("---->"));
 		inputPanel.add(targetNode);
 		inputPanel.add(Box.createHorizontalGlue());
 		inputPanelWrapper.add(inputPanel);

@@ -136,7 +136,7 @@ public class JsonToTopology {
 					System.out.println("Sensor type : "+sensorType);
 					sensors.add(new Sensor(nodeName, sensorType, userId, appId, distribution));
 				} else if(nodeType.equals("ACTUATOR")){
-					String actuatorType = node.get("type").toString();
+					String actuatorType = node.get("actuatorType").toString();
 					actuators.add(new Actuator(nodeName, userId, appId, actuatorType));
 				}
 			}

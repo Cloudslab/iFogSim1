@@ -93,7 +93,7 @@ public class Bridge {
 						Node sensor = new SensorGui(nodeName, sensorType, distribution);
 						graph.addNode(sensor);
 					} else if(nodeType.equals("ACTUATOR")){
-						String actuatorType = node.get("type").toString(); 
+						String actuatorType = node.get("actuatorType").toString(); 
 						Node actuator = new ActuatorGui(nodeName, actuatorType);
 						graph.addNode(actuator);
 					} else {   //switch
@@ -202,6 +202,7 @@ public class Bridge {
 					ActuatorGui actuator = (ActuatorGui)srcNode;
 					jobj.put("name", actuator.getName());
 					jobj.put("type", actuator.getType());
+					jobj.put("actuatorType", actuator.getActuatorType());
 					break;
 				case "SENSOR":
 					SensorGui sensor = (SensorGui)srcNode;

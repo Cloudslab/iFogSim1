@@ -39,7 +39,7 @@ import org.fog.utils.GeoCoverage;
 import org.fog.utils.JsonToTopology;
 import org.fog.utils.distribution.DeterministicDistribution;
 
-public class FromJson {
+public class CleanFromJson {
 
 	public static void main(String[] args) {
 

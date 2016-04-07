@@ -20,6 +20,10 @@ public class Application {
 	
 	private List<AppLoop> loops;
 
+	public static Application createApplication(String appId){
+		return new Application(appId);
+	}
+	
 	public List<AppEdge> getPeriodicEdges(String srcModule){
 		List<AppEdge> result = new ArrayList<AppEdge>();
 		for(AppEdge edge : edges){
@@ -27,6 +31,14 @@ public class Application {
 				result.add(edge);
 		}
 		return result;
+	}
+	
+	public Application(String appId) {
+		setAppId(appId);
+		setModules(new ArrayList<AppModule>());
+		setEdges(new ArrayList<AppEdge>());
+		setGeoCoverage(null);
+		setLoops(new ArrayList<AppLoop>());
 	}
 	
 	public Application(String appId, List<AppModule> modules,

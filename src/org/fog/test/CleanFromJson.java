@@ -59,7 +59,7 @@ public class CleanFromJson {
 			
 			int transmitInterval = 1000;
 
-			Application application = createApplication(appId, broker.getId(), transmitInterval);
+			Application application = createApplication(appId, broker.getId());
 			application.setUserId(broker.getId());
 			//List<FogDevice> fogDevices = createFogDevices(appId, broker.getId(), transmitInterval);
 			
@@ -204,50 +204,34 @@ public class CleanFromJson {
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked", "serial" })
-	private static Application createApplication(String appId, int userId, int transmitInterval){
-		int mips = 1000;
-		long size = 10000; // image size (MB)
-		int ram = 5; // vm memory (MB)
-		long bw = 1000;
-		String vmm = "Xen"; // VMM name
+	private static Application createApplication(String appId, int userId){
 		
-		Map<Pair<String, String>, Double> clientSelectivityMap = new HashMap<Pair<String, String>, Double>();
-		clientSelectivityMap.put(new Pair("TEMP", "_SENSOR"),  1.0);
-		clientSelectivityMap.put(new Pair("CLASSIFICATION", "ACTUATOR"),  1.0);
-		final AppModule client = new AppModule(FogUtils.generateEntityId(), "client", null, appId, userId, 
-				mips, ram, bw, size, vmm, new TupleScheduler(mips, 1), clientSelectivityMap);
+		Application application = Application.createApplication(appId, userId);
+		application.addAppModule("client", 10);
+		application.addAppModule("classifier", 10);
+		application.addAppModule("tuner", 10);
 		
-		Map<Pair<String, String>, Double> classifierSelectivityMap = new HashMap<Pair<String, String>, Double>();
-		classifierSelectivityMap.put(new Pair("_SENSOR", "CLASSIFICATION"),  1.0);
-		classifierSelectivityMap.put(new Pair("_SENSOR", "HISTORY"), 1.0);
-		final AppModule classifier = new AppModule(FogUtils.generateEntityId(), "classifier", null, appId, userId, 
-				mips, ram, bw, size, vmm, new TupleScheduler(mips, 1), classifierSelectivityMap);
-
-		Map<Pair<String, String>, Double> tunerSelectivityMap = new HashMap<Pair<String, String>, Double>();
-		tunerSelectivityMap.put(new Pair("HISTORY", "TUNING_PARAMS"),  1.0);
-		final AppModule tuner = new AppModule(FogUtils.generateEntityId(), "tuner", null, appId, userId, 
-				mips, ram, bw, size, vmm, new TupleScheduler(mips, 1), tunerSelectivityMap);
+		application.addTupleMapping("client", "TEMP", "_SENSOR", 1.0);
+		application.addTupleMapping("client", "CLASSIFICATION", "ACTUATOR", 1.0);
+		application.addTupleMapping("classifier", "_SENSOR", "CLASSIFICATION", 1.0);
+		application.addTupleMapping("classifier", "_SENSOR", "HISTORY", 1.0);
+		application.addTupleMapping("tuner", "HISTORY", "TUNING_PARAMS", 1.0);
+	
+		application.addAppEdge("TEMP", "client", 1000, 100, "TEMP", Tuple.UP, AppEdge.SENSOR);
+		application.addAppEdge("client", "classifier", 1000, 100, "_SENSOR", Tuple.UP, AppEdge.MODULE);
+		application.addAppEdge("classifier", "tuner", 1000, 100, "HISTORY", Tuple.UP, AppEdge.MODULE);
+		application.addAppEdge("classifier", "client", 1000, 100, "CLASSIFICATION", Tuple.DOWN, AppEdge.MODULE);
+		application.addAppEdge("tuner", "classifier", 1000, 100, "TUNING_PARAMS", Tuple.DOWN, AppEdge.MODULE);
+		application.addAppEdge("client", "MOTOR", 1000, 100, "ACTUATOR", Tuple.DOWN, AppEdge.ACTUATOR);
 		
-		List<AppModule> modules = new ArrayList<AppModule>(){{add(client);add(classifier);add(tuner);}};
-		
-		final AppEdge edgeSensor = new AppEdge("TEMP", "client", 1000, 100, "TEMP", Tuple.UP, AppEdge.SENSOR);
-		final AppEdge edge_Sensor = new AppEdge("client", "classifier", 1000, 100, "_SENSOR", Tuple.UP, AppEdge.MODULE);
-		final AppEdge edgeHistory = new AppEdge("classifier", "tuner", 1000, 100, "HISTORY", Tuple.UP, AppEdge.MODULE);
-		final AppEdge edgeClassification = new AppEdge("classifier", "client", 1000, 100, "CLASSIFICATION", Tuple.DOWN, AppEdge.MODULE);
-		final AppEdge edgeTuningParams = new AppEdge("tuner", "classifier", 1000, 100, "TUNING_PARAMS", Tuple.DOWN, AppEdge.MODULE);
-		final AppEdge edgeActuator = new AppEdge("client", "MOTOR", 1000, 100, "ACTUATOR", Tuple.DOWN, AppEdge.ACTUATOR);
-		List<AppEdge> edges = new ArrayList<AppEdge>(){{add(edgeSensor);add(edge_Sensor);add(edgeHistory);add(edgeClassification);
-		add(edgeTuningParams);add(edgeActuator);}};
 		
 		final AppLoop loop1 = new AppLoop(new ArrayList<String>(){{add("TEMP");add("client");add("classifier");add("client");add("MOTOR");}});
 		final AppLoop loop2 = new AppLoop(new ArrayList<String>(){{add("classifier");add("tuner");add("classifier");}});
 		List<AppLoop> loops = new ArrayList<AppLoop>(){{add(loop1);add(loop2);}};
 		
+		application.setLoops(loops);
 		
-		
-		
-		GeoCoverage geoCoverage = new GeoCoverage(-100, 100, -100, 100);
-		Application app = new Application(appId, modules, edges, loops, geoCoverage);
-		return app;
+		//GeoCoverage geoCoverage = new GeoCoverage(-100, 100, -100, 100);
+		return application;
 	}
 }

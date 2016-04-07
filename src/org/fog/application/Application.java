@@ -1,11 +1,13 @@
 package org.fog.application;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.math3.util.Pair;
 import org.cloudbus.cloudsim.UtilizationModelFull;
 import org.fog.entities.Tuple;
+import org.fog.scheduler.TupleScheduler;
 import org.fog.utils.FogUtils;
 import org.fog.utils.GeoCoverage;
 
@@ -20,8 +22,32 @@ public class Application {
 	
 	private List<AppLoop> loops;
 
-	public static Application createApplication(String appId){
-		return new Application(appId);
+	public static Application createApplication(String appId, int userId){
+		return new Application(appId, userId);
+	}
+	
+	public void addAppModule(String moduleName, int ram){
+		int mips = 1000;
+		long size = 10000;
+		long bw = 1000;
+		String vmm = "Xen";
+		
+		AppModule module = new AppModule(FogUtils.generateEntityId(), moduleName, null, appId, userId, 
+				mips, ram, bw, size, vmm, new TupleScheduler(mips, 1), new HashMap<Pair<String, String>, Double>());
+		
+		getModules().add(module);
+		
+	}
+	
+	public void addAppEdge(String source, String destination, double tupleCpuLength, 
+			double tupleNwLength, String tupleType, int direction, int edgeType){
+		AppEdge edge = new AppEdge(source, destination, tupleCpuLength, tupleNwLength, tupleType, direction, edgeType);
+		getEdges().add(edge);
+	}
+	
+	public void addTupleMapping(String moduleName, String inputTupleType, String outputTupleType, double selectivity){
+		AppModule module = getModuleByName(moduleName);
+		module.getSelectivityMap().put(new Pair<String, String>(inputTupleType, outputTupleType), selectivity);
 	}
 	
 	public List<AppEdge> getPeriodicEdges(String srcModule){
@@ -33,12 +59,14 @@ public class Application {
 		return result;
 	}
 	
-	public Application(String appId) {
+	public Application(String appId, int userId) {
 		setAppId(appId);
+		setUserId(userId);
 		setModules(new ArrayList<AppModule>());
 		setEdges(new ArrayList<AppEdge>());
 		setGeoCoverage(null);
 		setLoops(new ArrayList<AppLoop>());
+		
 	}
 	
 	public Application(String appId, List<AppModule> modules,

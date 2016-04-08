@@ -19,8 +19,6 @@ public class Sensor extends SimEntity{
 
 	private int gatewayDeviceId;
 	private GeoLocation geoLocation;
-	private long length;
-	private long fileSize;
 	private long outputSize;
 	private String appId;
 	private int userId;
@@ -40,8 +38,6 @@ public class Sensor extends SimEntity{
 		this.setAppId(appId);
 		this.gatewayDeviceId = gatewayDeviceId;
 		this.geoLocation = geoLocation;
-		this.length = cpuLength;
-		this.fileSize = nwLength;
 		this.outputSize = 3;
 		this.setTransmitDistribution(transmitDistribution);
 		setUserId(userId);

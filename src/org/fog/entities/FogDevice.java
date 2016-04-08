@@ -30,6 +30,7 @@ import org.fog.application.AppModule;
 import org.fog.application.Application;
 import org.fog.policy.AppModuleAllocationPolicy;
 import org.fog.scheduler.StreamOperatorScheduler;
+import org.fog.utils.Config;
 import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
 import org.fog.utils.GeoCoverage;
@@ -174,17 +175,15 @@ public class FogDevice extends PowerDatacenter {
 
 		setVmAllocationPolicy(new AppModuleAllocationPolicy(hostList));
 		
-		String arch = "x86"; // system architecture
-		String os = "Linux"; // operating system
-		String vmm = "Xen";
-		double time_zone = 10.0; // time zone this resource located
-		double cost = 3.0; // the cost of using processing in this resource
-		double costPerMem = 0.05; // the cost of using memory in this resource
-		double costPerStorage = 0.001; // the cost of using storage in this
-										// resource
-		double costPerBw = 0.0; // the cost of using bw in this resource
-		LinkedList<Storage> storageList = new LinkedList<Storage>(); // we are not adding SAN
-													// devices by now
+		String arch = Config.FOG_DEVICE_ARCH; 
+		String os = Config.FOG_DEVICE_OS; 
+		String vmm = Config.FOG_DEVICE_VMM;
+		double time_zone = Config.FOG_DEVICE_TIMEZONE;
+		double cost = Config.FOG_DEVICE_COST; 
+		double costPerMem = Config.FOG_DEVICE_COST_PER_MEMORY;
+		double costPerStorage = Config.FOG_DEVICE_COST_PER_STORAGE;
+		double costPerBw = Config.FOG_DEVICE_COST_PER_BW;
+		LinkedList<Storage> storageList = new LinkedList<Storage>();
 
 		FogDeviceCharacteristics characteristics = new FogDeviceCharacteristics(
 				arch, os, vmm, host, time_zone, cost, costPerMem,
@@ -674,8 +673,6 @@ public class FogDevice extends PowerDatacenter {
 		updateAllocatedMips(operatorId);
 		processCloudletSubmit(ev, false);
 		updateAllocatedMips(operatorId);
-		Logger.error(getName(), "Executing "+operatorId);
-		Logger.error(getName(), "VM LIST : "+getHost().getVmList());
 		/*for(Vm vm : getHost().getVmList()){
 			Logger.error(getName(), "MIPS allocated to "+((AppModule)vm).getName()+" = "+getHost().getTotalAllocatedMipsForVm(vm));
 		}*/

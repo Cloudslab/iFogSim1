@@ -53,10 +53,41 @@ public class GraphView extends JPanel {
 		initComponents();
 	}
 
+	private Map<Node, List<Node>> createChildrenMap(){
+		Map<Node, List<Node>> childrenMap = new HashMap<Node, List<Node>>();
+		for(Node node : graph.getAdjacencyList().keySet()){
+			if(node.getType().equals("FOG_DEVICE") && !childrenMap.containsKey(node))
+				childrenMap.put(node, new ArrayList<Node>());
+			List<Edge> edgeList = graph.getAdjacencyList().get(node);
+			
+			for(Edge edge : edgeList){
+				Node neighbour = edge.getNode();
+				if(node.getType().equals("SENSOR") || node.getType().equals("ACTUATOR")){
+					if(!childrenMap.containsKey(neighbour)){
+						childrenMap.put(neighbour, new ArrayList<Node>());
+					}
+					childrenMap.get(neighbour).add(node);
+				} else if(neighbour.getType().equals("SENSOR") || neighbour.getType().equals("ACTUATOR")){
+					if(!childrenMap.containsKey(node)){
+						childrenMap.put(node, new ArrayList<Node>());
+					}
+					childrenMap.get(node).add(neighbour);
+				}else {
+					Node child = (((FogDeviceGui)node).getLevel() > ((FogDeviceGui)neighbour).getLevel())?node:neighbour;
+					Node parent = (((FogDeviceGui)node).getLevel() < ((FogDeviceGui)neighbour).getLevel())?node:neighbour;
+					if(!childrenMap.containsKey(parent)){
+						childrenMap.put(parent, new ArrayList<Node>());
+					}
+					childrenMap.get(parent).add(child);
+				}
+			}
+		}
+		return childrenMap;
+	}
+	
 	private void initComponents() {
 
 		canvas = new JPanel() {
-			
 			@Override
 			public void paint(Graphics g) {
 
@@ -98,6 +129,19 @@ public class GraphView extends JPanel {
 				}
 				
 				double yDist = canvas.getHeight()/(maxLevel-minLevel+3);
+				System.out.println("===================\n================\n=============");
+				Map<Node, List<Node>> childrenMap = createChildrenMap();
+				/*for(Node node : childrenMap.keySet()){
+					System.out.println(node.getName()+" -----> ");
+					for(Node neighbour : childrenMap.get(node)){
+						System.out.print(neighbour.getName()+" ; ");
+					}
+					System.out.println();
+				}*/
+				
+				
+				
+				
 				int k=1;
 				for(int i=minLevel;i<=maxLevel;i++, k++){
 					double xDist = canvas.getWidth()/(levelMap.get(i).size()+1);
@@ -135,9 +179,6 @@ public class GraphView extends JPanel {
 					i++;
 				}
 
-				
-				
-				
 				Map<Node, List<Node>> drawnList = new HashMap<Node, List<Node>>();
 				
 				
@@ -200,6 +241,7 @@ public class GraphView extends JPanel {
 				for (Entry<Node, List<Edge>> entry : graph.getAdjacencyList().entrySet()) {
 
 					Coordinates startNode = coordForNodes.get(entry.getKey());
+					System.out.println("Start Node : "+entry.getKey().getName());
 
 					for (Edge edge : entry.getValue()) {
 /*
@@ -222,37 +264,7 @@ public class GraphView extends JPanel {
 							drawnList.put(entry.getKey(), nodes);
 						}
 
-						// if (startNode.getX() - targetNode.getX() < 0) {
-
-						// int tx = 0;
-						// int ty = 0;
-						// double gradient = (targetNode.getY() - startNode.getY()) /
-						// (targetNode.getX() - startNode.getX());
-						// LOGGER.log(Level.INFO, "Gradient: " + gradient);
-
-						// if (startNode.getX() == targetNode.getX()) {
-						// tx = targetNode.getX();
-						// } else {
-						// if ((startNode.getX() - targetNode.getX()) < 0) {
-						// tx = targetNode.getX() - Double.valueOf((nodeHeight / 2)).intValue();
-						// } else {
-						// tx = targetNode.getX() + Double.valueOf((nodeHeight / 2)).intValue();
-						// }
-						// }
-						// if (startNode.getY() == targetNode.getY()) {
-						// ty = targetNode.getY();
-						// } else {
-						// if ((startNode.getY() - targetNode.getY()) < 0) {
-						// ty = targetNode.getY() - Double.valueOf((nodeHeight / 2)).intValue();
-						// } else {
-						// ty = targetNode.getY() + Double.valueOf((nodeHeight / 2)).intValue();
-						// }
-						// }
-
-						// drawArrow(g, startNode.getX(), startNode.getY(), tx, ty);
-
-						// draw edge costs
-						int labelX = (startNode.getX() - targetNode.getX()) / 2;
+												int labelX = (startNode.getX() - targetNode.getX()) / 2;
 						int labelY = (startNode.getY() - targetNode.getY()) / 2;
 
 						labelX *= -1;
@@ -275,6 +287,61 @@ public class GraphView extends JPanel {
 
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		add(scrollPane);
+	}
+
+	protected Node getApexNode(){
+		for(Node node : graph.getAdjacencyList().keySet()){
+			if(node.getName().equals("cloud"))
+				return node;
+		}
+		return null;
+	}
+	
+	private boolean checkDrawingCompletion(Map<Node, Boolean> childrenDrawn){
+		for(Node node : childrenDrawn.keySet()){
+			if(!childrenDrawn.get(node))
+				return true;
+		}
+		return false;
+	}
+	
+	protected Map<Node, Coordinates> drawNodes(Map<Node, List<Node>> childrenMap, int maxLevel, int minLevel) {
+		Map<Node, Coordinates> coordForNodes = new HashMap<Node, Coordinates>();
+		Map<Node, Boolean> childrenDrawn = new HashMap<Node, Boolean>();
+		for(Node node : graph.getAdjacencyList().keySet())childrenDrawn.put(node, false);
+		
+		double yDist = canvas.getHeight()/(maxLevel-minLevel+3);
+		int y = (int) yDist;
+		
+		List<Node> currentList = new ArrayList<Node>();
+		List<Node> nextList = new ArrayList<Node>();
+		
+		Node apex = getApexNode();
+		currentList.add(apex);
+		
+		while(checkDrawingCompletion(childrenDrawn)){
+			System.out.println("====");
+			System.out.println(childrenDrawn);
+			for(Node node : currentList){
+				if(childrenMap.containsKey(node))
+					nextList.addAll(childrenMap.get(node));
+			}
+			
+			double xDist = canvas.getWidth()/(currentList.size()+1);
+			for(int j=0;j<currentList.size();j++){
+				Node node = currentList.get(j);
+				int x = (int)xDist*(j+1);
+				coordForNodes.put(node, new Coordinates(x, y));
+				node.setCoordinate(new Coordinates(x, y));
+				childrenDrawn.put(node, true);
+			}
+			
+			y += yDist;
+			currentList = nextList;
+			nextList = new ArrayList<Node>();
+		}
+		
+		return coordForNodes;
 	}
 
 	private void drawArrow(Graphics g1, int x1, int y1, int x2, int y2) {

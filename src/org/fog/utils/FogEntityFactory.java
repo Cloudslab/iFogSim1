@@ -19,7 +19,7 @@ import org.fog.scheduler.StreamOperatorScheduler;
 
 public class FogEntityFactory {
 
-	public static FogDevice createFogDevice(String name, int mips, GeoCoverage geoCoverage, double uplinkBandwidth, double downlinkBandwidth, double latency, double actuatorDelay) {
+	public static FogDevice createFogDevice(String name, int mips, double uplinkBandwidth, double downlinkBandwidth, double latency, double ratePerMips) {
 
 		List<Pe> peList = new ArrayList<Pe>();
 		peList.add(new Pe(0, new PeProvisionerOverbooking(mips))); // need to store Pe id and MIPS Rating
@@ -56,12 +56,12 @@ public class FogEntityFactory {
 
 		FogDeviceCharacteristics characteristics = new FogDeviceCharacteristics(
 				arch, os, vmm, host, time_zone, cost, costPerMem,
-				costPerStorage, costPerBw, geoCoverage);
+				costPerStorage, costPerBw);
 
 		FogDevice fogdevice = null;
 		try {
-			fogdevice = new FogDevice(name, geoCoverage, characteristics, 
-					new AppModuleAllocationPolicy(hostList), storageList, 10, uplinkBandwidth, downlinkBandwidth, latency);
+			fogdevice = new FogDevice(name, characteristics, 
+					new AppModuleAllocationPolicy(hostList), storageList, 10, uplinkBandwidth, downlinkBandwidth, latency, ratePerMips);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -105,8 +105,7 @@ public class FogDeviceCharacteristics extends DatacenterCharacteristics{
 			double costPerSec,
 			double costPerMem,
 			double costPerStorage,
-			double costPerBw,
-			GeoCoverage geoCoverage) {
+			double costPerBw) {
 		super(architecture, os, vmm, new ArrayList<Host>(){{add(host);}} , timeZone, costPerSec, costPerMem, costPerStorage, costPerBw);
 		setHostList(new ArrayList<Host>(){{add(host);}});
 		setId(-1);
@@ -123,7 +122,6 @@ public class FogDeviceCharacteristics extends DatacenterCharacteristics{
 		setCostPerStorage(costPerStorage);
 		setCostPerBw(costPerBw);
 		
-		setGeoCoverage(geoCoverage);
 	}
 
 	/**

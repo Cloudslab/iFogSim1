@@ -72,8 +72,9 @@ public class Bridge {
 						long upBw = new BigDecimal((Long)node.get("upBw")).intValueExact();
 						long downBw = new BigDecimal((Long)node.get("downBw")).intValueExact();
 						int level = new BigDecimal((Long)node.get("level")).intValue();
+						double rate = new BigDecimal((Double)node.get("ratePerMips")).doubleValue();
 						
-						Node fogDevice = new FogDeviceGui(nodeName, mips, ram, upBw, downBw, level);
+						Node fogDevice = new FogDeviceGui(nodeName, mips, ram, upBw, downBw, level, rate);
 						graph.addNode(fogDevice);
  
 					} else if(nodeType.equals("SENSOR")){
@@ -118,9 +119,9 @@ public class Bridge {
 					
 					Node source = (Node) getNode(graph, src);
 					Node target = (Node) getNode(graph, dst);
-
 					
 					if(source!=null && target!=null){
+						System.out.println("Adding edge between "+source.getName()+" & "+target.getName());
 						Edge edge = new Edge(target, lat);
 						graph.addEdge(source, edge);
 					}
@@ -176,13 +177,19 @@ public class Bridge {
 				e.printStackTrace();
 			}
 		}
-		
+		System.out.println("############################");
+		System.out.println(graph.getAdjacencyList());
+		System.out.println("############################");
 		return graph;
 	}
 	
 	// convert from Graph object to JSON object
 	@SuppressWarnings("unchecked")
 	public static String graphToJson(Graph graph){
+		System.out.println();
+		System.out.println("****************************");
+		System.out.println(graph.getAdjacencyList());
+		System.out.println("****************************");
 		if(graph.getAdjacencyList().size() < 1){
 			return "Graph is Empty";
 		}
@@ -229,6 +236,7 @@ public class Bridge {
 					jobj.put("upBw", fogDevice.getUpBw());
 					jobj.put("downBw", fogDevice.getDownBw());
 					jobj.put("level", fogDevice.getLevel());
+					jobj.put("ratePerMips", fogDevice.getRatePerMips());
 					break;
 				case "host":
 					HostNode hNode = (HostNode)srcNode;

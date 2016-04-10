@@ -115,8 +115,9 @@ public class JsonToTopology {
 					long upBw = new BigDecimal((Long)node.get("upBw")).intValueExact();
 					long downBw = new BigDecimal((Long)node.get("downBw")).intValueExact();
 					int level = new BigDecimal((Long)node.get("level")).intValue();
+					double ratePerMips = new BigDecimal((Double)node.get("ratePerMips")).doubleValue();
 					
-					FogDevice fogDevice = createFogDevice(nodeName, mips, ram, upBw, downBw, level);
+					FogDevice fogDevice = createFogDevice(nodeName, mips, ram, upBw, downBw, level, ratePerMips);
 					
 					fogDevices.add(fogDevice);
 
@@ -162,7 +163,7 @@ public class JsonToTopology {
 		return physicalTopology;
 	}
 	private static FogDevice createFogDevice(String nodeName, long mips,
-			int ram, long upBw, long downBw, int level) {
+			int ram, long upBw, long downBw, int level, double ratePerMips) {
 		
 		List<Pe> peList = new ArrayList<Pe>();
 
@@ -200,12 +201,12 @@ public class JsonToTopology {
 
 		FogDeviceCharacteristics characteristics = new FogDeviceCharacteristics(
 				arch, os, vmm, host, time_zone, cost, costPerMem,
-				costPerStorage, costPerBw, null);
+				costPerStorage, costPerBw);
 
 		FogDevice fogdevice = null;
 		try {
-			fogdevice = new FogDevice(nodeName, null, characteristics, 
-					new AppModuleAllocationPolicy(hostList), storageList, 10, upBw, downBw, 0);
+			fogdevice = new FogDevice(nodeName, characteristics, 
+					new AppModuleAllocationPolicy(hostList), storageList, 10, upBw, downBw, 0, ratePerMips);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

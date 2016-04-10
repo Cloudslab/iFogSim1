@@ -22,7 +22,7 @@ import org.fog.gui.core.FogDeviceGui;
 import org.fog.gui.core.Graph;
 import org.fog.gui.core.SpringUtilities;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({ "rawtypes" })
 public class AddFogDevice extends JDialog {
 	private static final long serialVersionUID = -5116677861770319577L;
 	
@@ -34,11 +34,7 @@ public class AddFogDevice extends JDialog {
 	private JLabel mipsLabel;
 	private JLabel ramLabel;
 	private JLabel levelLabel;
-	
-	private JLabel lop1;
-	private JLabel lop2;
-	private JLabel lop3;
-	private JLabel lop4;
+	private JLabel rateLabel;
 	
 	private JTextField deviceName;
 	private JTextField upBw;
@@ -46,6 +42,7 @@ public class AddFogDevice extends JDialog {
 	private JTextField mips;
 	private JTextField ram;
 	private JTextField level;
+	private JTextField rate;
 
 
 	public AddFogDevice(final Graph graph, final JFrame frame) {
@@ -95,21 +92,24 @@ public class AddFogDevice extends JDialog {
 					prompt("Please enter RAM", "Error");				
 				} else if (level.getText() == null || level.getText().length() < 1) {
 					prompt("Please enter Level", "Error");
+				} else if (rate.getText() == null || rate.getText().length() < 1) {
+					prompt("Please enter Rate", "Error");
 				}
-				long upBw_=-1, downBw_=-1, mips_=-1; int ram_=-1, level_=-1;
+				long upBw_=-1, downBw_=-1, mips_=-1; int ram_=-1, level_=-1;double rate_ = -1;
 				try {
 					upBw_ = Long.parseLong(upBw.getText());
 					downBw_ = Long.parseLong(downBw.getText());
 					mips_ = Long.parseLong(mips.getText());
 					ram_ = Integer.parseInt(ram.getText());
 					level_ = Integer.parseInt(level.getText());
+					rate_ = Double.parseDouble(rate.getText());
 					catchedError = false;
 				} catch (NumberFormatException e1) {
 					catchedError = true;
 					prompt("Input should be numerical character", "Error");
 				}
 				if(!catchedError){
-					FogDeviceGui fogDevice = new FogDeviceGui(deviceName.getText().toString(), mips_, ram_, upBw_, downBw_, level_);
+					FogDeviceGui fogDevice = new FogDeviceGui(deviceName.getText().toString(), mips_, ram_, upBw_, downBw_, level_, rate_);
 					graph.addNode(fogDevice);
 					setVisible(false);								
 				}
@@ -125,24 +125,6 @@ public class AddFogDevice extends JDialog {
 
 		return buttonPanel;
 	}
-
-	/*private void updatePanel(){
-		switch(type){
-			case "host":
-				lop1.setText("Pes: ");
-				lop2.setText("Mips: ");
-				lop3.setText("Ram: ");
-				lop4.setVisible(true);
-				lop4.setText("Storage: ");
-				
-				top1.setText("");
-				top2.setText("");
-				top3.setText("");
-				top4.setVisible(true);
-				top4.setText("");
-				break;
-		}
-	}*/
 	
 	private JPanel createInputPanelArea() { 
         //Create and populate the panel.
@@ -186,11 +168,17 @@ public class AddFogDevice extends JDialog {
 		ram = new JTextField();
 		ramLabel.setLabelFor(ram);
 		springPanel.add(ram);
+		
+		rateLabel = new JLabel("Rate/MIPS: ");
+		springPanel.add(rateLabel);
+		rate = new JTextField();
+		rateLabel.setLabelFor(rate);
+		springPanel.add(rate);
 
 		
         //Lay out the panel.
         SpringUtilities.makeCompactGrid(springPanel,
-                                        6, 2,        //rows, cols
+                                        7, 2,        //rows, cols
                                         6, 6,        //initX, initY
                                         6, 6);       //xPad, yPad
         //updatePanel("core");

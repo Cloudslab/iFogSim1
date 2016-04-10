@@ -177,8 +177,8 @@ public class FogGui extends JFrame {
 		    public void actionPerformed(ActionEvent e) {
 		    	String fileName = importFile("josn");
 		    	Graph phyGraph= Bridge.jsonToGraph(fileName, 0);
-		    	
-		    	physicalCanvas.setGraph(phyGraph);
+		    	physicalGraph = phyGraph;
+		    	physicalCanvas.setGraph(physicalGraph);
 		    	physicalCanvas.repaint();
 		    }
 		};
@@ -510,14 +510,7 @@ public class FogGui extends JFrame {
     	AddPhysicalEdge phyEdge = new AddPhysicalEdge(physicalGraph, FogGui.this);
     	physicalCanvas.repaint();
     }
-    /*private void openAddVirtualNodeDialog(){
-    	AddVirtualNode vmNode = new AddVirtualNode(virtualGraph, FogGui.this);
-    	virtualCanvas.repaint();  	
-    }
-    private void openAddVirtualEdgeDialog(){
-    	AddVirtualEdge phyNode = new AddVirtualEdge(virtualGraph, FogGui.this);
-    	virtualCanvas.repaint();
-    }*/
+
     protected void openAddSensorDialog() {
 		AddSensor sensor = new AddSensor(physicalGraph, FogGui.this);
 		physicalCanvas.repaint();
@@ -533,7 +526,6 @@ public class FogGui extends JFrame {
 
         if (ret == JFileChooser.APPROVE_OPTION) {
             File file = fileopen.getSelectedFile();
-            //System.out.println(file.getPath());
             return file.getPath();
         }
         return "";

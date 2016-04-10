@@ -96,11 +96,22 @@ public class Controller extends SimEntity{
 			CloudSim.stopSimulation();
 			printTimeDetails();
 			printPowerDetails();
+			printCostDetails();
 			System.exit(0);
 			break;
 		}
 	}
 	
+	private FogDevice getCloud(){
+		for(FogDevice dev : getFogDevices())
+			if(dev.getName().equals("cloud"))
+				return dev;
+		return null;
+	}
+	
+	private void printCostDetails(){
+		System.out.println("Cost of execution in cloud = "+getCloud().getTotalCost());
+	}
 	private void printPowerDetails() {
 		// TODO Auto-generated method stub
 		for(FogDevice fogDevice : getFogDevices()){

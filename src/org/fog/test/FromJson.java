@@ -124,12 +124,12 @@ public class FromJson {
 	
 	@SuppressWarnings("serial")
 	private static List<FogDevice> createFogDevices(String appId, int userId, int transmitInterval) {
-		final FogDevice gw0 = createFogDevice("mobile-0", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 10);
-		final FogDevice gw1 = createFogDevice("mobile-1", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 10);
+		final FogDevice gw0 = createFogDevice("mobile-0", 1000, 1000, 1000, 10);
+		final FogDevice gw1 = createFogDevice("mobile-1", 1000, 1000, 1000, 10);
 		
-		final FogDevice mid = createFogDevice("router", 1000, new GeoCoverage(-100, 100, -100, 100), 1000, 1000, 50);
+		final FogDevice mid = createFogDevice("router", 1000, 1000, 1000, 50);
 		
-		final FogDevice cloud = createFogDevice("cloud", FogUtils.MAX, new GeoCoverage(-FogUtils.MAX, FogUtils.MAX, -FogUtils.MAX, FogUtils.MAX), FogUtils.MAX, 1000, 1);
+		final FogDevice cloud = createFogDevice("cloud", FogUtils.MAX, FogUtils.MAX, 1000, 1);
 		cloud.setChildrenIds(new ArrayList<Integer>(){{add(mid.getId());}});
 		mid.setChildrenIds(new ArrayList<Integer>(){{add(gw1.getId());add(gw0.getId());}});
 		
@@ -149,7 +149,7 @@ public class FromJson {
 	 *
 	 * @return the datacenter
 	 */
-	private static FogDevice createFogDevice(String name, int mips, GeoCoverage geoCoverage, double uplinkBandwidth, double downlinkBandwidth, double latency) {
+	private static FogDevice createFogDevice(String name, int mips, double uplinkBandwidth, double downlinkBandwidth, double latency) {
 
 		// 2. A Machine contains one or more PEs or CPUs/Cores.
 		// In this example, it will have only one core.
@@ -190,11 +190,11 @@ public class FromJson {
 
 		FogDeviceCharacteristics characteristics = new FogDeviceCharacteristics(
 				arch, os, vmm, host, time_zone, cost, costPerMem,
-				costPerStorage, costPerBw, geoCoverage);
+				costPerStorage, costPerBw);
 
 		FogDevice fogdevice = null;
 		try {
-			fogdevice = new FogDevice(name, geoCoverage, characteristics, 
+			fogdevice = new FogDevice(name, characteristics, 
 					new AppModuleAllocationPolicy(hostList), storageList, 10, uplinkBandwidth, downlinkBandwidth, latency);
 		} catch (Exception e) {
 			e.printStackTrace();

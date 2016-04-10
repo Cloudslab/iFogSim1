@@ -45,7 +45,6 @@ public class FogDevice extends PowerDatacenter {
 	
 	protected Map<String, Application> applicationMap;
 	protected Map<String, List<String>> appToModulesMap;
-	protected GeoCoverage geoCoverage;
 	protected Map<Integer, Double> childToLatencyMap;
 
 	protected Map<String, Queue<Double>> utilization; 
@@ -90,16 +89,18 @@ public class FogDevice extends PowerDatacenter {
 	protected double lastUtilization;
 	private int level;
 	
+	protected double ratePerMips;
+	
+	protected double totalCost;
+	
 	public FogDevice(
 			String name, 
-			GeoCoverage geoCoverage,
 			FogDeviceCharacteristics characteristics,
 			VmAllocationPolicy vmAllocationPolicy,
 			List<Storage> storageList,
 			double schedulingInterval,
-			double uplinkBandwidth, double downlinkBandwidth, double uplinkLatency) throws Exception {
+			double uplinkBandwidth, double downlinkBandwidth, double uplinkLatency, double ratePerMips) throws Exception {
 		super(name, characteristics, vmAllocationPolicy, storageList, schedulingInterval);
-		setGeoCoverage(geoCoverage);
 		setCharacteristics(characteristics);
 		setVmAllocationPolicy(vmAllocationPolicy);
 		setLastProcessTime(0.0);
@@ -109,6 +110,7 @@ public class FogDevice extends PowerDatacenter {
 		setUplinkBandwidth(uplinkBandwidth);
 		setDownlinkBandwidth(downlinkBandwidth);
 		setUplinkLatency(uplinkLatency);
+		setRatePerMips(ratePerMips);
 		setAssociatedActuatorIds(new ArrayList<Pair<Integer, Double>>());
 		for (Host host : getCharacteristics().getHostList()) {
 			host.setDatacenter(this);
@@ -140,13 +142,14 @@ public class FogDevice extends PowerDatacenter {
 		
 		this.energyConsumption = 0;
 		this.lastUtilization = 0;
+		setTotalCost(0);
 		
 		setChildToLatencyMap(new HashMap<Integer, Double>());
 	}
 
 	public FogDevice(
 			String name, long mips, int ram, 
-			double uplinkBandwidth, double downlinkBandwidth, int level) throws Exception {
+			double uplinkBandwidth, double downlinkBandwidth, int level, double ratePerMips) throws Exception {
 		super(name, null, null, new LinkedList<Storage>(), 0);
 		
 		setLevel(level);
@@ -187,7 +190,7 @@ public class FogDevice extends PowerDatacenter {
 
 		FogDeviceCharacteristics characteristics = new FogDeviceCharacteristics(
 				arch, os, vmm, host, time_zone, cost, costPerMem,
-				costPerStorage, costPerBw, geoCoverage);
+				costPerStorage, costPerBw);
 
 		setCharacteristics(characteristics);
 		
@@ -209,9 +212,6 @@ public class FogDevice extends PowerDatacenter {
 		
 		getCharacteristics().setId(super.getId());
 		
-		
-		
-		
 		applicationMap = new HashMap<String, Application>();
 		appToModulesMap = new HashMap<String, List<String>>();
 		northTupleQueue = new LinkedList<Tuple>();
@@ -230,7 +230,7 @@ public class FogDevice extends PowerDatacenter {
 		
 		this.energyConsumption = 0;
 		this.lastUtilization = 0;
-		
+		setTotalCost(0);
 		setChildToLatencyMap(new HashMap<Integer, Double>());
 	}
 	
@@ -311,20 +311,6 @@ public class FogDevice extends PowerDatacenter {
 		getAssociatedActuatorIds().add(new Pair<Integer, Double>(actuatorId, delay));
 	}
 
-	/**
-	 * Returns the child fog devices concerned for the application appId
-	 * @param appId
-	 * @return
-	 */
-	protected List<Integer> childIdsForApplication(String appId){
-		List<Integer> childIdsForApplication = new ArrayList<Integer>();
-		GeoCoverage geo = getApplicationMap().get(appId).getGeoCoverage();
-		for(Integer childId : getChildrenIds()){
-			if(((FogDevice)CloudSim.getEntity(childId)).getGeoCoverage().covers(geo) || geo.covers(((FogDevice)CloudSim.getEntity(childId)).getGeoCoverage()))
-				childIdsForApplication.add(childId);
-		}
-		return childIdsForApplication;
-	}
 	
 	protected void updateActiveApplications(SimEvent ev) {
 		Application app = (Application)ev.getData();
@@ -532,6 +518,10 @@ public class FogDevice extends PowerDatacenter {
 		double newEnergyConsumption = currentEnergyConsumption + (timeNow-lastUtilizationUpdateTime)*getHost().getPowerModel().getPower(lastUtilization);
 		setEnergyConsumption(newEnergyConsumption);
 		
+		double currentCost = getTotalCost();
+		double newcost = currentCost + (timeNow-lastUtilizationUpdateTime)*getRatePerMips()*lastUtilization*getHost().getTotalMips();
+		setTotalCost(newcost);
+		
 		lastUtilization = Math.min(1, totalMipsAllocated/getHost().getTotalMips());
 		lastUtilizationUpdateTime = timeNow;
 	}
@@ -713,11 +703,6 @@ public class FogDevice extends PowerDatacenter {
 		this.processVmMigrate(ev, false);
 	}
 	
-	public boolean isAncestorOf(FogDevice dev){
-		if(this.geoCoverage.covers(dev.getGeoCoverage()))
-			return true;
-		return false;
-	}
 	
 	protected void updateNorthTupleQueue(){
 		if(!getNorthTupleQueue().isEmpty()){
@@ -792,12 +777,6 @@ public class FogDevice extends PowerDatacenter {
 	}
 	public void setChildrenIds(List<Integer> childrenIds) {
 		this.childrenIds = childrenIds;
-	}
-	public GeoCoverage getGeoCoverage() {
-		return geoCoverage;
-	}
-	public void setGeoCoverage(GeoCoverage geoCoverage) {
-		this.geoCoverage = geoCoverage;
 	}
 	public double getUplinkBandwidth() {
 		return uplinkBandwidth;
@@ -903,6 +882,21 @@ public class FogDevice extends PowerDatacenter {
 
 	public void setLevel(int level) {
 		this.level = level;
+	}
+
+	public double getRatePerMips() {
+		return ratePerMips;
+	}
+
+	public void setRatePerMips(double ratePerMips) {
+		this.ratePerMips = ratePerMips;
+	}
+	public double getTotalCost() {
+		return totalCost;
+	}
+
+	public void setTotalCost(double totalCost) {
+		this.totalCost = totalCost;
 	}
 
 }

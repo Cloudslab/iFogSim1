@@ -187,11 +187,11 @@ public class VRGameMobileModuleMapping {
 
 		FogDeviceCharacteristics characteristics = new FogDeviceCharacteristics(
 				arch, os, vmm, host, time_zone, cost, costPerMem,
-				costPerStorage, costPerBw, geoCoverage);
+				costPerStorage, costPerBw);
 
 		FogDevice fogdevice = null;
 		try {
-			fogdevice = new FogDevice(name, geoCoverage, characteristics, 
+			fogdevice = new FogDevice(name, characteristics, 
 					new AppModuleAllocationPolicy(hostList), storageList, 10, uplinkBandwidth, downlinkBandwidth, latency);
 		} catch (Exception e) {
 			e.printStackTrace();

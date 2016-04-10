@@ -13,11 +13,12 @@ public class FogDeviceGui extends Node {
 	private int ram;
 	private long upBw;
 	private long downBw;
-
+	private double ratePerMips;
+	
 	public FogDeviceGui() {
 	}
 
-	public FogDeviceGui(String name, long mips, int ram, long upBw, long downBw, int level) {
+	public FogDeviceGui(String name, long mips, int ram, long upBw, long downBw, int level, double rate) {
 		super(name, "FOG_DEVICE");
 		this.name = name;
 		this.mips = mips;
@@ -25,6 +26,7 @@ public class FogDeviceGui extends Node {
 		this.upBw = upBw;
 		this.downBw = downBw;
 		this.level = level;
+		this.ratePerMips = rate;
 	}
 
 
@@ -79,6 +81,14 @@ public class FogDeviceGui extends Node {
 
 	public void setLevel(int level) {
 		this.level = level;
+	}
+
+	public double getRatePerMips() {
+		return ratePerMips;
+	}
+
+	public void setRatePerMips(double ratePerMips) {
+		this.ratePerMips = ratePerMips;
 	}
 
 }

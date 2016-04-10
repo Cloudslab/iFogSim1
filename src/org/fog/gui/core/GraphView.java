@@ -18,7 +18,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.cloudbus.cloudsim.sdn.graph.core.Coordinates;
+import org.fog.utils.FogUtils;
+
 
 /** Panel that displays a graph */
 public class GraphView extends JPanel {
@@ -41,7 +42,6 @@ public class GraphView extends JPanel {
 	public GraphView(final Graph graph) {
 
 		this.graph = graph;
-		
 		imgHost = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/images/host.png"));
 		imgSwitch = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/images/disk.png"));
 		imgAppModule = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/images/module.png"));
@@ -109,7 +109,7 @@ public class GraphView extends JPanel {
 				int nodeHeight = Math.max(height, f.getHeight());
 				int nodeWidth = nodeHeight;
 
-				int maxLevel=-1, minLevel=1000;
+				int maxLevel=-1, minLevel=FogUtils.MAX;
 				Map<Integer, List<Node>> levelMap = new HashMap<Integer, List<Node>>();
 				List<Node> endpoints = new ArrayList<Node>(); 
 				for (Node node : graph.getAdjacencyList().keySet()) {
@@ -130,17 +130,9 @@ public class GraphView extends JPanel {
 				
 				double yDist = canvas.getHeight()/(maxLevel-minLevel+3);
 				System.out.println("===================\n================\n=============");
-				Map<Node, List<Node>> childrenMap = createChildrenMap();
-				/*for(Node node : childrenMap.keySet()){
-					System.out.println(node.getName()+" -----> ");
-					for(Node neighbour : childrenMap.get(node)){
-						System.out.print(neighbour.getName()+" ; ");
-					}
-					System.out.println();
-				}*/
+				Map<Node, List<Node>> childrenMap = createChildrenMap();				
 				
-				
-				
+				Map<Integer, List<PlaceHolder>> levelToPlaceHolderMap = new HashMap<Integer, List<PlaceHolder>>();
 				
 				int k=1;
 				for(int i=minLevel;i<=maxLevel;i++, k++){
@@ -151,16 +143,25 @@ public class GraphView extends JPanel {
 						Node node = levelMap.get(i).get(j-1);
 						int x = (int)xDist*j;
 						int y = (int)yDist*k;
-						coordForNodes.put(node, new Coordinates(x, y));
-						node.setCoordinate(new Coordinates(x, y));
+						if(!levelToPlaceHolderMap.containsKey(i))
+							levelToPlaceHolderMap.put(i, new ArrayList<PlaceHolder>());
+						levelToPlaceHolderMap.get(i).add(new PlaceHolder(x, y));
+						
+						//coordForNodes.put(node, new Coordinates(x, y));
+						//node.setCoordinate(new Coordinates(x, y));
 					}
 				}
+				
+				List<PlaceHolder> endpointPlaceHolders = new ArrayList<PlaceHolder>();
 				
 				double xDist = canvas.getWidth()/(endpoints.size()+1);
 				for(int i=0;i<endpoints.size();i++){
 					Node node = endpoints.get(i);
 					int x = (int)xDist*(i+1);
 					int y = (int)yDist*k;
+					
+					endpointPlaceHolders.add(new PlaceHolder(x, y));
+					
 					coordForNodes.put(node, new Coordinates(x, y));
 					node.setCoordinate(new Coordinates(x, y));
 				}
@@ -172,13 +173,16 @@ public class GraphView extends JPanel {
 					// calculate coordinates
 					int x = Double.valueOf(offsetX + Math.cos(i * angle) * radius).intValue();
 					int y = Double.valueOf(offsetY + Math.sin(i * angle) * radius).intValue();
-					//System.out.println(i+":"+x+"-"+y);
 
-					coordForNodes.put(node, new Coordinates(x, y));
-					node.setCoordinate(new Coordinates(x, y));
+					//coordForNodes.put(node, new Coordinates(x, y));
+					//node.setCoordinate(new Coordinates(x, y));
 					i++;
 				}
 
+				
+				coordForNodes = getCoordForNodes(levelToPlaceHolderMap, endpointPlaceHolders, levelMap, endpoints, minLevel, maxLevel);
+				System.out.println("COORD MAP"+coordForNodes);
+				
 				Map<Node, List<Node>> drawnList = new HashMap<Node, List<Node>>();
 				
 				
@@ -264,7 +268,7 @@ public class GraphView extends JPanel {
 							drawnList.put(entry.getKey(), nodes);
 						}
 
-												int labelX = (startNode.getX() - targetNode.getX()) / 2;
+						int labelX = (startNode.getX() - targetNode.getX()) / 2;
 						int labelY = (startNode.getY() - targetNode.getY()) / 2;
 
 						labelX *= -1;
@@ -280,68 +284,87 @@ public class GraphView extends JPanel {
 			}
 		};
 		JScrollPane scrollPane = new JScrollPane(canvas);
-
-//		canvas.setBorder(BorderFactory.createLineBorder(Color.GREEN));
-//		scrollPane.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-		// scrollPane.setPreferredSize(new Dimension(200, 200));
-
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		add(scrollPane);
 	}
 
-	protected Node getApexNode(){
-		for(Node node : graph.getAdjacencyList().keySet()){
-			if(node.getName().equals("cloud"))
-				return node;
+	protected Map<Node, Coordinates> getCoordForNodes(
+			Map<Integer, List<PlaceHolder>> levelToPlaceHolderMap,
+			List<PlaceHolder> endpointPlaceHolders,
+			Map<Integer, List<Node>> levelMap, List<Node> endpoints, int minLevel, int maxLevel) {
+		// TODO Auto-generated method stub
+		Map<Node, Coordinates> coordForNodesMap = new HashMap<Node, Coordinates>();
+		Map<Node, List<Node>> childrenMap = createChildrenMap();
+		
+		for(Node node : graph.getAdjacencyList().keySet())node.setPlaced(false);
+		for(Node node : endpoints)node.setPlaced(false);
+		
+		if(maxLevel < 0)
+			return new HashMap<Node, Coordinates>();
+		
+		int j=0;
+		for(PlaceHolder placeHolder : levelToPlaceHolderMap.get(minLevel)){
+			Node node = levelMap.get(minLevel).get(j);
+			placeHolder.setNode(node);
+			node.setCoordinate(placeHolder.getCoordinates());
+			coordForNodesMap.put(node, node.getCoordinate());
+			node.setPlaced(true);
+			j++;
 		}
-		return null;
-	}
-	
-	private boolean checkDrawingCompletion(Map<Node, Boolean> childrenDrawn){
-		for(Node node : childrenDrawn.keySet()){
-			if(!childrenDrawn.get(node))
-				return true;
-		}
-		return false;
-	}
-	
-	protected Map<Node, Coordinates> drawNodes(Map<Node, List<Node>> childrenMap, int maxLevel, int minLevel) {
-		Map<Node, Coordinates> coordForNodes = new HashMap<Node, Coordinates>();
-		Map<Node, Boolean> childrenDrawn = new HashMap<Node, Boolean>();
-		for(Node node : graph.getAdjacencyList().keySet())childrenDrawn.put(node, false);
 		
-		double yDist = canvas.getHeight()/(maxLevel-minLevel+3);
-		int y = (int) yDist;
-		
-		List<Node> currentList = new ArrayList<Node>();
-		List<Node> nextList = new ArrayList<Node>();
-		
-		Node apex = getApexNode();
-		currentList.add(apex);
-		
-		while(checkDrawingCompletion(childrenDrawn)){
-			System.out.println("====");
-			System.out.println(childrenDrawn);
-			for(Node node : currentList){
-				if(childrenMap.containsKey(node))
-					nextList.addAll(childrenMap.get(node));
+		for(int level = minLevel+1;level <= maxLevel; level++){
+			List<PlaceHolder> upperLevelNodes = levelToPlaceHolderMap.get(level-1);
+			List<Node> nodes = levelMap.get(level);
+			int i=0;
+			for(PlaceHolder parentPH : upperLevelNodes){
+				List<Node> children = childrenMap.get(parentPH.getNode());
+				for(Node child : children){
+					PlaceHolder childPlaceHolder = levelToPlaceHolderMap.get(level).get(i);
+					childPlaceHolder.setOccupied(true);
+					childPlaceHolder.setNode(child);
+					child.setCoordinate(childPlaceHolder.getCoordinates());
+					coordForNodesMap.put(child, child.getCoordinate());
+					child.setPlaced(true);
+					i++;
+				}
 			}
-			
-			double xDist = canvas.getWidth()/(currentList.size()+1);
-			for(int j=0;j<currentList.size();j++){
-				Node node = currentList.get(j);
-				int x = (int)xDist*(j+1);
-				coordForNodes.put(node, new Coordinates(x, y));
-				node.setCoordinate(new Coordinates(x, y));
-				childrenDrawn.put(node, true);
+			for(Node node : nodes){
+				if(!node.isPlaced()){
+					PlaceHolder placeHolder = levelToPlaceHolderMap.get(level).get(i);
+					placeHolder.setOccupied(true);
+					placeHolder.setNode(node);
+					node.setCoordinate(placeHolder.getCoordinates());
+					coordForNodesMap.put(node, node.getCoordinate());
+					node.setPlaced(true);
+					i++;
+				}
 			}
-			
-			y += yDist;
-			currentList = nextList;
-			nextList = new ArrayList<Node>();
 		}
-		
-		return coordForNodes;
+		int i=0;
+		for(PlaceHolder parentPH : levelToPlaceHolderMap.get(maxLevel)){
+			List<Node>children = childrenMap.get(parentPH.getNode());
+			for(Node child : children){
+				PlaceHolder placeHolder = endpointPlaceHolders.get(i);
+				placeHolder.setOccupied(true);
+				placeHolder.setNode(child);
+				child.setCoordinate(placeHolder.getCoordinates());
+				coordForNodesMap.put(child, child.getCoordinate());
+				child.setPlaced(true);
+				i++;
+			}
+		}
+		for(Node node : endpoints){
+			if(!node.isPlaced()){
+				PlaceHolder placeHolder = endpointPlaceHolders.get(i);
+				placeHolder.setOccupied(true);
+				placeHolder.setNode(node);
+				node.setCoordinate(placeHolder.getCoordinates());
+				coordForNodesMap.put(node, node.getCoordinate());
+				node.setPlaced(true);
+				i++;
+			}
+		}
+		return coordForNodesMap;
 	}
 
 	private void drawArrow(Graphics g1, int x1, int y1, int x2, int y2) {
@@ -362,13 +385,5 @@ public class GraphView extends JPanel {
 	
 	public void setGraph(Graph newGraph){
 		this.graph = newGraph;
-		/*this.graph.clearGraph();
-		for (Entry<Node, List<Edge>> entry : newGraph.getAdjacencyList().entrySet()) {
-			graph.addNode(entry.getKey());
-			for (Edge edge : entry.getValue()) {
-				graph.addEdge(entry.getKey(), edge);
-			}
-		}*/
 	}
-
 }

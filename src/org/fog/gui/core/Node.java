@@ -2,7 +2,6 @@ package org.fog.gui.core;
 
 import java.io.Serializable;
 
-import org.cloudbus.cloudsim.sdn.graph.core.Coordinates;
 
 /**
  * The model that represents node (host or vm) for the graph.
@@ -14,13 +13,16 @@ public class Node implements Serializable {
 	private Coordinates coord;
 	private String name;
 	private String type;
+	private boolean isPlaced;
 
 	public Node() {
+		setPlaced(false);
 	}
 
 	public Node(String name, String type) {
 		this.name = name;
 		this.type = type;
+		setPlaced(false);
 		coord = new Coordinates();
 	}
 
@@ -77,6 +79,14 @@ public class Node implements Serializable {
 	@Override
 	public String toString() {
 		return "Node [name=" + name + " type=" + type + "]";
+	}
+
+	public boolean isPlaced() {
+		return isPlaced;
+	}
+
+	public void setPlaced(boolean isPlaced) {
+		this.isPlaced = isPlaced;
 	}
 
 }

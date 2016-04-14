@@ -1,5 +1,6 @@
 package org.fog.placement;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +35,8 @@ public class Controller extends SimEntity{
 	public Controller(String name, List<FogDevice> fogDevices, List<Sensor> sensors, List<Actuator> actuators, ModuleMapping moduleMapping) {
 		super(name);
 		this.applications = new HashMap<String, Application>();
-		this.setAppLaunchDelays(new HashMap<String, Integer>());
-		this.setModuleMapping(moduleMapping);
+		setAppLaunchDelays(new HashMap<String, Integer>());
+		setModuleMapping(moduleMapping);
 		for(FogDevice fogDevice : fogDevices){
 			fogDevice.setControllerId(getId());
 		}
@@ -200,7 +201,7 @@ public class Controller extends SimEntity{
 		
 		ModulePlacement modulePlacement = (getModuleMapping()==null)?
 				(new ModulePlacementOnlyCloud(getFogDevices(), application))
-				:(new ModulePlacementMapping(getFogDevices(), application, getModuleMapping()));
+				:(new ModulePlacementEdgewards(getFogDevices(), getSensors(), getActuators(), application, getModuleMapping()));
 		
 		for(FogDevice fogDevice : fogDevices){
 			sendNow(fogDevice.getId(), FogEvents.ACTIVE_APP_UPDATE, application);

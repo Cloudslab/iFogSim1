@@ -69,7 +69,7 @@ public class CleanFromJson {
 			final Actuator actuator1 = createActuator("Display-1", appId, broker.getId(), CloudSim.getEntityId("mobile-1"), "ACTUATOR", "client");
 			*/
 			
-			PhysicalTopology physicalTopology = JsonToTopology.getPhysicalTopology(broker.getId(), appId, "/home/harshit/testing");
+			PhysicalTopology physicalTopology = JsonToTopology.getPhysicalTopology(broker.getId(), appId, "/home/harshit/routerTopology");
 			
 			/*List<Sensor> sensors = new ArrayList<Sensor>(){{add(s0);add(s1);}};
 			List<Actuator> actuators = new ArrayList<Actuator>(){{add(actuator0);add(actuator1);}};*/
@@ -89,7 +89,7 @@ public class CleanFromJson {
 			moduleMapping.addModuleToDevice("tuner", "cloud");
 			
 			Controller controller = new Controller("master-controller", physicalTopology.getFogDevices(), physicalTopology.getSensors(), 
-					physicalTopology.getActuators(), null);
+					physicalTopology.getActuators(), moduleMapping);
 			
 			/*s0.setControllerId(controller.getId());
 			s1.setControllerId(controller.getId());

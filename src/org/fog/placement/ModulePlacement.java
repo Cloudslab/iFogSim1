@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.cloudbus.cloudsim.core.CloudSim;
 import org.fog.application.AppModule;
 import org.fog.application.Application;
 import org.fog.entities.FogDevice;
@@ -21,6 +22,10 @@ public abstract class ModulePlacement {
 		return fogDevice.getVmAllocationPolicy().allocateHostForVm(module);
 	}
 	
+	protected FogDevice getFogDeviceById(int fogDeviceId){
+		return (FogDevice)CloudSim.getEntity(fogDeviceId);
+	}
+	
 	protected void createModuleInstanceOnDevice(AppModule _module, final FogDevice device){
 		AppModule module = null;
 		if(getModuleToDeviceMap().containsKey(_module.getName()))
@@ -29,6 +34,7 @@ public abstract class ModulePlacement {
 			module = _module;
 			
 		if(canBeCreated(device, module)){
+			System.out.println("Creating "+module.getName()+" on device "+device.getName());
 			
 			if(!getDeviceToModuleMap().containsKey(device.getId()))
 				getDeviceToModuleMap().put(device.getId(), new ArrayList<AppModule>());

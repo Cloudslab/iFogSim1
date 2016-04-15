@@ -26,5 +26,10 @@ public class DeterministicDistribution extends Distribution{
 	public int getDistributionType() {
 		return Distribution.DETERMINISTIC;
 	}
+
+	@Override
+	public double getMeanInterTransmitTime() {
+		return value;
+	}
 	
 }

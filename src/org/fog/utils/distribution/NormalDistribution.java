@@ -39,4 +39,9 @@ public class NormalDistribution extends Distribution{
 		return Distribution.NORMAL;
 	}
 
+	@Override
+	public double getMeanInterTransmitTime() {
+		return mean;
+	}
+
 }

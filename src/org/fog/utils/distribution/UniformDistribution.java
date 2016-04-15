@@ -37,4 +37,9 @@ public class UniformDistribution extends Distribution{
 		return Distribution.UNIFORM;
 	}
 
+	@Override
+	public double getMeanInterTransmitTime() {
+		return (min+max)/2;
+	}
+
 }

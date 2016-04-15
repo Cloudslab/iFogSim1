@@ -26,7 +26,7 @@ public abstract class ModulePlacement {
 		return (FogDevice)CloudSim.getEntity(fogDeviceId);
 	}
 	
-	protected void createModuleInstanceOnDevice(AppModule _module, final FogDevice device){
+	protected boolean createModuleInstanceOnDevice(AppModule _module, final FogDevice device){
 		AppModule module = null;
 		if(getModuleToDeviceMap().containsKey(_module.getName()))
 			module = new AppModule(_module);
@@ -43,10 +43,11 @@ public abstract class ModulePlacement {
 			if(!getModuleToDeviceMap().containsKey(module.getName()))
 				getModuleToDeviceMap().put(module.getName(), new ArrayList<Integer>());
 			getModuleToDeviceMap().get(module.getName()).add(device.getId());
+			return true;
 		} else {
 			System.err.println("Module "+module.getName()+" cannot be created on device "+device.getName());
 			System.err.println("Terminating");
-			System.exit(0);
+			return false;
 		}
 	}
 	

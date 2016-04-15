@@ -20,4 +20,5 @@ public abstract class Distribution {
 	}
 
 	public abstract int getDistributionType();
+	public abstract double getMeanInterTransmitTime();
 }

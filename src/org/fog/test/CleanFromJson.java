@@ -69,7 +69,7 @@ public class CleanFromJson {
 			final Actuator actuator1 = createActuator("Display-1", appId, broker.getId(), CloudSim.getEntityId("mobile-1"), "ACTUATOR", "client");
 			*/
 			
-			PhysicalTopology physicalTopology = JsonToTopology.getPhysicalTopology(broker.getId(), appId, "/home/harshit/routerTopology");
+			PhysicalTopology physicalTopology = JsonToTopology.getPhysicalTopology(broker.getId(), appId, "topologies/routerTopology");
 			
 			/*List<Sensor> sensors = new ArrayList<Sensor>(){{add(s0);add(s1);}};
 			List<Actuator> actuators = new ArrayList<Actuator>(){{add(actuator0);add(actuator1);}};*/
@@ -214,10 +214,10 @@ public class CleanFromJson {
 		application.addTupleMapping("client", "TEMP", "_SENSOR", 1.0);
 		application.addTupleMapping("client", "CLASSIFICATION", "ACTUATOR", 1.0);
 		application.addTupleMapping("classifier", "_SENSOR", "CLASSIFICATION", 1.0);
-		application.addTupleMapping("classifier", "_SENSOR", "HISTORY", 1.0);
+		application.addTupleMapping("classifier", "_SENSOR", "HISTORY", 0.1);
 		application.addTupleMapping("tuner", "HISTORY", "TUNING_PARAMS", 1.0);
 	
-		application.addAppEdge("TEMP", "client", 1000, 100, "TEMP", Tuple.UP, AppEdge.SENSOR);
+		application.addAppEdge("TEMP", "client", 10000, 100, "TEMP", Tuple.UP, AppEdge.SENSOR);
 		application.addAppEdge("client", "classifier", 1000, 100, "_SENSOR", Tuple.UP, AppEdge.MODULE);
 		application.addAppEdge("classifier", "tuner", 1000, 100, "HISTORY", Tuple.UP, AppEdge.MODULE);
 		application.addAppEdge("classifier", "client", 1000, 100, "CLASSIFICATION", Tuple.DOWN, AppEdge.MODULE);

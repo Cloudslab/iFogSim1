@@ -3,6 +3,7 @@ package org.fog.application;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.math3.util.Pair;
 import org.cloudbus.cloudsim.UtilizationModelFull;
@@ -21,6 +22,8 @@ public class Application {
 	private List<AppEdge> edges;
 	
 	private List<AppLoop> loops;
+	
+	private Map<String, AppEdge> edgeMap;
 
 	public static Application createApplication(String appId, int userId){
 		return new Application(appId, userId);
@@ -43,6 +46,7 @@ public class Application {
 			double tupleNwLength, String tupleType, int direction, int edgeType){
 		AppEdge edge = new AppEdge(source, destination, tupleCpuLength, tupleNwLength, tupleType, direction, edgeType);
 		getEdges().add(edge);
+		getEdgeMap().put(edge.getTupleType(), edge);
 	}
 	
 	public void addTupleMapping(String moduleName, String inputTupleType, String outputTupleType, double selectivity){
@@ -66,7 +70,7 @@ public class Application {
 		setEdges(new ArrayList<AppEdge>());
 		setGeoCoverage(null);
 		setLoops(new ArrayList<AppLoop>());
-		
+		setEdgeMap(new HashMap<String, AppEdge>());
 	}
 	
 	public Application(String appId, List<AppModule> modules,
@@ -76,6 +80,10 @@ public class Application {
 		setEdges(edges);
 		setGeoCoverage(geoCoverage);
 		setLoops(loops);
+		setEdgeMap(new HashMap<String, AppEdge>());
+		for(AppEdge edge : edges){
+			getEdgeMap().put(edge.getTupleType(), edge);
+		}
 	}
 
 	public AppModule getModuleByName(String name){
@@ -85,7 +93,7 @@ public class Application {
 		}
 		return null;
 	}
-
+	
 	public List<Tuple> getResultantTuples(String moduleName, Tuple inputTuple, int sourceDeviceId){
 		List<Tuple> tuples = new ArrayList<Tuple>();
 		AppModule module = getModuleByName(moduleName);
@@ -232,5 +240,13 @@ public class Application {
 
 	public void setUserId(int userId) {
 		this.userId = userId;
+	}
+
+	public Map<String, AppEdge> getEdgeMap() {
+		return edgeMap;
+	}
+
+	public void setEdgeMap(Map<String, AppEdge> edgeMap) {
+		this.edgeMap = edgeMap;
 	}
 }

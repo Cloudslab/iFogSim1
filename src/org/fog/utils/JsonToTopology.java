@@ -118,6 +118,7 @@ public class JsonToTopology {
 					double ratePerMips = new BigDecimal((Double)node.get("ratePerMips")).doubleValue();
 					
 					FogDevice fogDevice = createFogDevice(nodeName, mips, ram, upBw, downBw, level, ratePerMips);
+					fogDevice.setParentId(-1);
 					
 					fogDevices.add(fogDevice);
 
@@ -212,7 +213,6 @@ public class JsonToTopology {
 		}
 		
 		fogdevice.setLevel(level);
-		
 		return fogdevice;
 	}
 

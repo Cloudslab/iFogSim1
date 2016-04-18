@@ -1,6 +1,5 @@
 package org.fog.placement;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -199,9 +198,12 @@ public class Controller extends SimEntity{
 		FogUtils.appIdToGeoCoverageMap.put(application.getAppId(), application.getGeoCoverage());
 		getApplications().put(application.getAppId(), application);
 		
-		ModulePlacement modulePlacement = (getModuleMapping()==null)?
+		/*ModulePlacement modulePlacement = (getModuleMapping()==null)?
 				(new ModulePlacementOnlyCloud(getFogDevices(), application))
-				:(new ModulePlacementEdgewards(getFogDevices(), getSensors(), getActuators(), application, getModuleMapping()));
+				:(new ModulePlacementEdgewards(getFogDevices(), getSensors(), getActuators(), application, getModuleMapping()));*/
+		
+		ModulePlacement modulePlacement = new ModulePlacementEdgewards(getFogDevices(), getSensors(), getActuators(), application, getModuleMapping());
+		//ModulePlacement modulePlacement = new ModulePlacementOnlyCloud(getFogDevices(), application);
 		
 		for(FogDevice fogDevice : fogDevices){
 			sendNow(fogDevice.getId(), FogEvents.ACTIVE_APP_UPDATE, application);

@@ -7,6 +7,7 @@ import java.util.Map;
 
 public class ModuleMapping {
 
+
 	protected Map<String, List<String>> moduleMapping;
 	
 	public static ModuleMapping createModuleMapping(){

@@ -285,7 +285,6 @@ public class FogDevice extends PowerDatacenter {
 	}
 	
 	private void sendPeriodicTuple(SimEvent ev) {
-		// TODO Auto-generated method stub
 		AppEdge edge = (AppEdge)ev.getData();
 		String srcModule = edge.getSource();
 		AppModule module = null;
@@ -686,8 +685,6 @@ public class FogDevice extends PowerDatacenter {
 		module.updateVmProcessing(CloudSim.clock(), getVmAllocationPolicy().getHost(module).getVmScheduler()
 				.getAllocatedMipsForVm(module));
 	}
-	
-	
 	
 	private void initializePeriodicTuples(AppModule module) {
 		// TODO Auto-generated method stub

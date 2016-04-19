@@ -13,6 +13,7 @@ import org.fog.entities.FogBroker;
 import org.fog.entities.PhysicalTopology;
 import org.fog.entities.Tuple;
 import org.fog.placement.Controller;
+import org.fog.placement.ModuleMapping;
 import org.fog.utils.JsonToTopology;
 
 public class UseCaseVRGame {
@@ -38,8 +39,11 @@ public class UseCaseVRGame {
 			
 			PhysicalTopology physicalTopology = JsonToTopology.getPhysicalTopology(broker.getId(), appId, "topologies/vr_game_topo");
 
+			ModuleMapping moduleMapping = ModuleMapping.createModuleMapping();
+			moduleMapping.addModuleToDevice("tuner", "cloud");
+			
 			Controller controller = new Controller("master-controller", physicalTopology.getFogDevices(), physicalTopology.getSensors(), 
-					physicalTopology.getActuators(), null);
+					physicalTopology.getActuators(), moduleMapping);
 			
 			controller.submitApplication(application, 0);
 			

@@ -15,6 +15,8 @@ import org.fog.entities.FogDevice;
 import org.fog.entities.Sensor;
 import org.fog.entities.Tuple;
 
+import com.google.common.base.internal.Finalizer;
+
 public class ModulePlacementEdgewards extends ModulePlacement{
 	
 	protected ModuleMapping moduleMapping;
@@ -48,7 +50,10 @@ public class ModulePlacementEdgewards extends ModulePlacement{
 			getCurrentModuleMap().put(dev.getId(), new ArrayList<String>());
 			getCurrentModuleInstanceNum().put(dev.getId(), new HashMap<String, Integer>());
 		}
+		
 		mapModules();
+		
+		System.out.println(getCurrentModuleInstanceNum());
 		
 	}
 	
@@ -70,6 +75,7 @@ public class ModulePlacementEdgewards extends ModulePlacement{
 				int deviceId = CloudSim.getEntityId(deviceName);
 				getCurrentModuleMap().get(deviceId).add(moduleName);
 				getCurrentModuleLoadMap().get(deviceId).put(moduleName, 0.0);
+				getCurrentModuleInstanceNum().get(deviceId).put(moduleName, 0);
 			}
 		}
 		
@@ -83,17 +89,7 @@ public class ModulePlacementEdgewards extends ModulePlacement{
 			for(String module : getCurrentModuleMap().get(deviceId)){
 				createModuleInstanceOnDevice(getApplication().getModuleByName(module), getFogDeviceById(deviceId));
 			}
-		}
-		
-		/*Map<String, List<String>> mapping = moduleMapping.getModuleMapping(); 
-		for(String deviceName : mapping.keySet()){
-			FogDevice device = getDeviceByName(deviceName);
-			List<String> modulesOnDevice = mapping.get(deviceName);
-			for(String moduleName : modulesOnDevice){
-				AppModule module = getApplication().getModuleByName(moduleName);
-				createModuleInstanceOnDevice(module, device);
-			}
-		}*/
+		}	
 	}
 	
 	private List<String> getModulesToPlace(List<String> placedOperators){
@@ -235,7 +231,9 @@ public class ModulePlacementEdgewards extends ModulePlacement{
 					}
 					else{
 						System.out.println("Placement of operator "+operatorName+ " on device "+device.getName());
+						getCurrentModuleInstanceNum().get(deviceId).put(operatorName, 1);
 						getCurrentCpuLoad().put(deviceId, totalCpuLoad + getCurrentCpuLoad().get(deviceId));
+
 						System.out.println("Updated CPU load = "+getCurrentCpuLoad().get(deviceId));
 						if(!currentModuleMap.containsKey(deviceId))
 							currentModuleMap.put(deviceId, new ArrayList<String>());
@@ -263,10 +261,12 @@ public class ModulePlacementEdgewards extends ModulePlacement{
 	private void shiftModuleNorth(String moduleName, double cpuLoad, Integer deviceId) {
 		// TODO Auto-generated method stub
 		List<String> modulesToShift = findModulesToShift(moduleName, deviceId);
+		Map<String, Integer> moduleToNumInstances = new HashMap<String, Integer>();
 		double totalCpuLoad = 0;
 		Map<String, Double> loadMap = new HashMap<String, Double>();
 		for(String module : modulesToShift){
 			loadMap.put(module, getCurrentModuleLoadMap().get(deviceId).get(module));
+			moduleToNumInstances.put(module, getCurrentModuleInstanceNum().get(deviceId).get(module)+1);
 			System.out.println(module);
 			System.out.println(CloudSim.getEntityName(deviceId));
 			totalCpuLoad += getCurrentModuleLoadMap().get(deviceId).get(module);
@@ -291,6 +291,7 @@ public class ModulePlacementEdgewards extends ModulePlacement{
 				double cpuLoadShifted = 0;		// the total cpu load shifted from device id to its parent
 				for(String module : _modulesToShift){
 					if(!modulesToShift.contains(module)){
+						moduleToNumInstances.put(module, getCurrentModuleInstanceNum().get(deviceId).get(module)+1);
 						loadMap.put(module, getCurrentModuleLoadMap().get(id).get(module));
 						cpuLoadShifted += getCurrentModuleLoadMap().get(id).get(module);
 						totalCpuLoad += getCurrentModuleLoadMap().get(id).get(module);
@@ -311,6 +312,15 @@ public class ModulePlacementEdgewards extends ModulePlacement{
 					System.out.println(CloudSim.getEntityName(id));
 					System.out.println(getCurrentModuleMap().get(id));
 					getCurrentModuleMap().get(id).add(module);
+					for(String module_ : moduleToNumInstances.keySet()){
+						System.out.println(moduleToNumInstances);
+						int initialNumInstances = 0;
+						if(getCurrentModuleInstanceNum().get(id).containsKey(module_))
+							initialNumInstances = getCurrentModuleInstanceNum().get(id).get(module_);
+						int finalNumInstances = initialNumInstances + moduleToNumInstances.get(module_);
+						System.out.println("Placing "+finalNumInstances+" on "+CloudSim.getEntityName(id));
+						getCurrentModuleInstanceNum().get(id).put(module_, finalNumInstances);
+					}
 				}
 				getCurrentCpuLoad().put(id, totalLoad);
 				System.out.println("FINALLY placed "+loadMap.keySet()+" at device "+CloudSim.getEntityName(id));

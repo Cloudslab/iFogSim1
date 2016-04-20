@@ -57,10 +57,9 @@ public class CleanFromJson {
 			
 			FogBroker broker = new FogBroker("broker");
 			
-			int transmitInterval = 1000;
-
 			Application application = createApplication(appId, broker.getId());
 			application.setUserId(broker.getId());
+			
 			//List<FogDevice> fogDevices = createFogDevices(appId, broker.getId(), transmitInterval);
 			
 			/*final Sensor s0 = createSensor("EEGSensor-0", application, broker.getId(), CloudSim.getEntityId("mobile-0"), transmitInterval, 2000, 100, "SENSOR", "client");
@@ -75,18 +74,18 @@ public class CleanFromJson {
 			List<Actuator> actuators = new ArrayList<Actuator>(){{add(actuator0);add(actuator1);}};*/
 						
 			ModuleMapping moduleMapping = ModuleMapping.createModuleMapping();
-			moduleMapping.addModuleToDevice("client", "mobile-0");
+			/*moduleMapping.addModuleToDevice("client", "mobile-0");
 			moduleMapping.addModuleToDevice("client", "mobile-1");
-			
+			*/
 			//moduleMapping.addModuleToDevice("client", "cloud");
 			
 			//moduleMapping.addModuleToDevice("classifier", "gateway-0");
 			//moduleMapping.addModuleToDevice("classifier", "gateway-1");
 			
-			moduleMapping.addModuleToDevice("classifier", "router");
+			//moduleMapping.addModuleToDevice("classifier", "router");
 			
 			//moduleMapping.addModuleToDevice("classifier", "cloud");
-			moduleMapping.addModuleToDevice("tuner", "cloud");
+			//moduleMapping.addModuleToDevice("tuner", "cloud");
 			
 			Controller controller = new Controller("master-controller", physicalTopology.getFogDevices(), physicalTopology.getSensors(), 
 					physicalTopology.getActuators(), moduleMapping);

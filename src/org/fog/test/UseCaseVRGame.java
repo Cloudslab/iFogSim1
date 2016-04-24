@@ -37,7 +37,7 @@ public class UseCaseVRGame {
 			Application application = createApplication(appId, broker.getId());
 			application.setUserId(broker.getId());
 			
-			PhysicalTopology physicalTopology = JsonToTopology.getPhysicalTopology(broker.getId(), appId, "topologies/vr_game_topo");
+			PhysicalTopology physicalTopology = JsonToTopology.getPhysicalTopology(broker.getId(), appId, "topologies/test_instance_count");
 
 			ModuleMapping moduleMapping = ModuleMapping.createModuleMapping();
 			moduleMapping.addModuleToDevice("tuner", "cloud");
@@ -72,8 +72,8 @@ public class UseCaseVRGame {
 		application.addTupleMapping("classifier", "_SENSOR", "HISTORY", 0.1);
 		application.addTupleMapping("tuner", "HISTORY", "TUNING_PARAMS", 1.0);
 	
-		application.addAppEdge("EEG", "client", 100, 5, "EEG", Tuple.UP, AppEdge.SENSOR);
-		application.addAppEdge("client", "classifier", 5000, 100, "_SENSOR", Tuple.UP, AppEdge.MODULE);
+		application.addAppEdge("EEG", "client", 8000, 5, "EEG", Tuple.UP, AppEdge.SENSOR);
+		application.addAppEdge("client", "classifier", 6000, 100, "_SENSOR", Tuple.UP, AppEdge.MODULE);
 		application.addAppEdge("classifier", "tuner", 100000, 1000, "HISTORY", Tuple.UP, AppEdge.MODULE);
 		application.addAppEdge("classifier", "client", 100, 100, "CLASSIFICATION", Tuple.DOWN, AppEdge.MODULE);
 		application.addAppEdge("tuner", "classifier", 5000, 100, "TUNING_PARAMS", Tuple.DOWN, AppEdge.MODULE);

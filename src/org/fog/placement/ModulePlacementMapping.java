@@ -15,13 +15,17 @@ public class ModulePlacementMapping extends ModulePlacement{
 	@Override
 	protected void mapModules() {
 		//TODO Sending module instances to fog devices
-		Map<String, List<String>> mapping = moduleMapping.getModuleMapping(); 
+		Map<String, Map<String, Integer>> mapping = moduleMapping.getModuleMapping();
+		System.out.println(mapping);
 		for(String deviceName : mapping.keySet()){
 			FogDevice device = getDeviceByName(deviceName);
-			List<String> modulesOnDevice = mapping.get(deviceName);
-			for(String moduleName : modulesOnDevice){
+			for(String moduleName : mapping.get(deviceName).keySet()){
 				AppModule module = getApplication().getModuleByName(moduleName);
+				System.out.println("==========="+deviceName);
 				createModuleInstanceOnDevice(module, device);
+				System.out.println(moduleName);
+				System.out.println(deviceName);
+				getModuleInstanceCountMap().get(device.getId()).put(moduleName, mapping.get(deviceName).get(moduleName));
 			}
 		}
 	}
@@ -33,6 +37,9 @@ public class ModulePlacementMapping extends ModulePlacement{
 		this.setModuleMapping(moduleMapping);
 		this.setModuleToDeviceMap(new HashMap<String, List<Integer>>());
 		this.setDeviceToModuleMap(new HashMap<Integer, List<AppModule>>());
+		this.setModuleInstanceCountMap(new HashMap<Integer, Map<String, Integer>>());
+		for(FogDevice device : getFogDevices())
+			getModuleInstanceCountMap().put(device.getId(), new HashMap<String, Integer>());
 		mapModules();
 	}
 	

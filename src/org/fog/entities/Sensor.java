@@ -45,7 +45,7 @@ public class Sensor extends SimEntity{
 		setTupleNwSize(nwLength);
 		setDestModuleName(destModuleName);
 		setTupleType(tupleType);
-		setSensorName(tupleType);
+		setSensorName(sensorName);
 		setLatency(latency);
 	}
 	
@@ -59,7 +59,7 @@ public class Sensor extends SimEntity{
 		this.setTransmitDistribution(transmitDistribution);
 		setUserId(userId);
 		setTupleType(tupleType);
-		setSensorName(tupleType);
+		setSensorName(sensorName);
 		setLatency(latency);
 	}
 	
@@ -67,6 +67,7 @@ public class Sensor extends SimEntity{
 	 * This constructor is called from the code that generates PhysicalTopology from JSON
 	 * @param name
 	 * @param tupleType
+	 * @param string 
 	 * @param userId
 	 * @param appId
 	 * @param transmitDistribution

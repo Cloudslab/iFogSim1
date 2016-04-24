@@ -1,5 +1,6 @@
 package org.fog.entities;
 
+import java.lang.management.GarbageCollectorMXBean;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -20,7 +21,7 @@ import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.cloudbus.cloudsim.power.PowerDatacenter;
 import org.cloudbus.cloudsim.power.PowerHost;
-import org.cloudbus.cloudsim.power.models.PowerModelLinear;
+import org.cloudbus.cloudsim.power.models.PowerModel;
 import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
 import org.cloudbus.cloudsim.sdn.overbooking.BwProvisionerOverbooking;
 import org.cloudbus.cloudsim.sdn.overbooking.PeProvisionerOverbooking;
@@ -35,6 +36,8 @@ import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
 import org.fog.utils.GeoCoverage;
 import org.fog.utils.Logger;
+import org.fog.utils.ModuleLaunchConfig;
+import org.fog.utils.NetworkUsageMonitor;
 import org.fog.utils.TimeKeeper;
 
 public class FogDevice extends PowerDatacenter {
@@ -93,6 +96,8 @@ public class FogDevice extends PowerDatacenter {
 	
 	protected double totalCost;
 	
+	protected Map<String, Map<String, Integer>> moduleInstanceCount;
+	
 	public FogDevice(
 			String name, 
 			FogDeviceCharacteristics characteristics,
@@ -143,16 +148,14 @@ public class FogDevice extends PowerDatacenter {
 		this.energyConsumption = 0;
 		this.lastUtilization = 0;
 		setTotalCost(0);
-		
+		setModuleInstanceCount(new HashMap<String, Map<String, Integer>>());
 		setChildToLatencyMap(new HashMap<Integer, Double>());
 	}
 
 	public FogDevice(
 			String name, long mips, int ram, 
-			double uplinkBandwidth, double downlinkBandwidth, int level, double ratePerMips) throws Exception {
+			double uplinkBandwidth, double downlinkBandwidth, double ratePerMips, PowerModel powerModel) throws Exception {
 		super(name, null, null, new LinkedList<Storage>(), 0);
-		
-		setLevel(level);
 		
 		List<Pe> peList = new ArrayList<Pe>();
 
@@ -170,7 +173,7 @@ public class FogDevice extends PowerDatacenter {
 				storage,
 				peList,
 				new StreamOperatorScheduler(peList),
-				new PowerModelLinear(100, 40)
+				powerModel
 			);
 
 		List<Host> hostList = new ArrayList<Host>();
@@ -232,6 +235,7 @@ public class FogDevice extends PowerDatacenter {
 		this.lastUtilization = 0;
 		setTotalCost(0);
 		setChildToLatencyMap(new HashMap<Integer, Double>());
+		setModuleInstanceCount(new HashMap<String, Map<String, Integer>>());
 	}
 	
 	/**
@@ -279,11 +283,23 @@ public class FogDevice extends PowerDatacenter {
 		case FogEvents.ACTUATOR_JOINED:
 			processActuatorJoined(ev);
 			break;
+		case FogEvents.LAUNCH_MODULE_INSTANCE:
+			updateModuleInstanceCount(ev);
+			break;
 		default:
 			break;
 		}
 	}
 	
+	private void updateModuleInstanceCount(SimEvent ev) {
+		ModuleLaunchConfig config = (ModuleLaunchConfig)ev.getData();
+		String appId = config.getModule().getAppId();
+		if(!moduleInstanceCount.containsKey(appId))
+			moduleInstanceCount.put(appId, new HashMap<String, Integer>());
+		moduleInstanceCount.get(appId).put(config.getModule().getName(), config.getInstanceCount());
+		System.out.println(getName()+ " Creating "+config.getInstanceCount()+" instances of module "+config.getModule().getName());
+	}
+
 	private void sendPeriodicTuple(SimEvent ev) {
 		AppEdge edge = (AppEdge)ev.getData();
 		String srcModule = edge.getSource();
@@ -297,10 +313,14 @@ public class FogDevice extends PowerDatacenter {
 		if(module == null)
 			return;
 		
-		Tuple tuple = applicationMap.get(module.getAppId()).createTuple(edge, getId());
-		updateTimingsOnSending(tuple);
+		int instanceCount = getModuleInstanceCount().get(module.getAppId()).get(srcModule);
 		
-		sendToSelf(tuple);
+		for(int i = 0;i<((edge.getDirection()==Tuple.UP)?instanceCount:1);i++){
+			Tuple tuple = applicationMap.get(module.getAppId()).createTuple(edge, getId());
+			updateTimingsOnSending(tuple);
+			sendToSelf(tuple);			
+		}
+		//System.out.println(getName()+" SENT TUPLES OF TYPE "+edge.getTupleType());
 		send(getId(), edge.getPeriodicity(), FogEvents.SEND_PERIODIC_TUPLE, edge);
 	}
 
@@ -434,6 +454,7 @@ public class FogDevice extends PowerDatacenter {
 						
 						cloudletCompleted = true;
 						Tuple tuple = (Tuple)cl;
+						TimeKeeper.getInstance().tupleEndedExecution(tuple);
 						Application application = getApplicationMap().get(tuple.getAppId());
 						Logger.debug(getName(), "Completed execution of tuple "+tuple.getCloudletId()+"on "+tuple.getDestModuleName());
 						List<Tuple> resultantTuples = application.getResultantTuples(tuple.getDestModuleName(), tuple, getId());
@@ -517,6 +538,9 @@ public class FogDevice extends PowerDatacenter {
 		double newEnergyConsumption = currentEnergyConsumption + (timeNow-lastUtilizationUpdateTime)*getHost().getPowerModel().getPower(lastUtilization);
 		setEnergyConsumption(newEnergyConsumption);
 		
+		if(getName().equals("cloud"))
+			System.out.println("Last Utilization : "+lastUtilization);
+		
 		double currentCost = getTotalCost();
 		double newcost = currentCost + (timeNow-lastUtilizationUpdateTime)*getRatePerMips()*lastUtilization*getHost().getTotalMips();
 		setTotalCost(newcost);
@@ -547,7 +571,7 @@ public class FogDevice extends PowerDatacenter {
 	}
 	
 	protected void sendTupleToActuator(Tuple tuple){
-		for(Pair<Integer, Double> actuatorAssociation : getAssociatedActuatorIds()){
+		/*for(Pair<Integer, Double> actuatorAssociation : getAssociatedActuatorIds()){
 			int actuatorId = actuatorAssociation.getFirst();
 			double delay = actuatorAssociation.getSecond();
 			if(actuatorId == tuple.getActuatorId()){
@@ -557,7 +581,19 @@ public class FogDevice extends PowerDatacenter {
 		}
 		int childId = getChildIdForTuple(tuple);
 		if(childId != -1)
+			sendDown(tuple, childId);*/
+		for(Pair<Integer, Double> actuatorAssociation : getAssociatedActuatorIds()){
+			int actuatorId = actuatorAssociation.getFirst();
+			double delay = actuatorAssociation.getSecond();
+			String actuatorType = ((Actuator)CloudSim.getEntity(actuatorId)).getActuatorType();
+			if(tuple.getDestModuleName().equals(actuatorType)){
+				send(actuatorId, delay, FogEvents.TUPLE_ARRIVAL, tuple);
+				return;
+			}
+		}
+		for(int childId : getChildrenIds()){
 			sendDown(tuple, childId);
+		}
 	}
 	
 	protected void processTupleArrival(SimEvent ev){
@@ -659,6 +695,9 @@ public class FogDevice extends PowerDatacenter {
 	
 	protected void executeTuple(SimEvent ev, String operatorId){
 		//TODO Power funda
+		Logger.debug(getName(), "Executing tuple on module "+operatorId);
+		Tuple tuple = (Tuple)ev.getData();
+		TimeKeeper.getInstance().tupleStartedExecution(tuple);
 		updateAllocatedMips(operatorId);
 		processCloudletSubmit(ev, false);
 		updateAllocatedMips(operatorId);
@@ -715,6 +754,7 @@ public class FogDevice extends PowerDatacenter {
 		setNorthLinkBusy(true);
 		send(getId(), networkDelay, FogEvents.UPDATE_NORTH_TUPLE_QUEUE);
 		send(parentId, networkDelay+getUplinkLatency(), FogEvents.TUPLE_ARRIVAL, tuple);
+		NetworkUsageMonitor.sendingTuple(getUplinkLatency(), tuple.getCloudletFileSize());
 	}
 	
 	protected void sendUp(Tuple tuple){
@@ -744,6 +784,7 @@ public class FogDevice extends PowerDatacenter {
 		double latency = getChildToLatencyMap().get(childId);
 		send(getId(), networkDelay, FogEvents.UPDATE_SOUTH_TUPLE_QUEUE);
 		send(childId, networkDelay+latency, FogEvents.TUPLE_ARRIVAL, tuple);
+		NetworkUsageMonitor.sendingTuple(latency, tuple.getCloudletFileSize());
 	}
 	
 	protected void sendDown(Tuple tuple, int childId){
@@ -894,6 +935,15 @@ public class FogDevice extends PowerDatacenter {
 
 	public void setTotalCost(double totalCost) {
 		this.totalCost = totalCost;
+	}
+
+	public Map<String, Map<String, Integer>> getModuleInstanceCount() {
+		return moduleInstanceCount;
+	}
+
+	public void setModuleInstanceCount(
+			Map<String, Map<String, Integer>> moduleInstanceCount) {
+		this.moduleInstanceCount = moduleInstanceCount;
 	}
 
 }

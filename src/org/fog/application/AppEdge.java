@@ -107,4 +107,12 @@ public class AppEdge {
 	public void setPeriodic(boolean isPeriodic) {
 		this.isPeriodic = isPeriodic;
 	}
+
+	@Override
+	public String toString() {
+		return "AppEdge [source=" + source + ", destination=" + destination
+				+ ", tupleType=" + tupleType + "]";
+	}
+	
+	
 }

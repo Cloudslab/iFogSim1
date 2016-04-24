@@ -49,6 +49,13 @@ public class Application {
 		getEdgeMap().put(edge.getTupleType(), edge);
 	}
 	
+	public void addAppEdge(String source, String destination, double periodicity, double tupleCpuLength, 
+			double tupleNwLength, String tupleType, int direction, int edgeType){
+		AppEdge edge = new AppEdge(source, destination, periodicity, tupleCpuLength, tupleNwLength, tupleType, direction, edgeType);
+		getEdges().add(edge);
+		getEdgeMap().put(edge.getTupleType(), edge);
+	}
+	
 	public void addTupleMapping(String moduleName, String inputTupleType, String outputTupleType, double selectivity){
 		AppModule module = getModuleByName(moduleName);
 		module.getSelectivityMap().put(new Pair<String, String>(inputTupleType, outputTupleType), selectivity);
@@ -108,7 +115,7 @@ public class Application {
 					
 					//TODO check if the edge is ACTUATOR, then create multiple tuples
 					if(edge.getEdgeType() == AppEdge.ACTUATOR){
-						for(Integer actuatorId : module.getActuatorSubscriptions().get(edge.getTupleType())){
+						//for(Integer actuatorId : module.getActuatorSubscriptions().get(edge.getTupleType())){
 							Tuple tuple = new Tuple(appId, FogUtils.generateTupleId(), edge.getDirection(),  
 									(long) (edge.getTupleCpuLength()),
 									inputTuple.getNumberOfPes(),
@@ -126,10 +133,10 @@ public class Application {
 							tuple.setDirection(Tuple.ACTUATOR);
 							tuple.setTupleType(edge.getTupleType());
 							tuple.setSourceDeviceId(sourceDeviceId);
-							tuple.setActuatorId(actuatorId);
+							//tuple.setActuatorId(actuatorId);
 							
 							tuples.add(tuple);
-						}
+						//}
 					}else{
 						Tuple tuple = new Tuple(appId, FogUtils.generateTupleId(), edge.getDirection(),  
 								(long) (edge.getTupleCpuLength()),

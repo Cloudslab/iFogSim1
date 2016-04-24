@@ -1,0 +1,710 @@
+Starting VRGame...
+0.0 Submitted application vr_game
+On device m-0-0
+6
+{AppEdge [source=EEG, destination=client, tupleType=EEG]=0.1, AppEdge [source=connector, destination=client, tupleType=GLOBAL_GAME_STATE]=0.01, AppEdge [source=classifier, destination=connector, tupleType=PLAYER_GAME_STATE]=0.001}
+GLOBAL_STATE_UPDATE
+AppEdge [source=client, destination=DISPLAY, tupleType=GLOBAL_STATE_UPDATE]
+client----->DISPLAY : 0.01
+_SENSOR
+AppEdge [source=client, destination=classifier, tupleType=_SENSOR]
+client----->classifier : 0.09000000000000001
+CLASSIFICATION
+AppEdge [source=classifier, destination=client, tupleType=CLASSIFICATION]
+classifier----->client : 0.09000000000000001
+GLOBAL_STATE_UPDATE
+_SENSOR
+SELF_STATE_UPDATE
+AppEdge [source=client, destination=DISPLAY, tupleType=SELF_STATE_UPDATE]
+client----->DISPLAY : 0.09000000000000001
+CLASSIFICATION
+GLOBAL_STATE_UPDATE
+_SENSOR
+SELF_STATE_UPDATE
+CLASSIFICATION
+GLOBAL_STATE_UPDATE
+_SENSOR
+Placed Modules : [EEG, DISPLAY]
+Modules to place : [client]
+
+[6, 5, 4, 3]
+m-0-0
+d-0
+proxy-server
+cloud
+client XXXXX Upstream Device : null
+EEG
+Tuple type = EEG
+Rate = 0.1
+Cpu Load = 200.0
+CLASSIFICATION
+Tuple type = CLASSIFICATION
+Rate = 0.09000000000000001
+Cpu Load = 1.2600000000000002
+GLOBAL_GAME_STATE
+Tuple type = GLOBAL_GAME_STATE
+Rate = 0.01
+Cpu Load = 0.28
+Trying to place module client
+Placement of operator client on device m-0-0
+Updated CPU load = 201.54
+Placed Modules : [EEG, DISPLAY, client]
+Modules to place : [classifier]
+Number of instances for operator client = 1
+
+[6, 5, 4, 3]
+m-0-0
+d-0
+proxy-server
+cloud
+classifier XXXXX Upstream Device : null
+_SENSOR
+Tuple type = _SENSOR
+Rate = 0.09000000000000001
+Cpu Load = 315.00000000000006
+Trying to place module classifier
+Placement of operator classifier on device m-0-0
+Updated CPU load = 516.5400000000001
+Placed Modules : [EEG, DISPLAY, client, classifier]
+Modules to place : [connector]
+Number of instances for operator classifier = 1
+
+[6, 5, 4, 3]
+m-0-0
+d-0
+proxy-server
+cloud
+connector XXXXX Upstream Device : cloud
+m-0-0 : 0 modules of Operator connector is already placed on device cloud
+On device d-0
+5
+{AppEdge [source=classifier, destination=client, tupleType=CLASSIFICATION]=0.09000000000000001, AppEdge [source=client, destination=DISPLAY, tupleType=GLOBAL_STATE_UPDATE]=0.01, AppEdge [source=client, destination=DISPLAY, tupleType=SELF_STATE_UPDATE]=0.09000000000000001, AppEdge [source=client, destination=classifier, tupleType=_SENSOR]=0.09000000000000001, AppEdge [source=EEG, destination=client, tupleType=EEG]=0.1, AppEdge [source=connector, destination=client, tupleType=GLOBAL_GAME_STATE]=0.01, AppEdge [source=classifier, destination=connector, tupleType=PLAYER_GAME_STATE]=0.001}
+SELF_STATE_UPDATE
+CLASSIFICATION
+GLOBAL_STATE_UPDATE
+_SENSOR
+Placed Modules : [EEG, DISPLAY, client, classifier]
+Modules to place : [connector]
+
+[6, 5, 4, 3]
+m-0-0
+d-0
+proxy-server
+cloud
+connector XXXXX Upstream Device : cloud
+d-0 : 0 modules of Operator connector is already placed on device cloud
+On device proxy-server
+4
+{AppEdge [source=classifier, destination=client, tupleType=CLASSIFICATION]=0.09000000000000001, AppEdge [source=client, destination=DISPLAY, tupleType=GLOBAL_STATE_UPDATE]=0.01, AppEdge [source=client, destination=DISPLAY, tupleType=SELF_STATE_UPDATE]=0.09000000000000001, AppEdge [source=client, destination=classifier, tupleType=_SENSOR]=0.09000000000000001, AppEdge [source=EEG, destination=client, tupleType=EEG]=0.1, AppEdge [source=connector, destination=client, tupleType=GLOBAL_GAME_STATE]=0.01, AppEdge [source=classifier, destination=connector, tupleType=PLAYER_GAME_STATE]=0.001}
+SELF_STATE_UPDATE
+CLASSIFICATION
+GLOBAL_STATE_UPDATE
+_SENSOR
+Placed Modules : [EEG, DISPLAY, client, classifier]
+Modules to place : [connector]
+
+[6, 5, 4, 3]
+m-0-0
+d-0
+proxy-server
+cloud
+connector XXXXX Upstream Device : cloud
+proxy-server : 0 modules of Operator connector is already placed on device cloud
+On device cloud
+3
+{AppEdge [source=classifier, destination=client, tupleType=CLASSIFICATION]=0.09000000000000001, AppEdge [source=client, destination=DISPLAY, tupleType=GLOBAL_STATE_UPDATE]=0.01, AppEdge [source=client, destination=DISPLAY, tupleType=SELF_STATE_UPDATE]=0.09000000000000001, AppEdge [source=client, destination=classifier, tupleType=_SENSOR]=0.09000000000000001, AppEdge [source=EEG, destination=client, tupleType=EEG]=0.1, AppEdge [source=connector, destination=client, tupleType=GLOBAL_GAME_STATE]=0.01, AppEdge [source=classifier, destination=connector, tupleType=PLAYER_GAME_STATE]=0.001}
+SELF_STATE_UPDATE
+CLASSIFICATION
+GLOBAL_STATE_UPDATE
+_SENSOR
+Placed Modules : [EEG, DISPLAY, client, classifier]
+Modules to place : [connector]
+
+[6, 5, 4, 3]
+m-0-0
+d-0
+proxy-server
+cloud
+connector XXXXX Upstream Device : cloud
+cloud : 0 modules of Operator connector is already placed on device cloud
+Placed Modules : [EEG, DISPLAY, client, classifier, connector]
+Modules to place : []
+You can rest in peace. connector can be created in cloud
+On device m-0-1
+9
+{AppEdge [source=EEG, destination=client, tupleType=EEG]=0.1, AppEdge [source=connector, destination=client, tupleType=GLOBAL_GAME_STATE]=0.01, AppEdge [source=classifier, destination=connector, tupleType=PLAYER_GAME_STATE]=0.001}
+GLOBAL_STATE_UPDATE
+AppEdge [source=client, destination=DISPLAY, tupleType=GLOBAL_STATE_UPDATE]
+client----->DISPLAY : 0.01
+_SENSOR
+AppEdge [source=client, destination=classifier, tupleType=_SENSOR]
+client----->classifier : 0.09000000000000001
+CLASSIFICATION
+AppEdge [source=classifier, destination=client, tupleType=CLASSIFICATION]
+classifier----->client : 0.09000000000000001
+GLOBAL_STATE_UPDATE
+_SENSOR
+SELF_STATE_UPDATE
+AppEdge [source=client, destination=DISPLAY, tupleType=SELF_STATE_UPDATE]
+client----->DISPLAY : 0.09000000000000001
+CLASSIFICATION
+GLOBAL_STATE_UPDATE
+_SENSOR
+SELF_STATE_UPDATE
+CLASSIFICATION
+GLOBAL_STATE_UPDATE
+_SENSOR
+Placed Modules : [EEG, DISPLAY]
+Modules to place : [client]
+
+[9, 5, 4, 3]
+m-0-1
+d-0
+proxy-server
+cloud
+client XXXXX Upstream Device : null
+EEG
+Tuple type = EEG
+Rate = 0.1
+Cpu Load = 200.0
+CLASSIFICATION
+Tuple type = CLASSIFICATION
+Rate = 0.09000000000000001
+Cpu Load = 1.2600000000000002
+GLOBAL_GAME_STATE
+Tuple type = GLOBAL_GAME_STATE
+Rate = 0.01
+Cpu Load = 0.28
+Trying to place module client
+Placement of operator client on device m-0-1
+Updated CPU load = 201.54
+Placed Modules : [EEG, DISPLAY, client]
+Modules to place : [classifier]
+Number of instances for operator client = 1
+
+[9, 5, 4, 3]
+m-0-1
+d-0
+proxy-server
+cloud
+classifier XXXXX Upstream Device : null
+_SENSOR
+Tuple type = _SENSOR
+Rate = 0.09000000000000001
+Cpu Load = 315.00000000000006
+Trying to place module classifier
+Placement of operator classifier on device m-0-1
+Updated CPU load = 516.5400000000001
+Placed Modules : [EEG, DISPLAY, client, classifier]
+Modules to place : [connector]
+Number of instances for operator classifier = 1
+
+[9, 5, 4, 3]
+m-0-1
+d-0
+proxy-server
+cloud
+connector XXXXX Upstream Device : cloud
+m-0-1 : 1 modules of Operator connector is already placed on device cloud
+On device d-0
+5
+{AppEdge [source=classifier, destination=client, tupleType=CLASSIFICATION]=0.09000000000000001, AppEdge [source=client, destination=DISPLAY, tupleType=GLOBAL_STATE_UPDATE]=0.01, AppEdge [source=client, destination=DISPLAY, tupleType=SELF_STATE_UPDATE]=0.09000000000000001, AppEdge [source=client, destination=classifier, tupleType=_SENSOR]=0.09000000000000001, AppEdge [source=EEG, destination=client, tupleType=EEG]=0.1, AppEdge [source=connector, destination=client, tupleType=GLOBAL_GAME_STATE]=0.01, AppEdge [source=classifier, destination=connector, tupleType=PLAYER_GAME_STATE]=0.001}
+SELF_STATE_UPDATE
+CLASSIFICATION
+GLOBAL_STATE_UPDATE
+_SENSOR
+Placed Modules : [EEG, DISPLAY, client, classifier]
+Modules to place : [connector]
+
+[9, 5, 4, 3]
+m-0-1
+d-0
+proxy-server
+cloud
+connector XXXXX Upstream Device : cloud
+d-0 : 1 modules of Operator connector is already placed on device cloud
+On device proxy-server
+4
+{AppEdge [source=classifier, destination=client, tupleType=CLASSIFICATION]=0.09000000000000001, AppEdge [source=client, destination=DISPLAY, tupleType=GLOBAL_STATE_UPDATE]=0.01, AppEdge [source=client, destination=DISPLAY, tupleType=SELF_STATE_UPDATE]=0.09000000000000001, AppEdge [source=client, destination=classifier, tupleType=_SENSOR]=0.09000000000000001, AppEdge [source=EEG, destination=client, tupleType=EEG]=0.1, AppEdge [source=connector, destination=client, tupleType=GLOBAL_GAME_STATE]=0.01, AppEdge [source=classifier, destination=connector, tupleType=PLAYER_GAME_STATE]=0.001}
+SELF_STATE_UPDATE
+CLASSIFICATION
+GLOBAL_STATE_UPDATE
+_SENSOR
+Placed Modules : [EEG, DISPLAY, client, classifier]
+Modules to place : [connector]
+
+[9, 5, 4, 3]
+m-0-1
+d-0
+proxy-server
+cloud
+connector XXXXX Upstream Device : cloud
+proxy-server : 1 modules of Operator connector is already placed on device cloud
+On device cloud
+3
+{AppEdge [source=classifier, destination=client, tupleType=CLASSIFICATION]=0.09000000000000001, AppEdge [source=client, destination=DISPLAY, tupleType=GLOBAL_STATE_UPDATE]=0.01, AppEdge [source=client, destination=DISPLAY, tupleType=SELF_STATE_UPDATE]=0.09000000000000001, AppEdge [source=client, destination=classifier, tupleType=_SENSOR]=0.09000000000000001, AppEdge [source=EEG, destination=client, tupleType=EEG]=0.1, AppEdge [source=connector, destination=client, tupleType=GLOBAL_GAME_STATE]=0.01, AppEdge [source=classifier, destination=connector, tupleType=PLAYER_GAME_STATE]=0.001}
+SELF_STATE_UPDATE
+CLASSIFICATION
+GLOBAL_STATE_UPDATE
+_SENSOR
+Placed Modules : [EEG, DISPLAY, client, classifier]
+Modules to place : [connector]
+
+[9, 5, 4, 3]
+m-0-1
+d-0
+proxy-server
+cloud
+connector XXXXX Upstream Device : cloud
+cloud : 1 modules of Operator connector is already placed on device cloud
+Placed Modules : [EEG, DISPLAY, client, classifier, connector]
+Modules to place : []
+You can rest in peace. connector can be created in cloud
+On device m-0-2
+12
+{AppEdge [source=EEG, destination=client, tupleType=EEG]=0.1, AppEdge [source=connector, destination=client, tupleType=GLOBAL_GAME_STATE]=0.01, AppEdge [source=classifier, destination=connector, tupleType=PLAYER_GAME_STATE]=0.001}
+GLOBAL_STATE_UPDATE
+AppEdge [source=client, destination=DISPLAY, tupleType=GLOBAL_STATE_UPDATE]
+client----->DISPLAY : 0.01
+_SENSOR
+AppEdge [source=client, destination=classifier, tupleType=_SENSOR]
+client----->classifier : 0.09000000000000001
+CLASSIFICATION
+AppEdge [source=classifier, destination=client, tupleType=CLASSIFICATION]
+classifier----->client : 0.09000000000000001
+GLOBAL_STATE_UPDATE
+_SENSOR
+SELF_STATE_UPDATE
+AppEdge [source=client, destination=DISPLAY, tupleType=SELF_STATE_UPDATE]
+client----->DISPLAY : 0.09000000000000001
+CLASSIFICATION
+GLOBAL_STATE_UPDATE
+_SENSOR
+SELF_STATE_UPDATE
+CLASSIFICATION
+GLOBAL_STATE_UPDATE
+_SENSOR
+Placed Modules : [EEG, DISPLAY]
+Modules to place : [client]
+
+[12, 5, 4, 3]
+m-0-2
+d-0
+proxy-server
+cloud
+client XXXXX Upstream Device : null
+EEG
+Tuple type = EEG
+Rate = 0.1
+Cpu Load = 200.0
+CLASSIFICATION
+Tuple type = CLASSIFICATION
+Rate = 0.09000000000000001
+Cpu Load = 1.2600000000000002
+GLOBAL_GAME_STATE
+Tuple type = GLOBAL_GAME_STATE
+Rate = 0.01
+Cpu Load = 0.28
+Trying to place module client
+Placement of operator client on device m-0-2
+Updated CPU load = 201.54
+Placed Modules : [EEG, DISPLAY, client]
+Modules to place : [classifier]
+Number of instances for operator client = 1
+
+[12, 5, 4, 3]
+m-0-2
+d-0
+proxy-server
+cloud
+classifier XXXXX Upstream Device : null
+_SENSOR
+Tuple type = _SENSOR
+Rate = 0.09000000000000001
+Cpu Load = 315.00000000000006
+Trying to place module classifier
+Placement of operator classifier on device m-0-2
+Updated CPU load = 516.5400000000001
+Placed Modules : [EEG, DISPLAY, client, classifier]
+Modules to place : [connector]
+Number of instances for operator classifier = 1
+
+[12, 5, 4, 3]
+m-0-2
+d-0
+proxy-server
+cloud
+connector XXXXX Upstream Device : cloud
+m-0-2 : 2 modules of Operator connector is already placed on device cloud
+On device d-0
+5
+{AppEdge [source=classifier, destination=client, tupleType=CLASSIFICATION]=0.09000000000000001, AppEdge [source=client, destination=DISPLAY, tupleType=GLOBAL_STATE_UPDATE]=0.01, AppEdge [source=client, destination=DISPLAY, tupleType=SELF_STATE_UPDATE]=0.09000000000000001, AppEdge [source=client, destination=classifier, tupleType=_SENSOR]=0.09000000000000001, AppEdge [source=EEG, destination=client, tupleType=EEG]=0.1, AppEdge [source=connector, destination=client, tupleType=GLOBAL_GAME_STATE]=0.01, AppEdge [source=classifier, destination=connector, tupleType=PLAYER_GAME_STATE]=0.001}
+SELF_STATE_UPDATE
+CLASSIFICATION
+GLOBAL_STATE_UPDATE
+_SENSOR
+Placed Modules : [EEG, DISPLAY, client, classifier]
+Modules to place : [connector]
+
+[12, 5, 4, 3]
+m-0-2
+d-0
+proxy-server
+cloud
+connector XXXXX Upstream Device : cloud
+d-0 : 2 modules of Operator connector is already placed on device cloud
+On device proxy-server
+4
+{AppEdge [source=classifier, destination=client, tupleType=CLASSIFICATION]=0.09000000000000001, AppEdge [source=client, destination=DISPLAY, tupleType=GLOBAL_STATE_UPDATE]=0.01, AppEdge [source=client, destination=DISPLAY, tupleType=SELF_STATE_UPDATE]=0.09000000000000001, AppEdge [source=client, destination=classifier, tupleType=_SENSOR]=0.09000000000000001, AppEdge [source=EEG, destination=client, tupleType=EEG]=0.1, AppEdge [source=connector, destination=client, tupleType=GLOBAL_GAME_STATE]=0.01, AppEdge [source=classifier, destination=connector, tupleType=PLAYER_GAME_STATE]=0.001}
+SELF_STATE_UPDATE
+CLASSIFICATION
+GLOBAL_STATE_UPDATE
+_SENSOR
+Placed Modules : [EEG, DISPLAY, client, classifier]
+Modules to place : [connector]
+
+[12, 5, 4, 3]
+m-0-2
+d-0
+proxy-server
+cloud
+connector XXXXX Upstream Device : cloud
+proxy-server : 2 modules of Operator connector is already placed on device cloud
+On device cloud
+3
+{AppEdge [source=classifier, destination=client, tupleType=CLASSIFICATION]=0.09000000000000001, AppEdge [source=client, destination=DISPLAY, tupleType=GLOBAL_STATE_UPDATE]=0.01, AppEdge [source=client, destination=DISPLAY, tupleType=SELF_STATE_UPDATE]=0.09000000000000001, AppEdge [source=client, destination=classifier, tupleType=_SENSOR]=0.09000000000000001, AppEdge [source=EEG, destination=client, tupleType=EEG]=0.1, AppEdge [source=connector, destination=client, tupleType=GLOBAL_GAME_STATE]=0.01, AppEdge [source=classifier, destination=connector, tupleType=PLAYER_GAME_STATE]=0.001}
+SELF_STATE_UPDATE
+CLASSIFICATION
+GLOBAL_STATE_UPDATE
+_SENSOR
+Placed Modules : [EEG, DISPLAY, client, classifier]
+Modules to place : [connector]
+
+[12, 5, 4, 3]
+m-0-2
+d-0
+proxy-server
+cloud
+connector XXXXX Upstream Device : cloud
+cloud : 2 modules of Operator connector is already placed on device cloud
+Placed Modules : [EEG, DISPLAY, client, classifier, connector]
+Modules to place : []
+You can rest in peace. connector can be created in cloud
+On device m-0-3
+15
+{AppEdge [source=EEG, destination=client, tupleType=EEG]=0.1, AppEdge [source=connector, destination=client, tupleType=GLOBAL_GAME_STATE]=0.01, AppEdge [source=classifier, destination=connector, tupleType=PLAYER_GAME_STATE]=0.001}
+GLOBAL_STATE_UPDATE
+AppEdge [source=client, destination=DISPLAY, tupleType=GLOBAL_STATE_UPDATE]
+client----->DISPLAY : 0.01
+_SENSOR
+AppEdge [source=client, destination=classifier, tupleType=_SENSOR]
+client----->classifier : 0.09000000000000001
+CLASSIFICATION
+AppEdge [source=classifier, destination=client, tupleType=CLASSIFICATION]
+classifier----->client : 0.09000000000000001
+GLOBAL_STATE_UPDATE
+_SENSOR
+SELF_STATE_UPDATE
+AppEdge [source=client, destination=DISPLAY, tupleType=SELF_STATE_UPDATE]
+client----->DISPLAY : 0.09000000000000001
+CLASSIFICATION
+GLOBAL_STATE_UPDATE
+_SENSOR
+SELF_STATE_UPDATE
+CLASSIFICATION
+GLOBAL_STATE_UPDATE
+_SENSOR
+Placed Modules : [EEG, DISPLAY]
+Modules to place : [client]
+
+[15, 5, 4, 3]
+m-0-3
+d-0
+proxy-server
+cloud
+client XXXXX Upstream Device : null
+EEG
+Tuple type = EEG
+Rate = 0.1
+Cpu Load = 200.0
+CLASSIFICATION
+Tuple type = CLASSIFICATION
+Rate = 0.09000000000000001
+Cpu Load = 1.2600000000000002
+GLOBAL_GAME_STATE
+Tuple type = GLOBAL_GAME_STATE
+Rate = 0.01
+Cpu Load = 0.28
+Trying to place module client
+Placement of operator client on device m-0-3
+Updated CPU load = 201.54
+Placed Modules : [EEG, DISPLAY, client]
+Modules to place : [classifier]
+Number of instances for operator client = 1
+
+[15, 5, 4, 3]
+m-0-3
+d-0
+proxy-server
+cloud
+classifier XXXXX Upstream Device : null
+_SENSOR
+Tuple type = _SENSOR
+Rate = 0.09000000000000001
+Cpu Load = 315.00000000000006
+Trying to place module classifier
+Placement of operator classifier on device m-0-3
+Updated CPU load = 516.5400000000001
+Placed Modules : [EEG, DISPLAY, client, classifier]
+Modules to place : [connector]
+Number of instances for operator classifier = 1
+
+[15, 5, 4, 3]
+m-0-3
+d-0
+proxy-server
+cloud
+connector XXXXX Upstream Device : cloud
+m-0-3 : 3 modules of Operator connector is already placed on device cloud
+On device d-0
+5
+{AppEdge [source=classifier, destination=client, tupleType=CLASSIFICATION]=0.09000000000000001, AppEdge [source=client, destination=DISPLAY, tupleType=GLOBAL_STATE_UPDATE]=0.01, AppEdge [source=client, destination=DISPLAY, tupleType=SELF_STATE_UPDATE]=0.09000000000000001, AppEdge [source=client, destination=classifier, tupleType=_SENSOR]=0.09000000000000001, AppEdge [source=EEG, destination=client, tupleType=EEG]=0.1, AppEdge [source=connector, destination=client, tupleType=GLOBAL_GAME_STATE]=0.01, AppEdge [source=classifier, destination=connector, tupleType=PLAYER_GAME_STATE]=0.001}
+SELF_STATE_UPDATE
+CLASSIFICATION
+GLOBAL_STATE_UPDATE
+_SENSOR
+Placed Modules : [EEG, DISPLAY, client, classifier]
+Modules to place : [connector]
+
+[15, 5, 4, 3]
+m-0-3
+d-0
+proxy-server
+cloud
+connector XXXXX Upstream Device : cloud
+d-0 : 3 modules of Operator connector is already placed on device cloud
+On device proxy-server
+4
+{AppEdge [source=classifier, destination=client, tupleType=CLASSIFICATION]=0.09000000000000001, AppEdge [source=client, destination=DISPLAY, tupleType=GLOBAL_STATE_UPDATE]=0.01, AppEdge [source=client, destination=DISPLAY, tupleType=SELF_STATE_UPDATE]=0.09000000000000001, AppEdge [source=client, destination=classifier, tupleType=_SENSOR]=0.09000000000000001, AppEdge [source=EEG, destination=client, tupleType=EEG]=0.1, AppEdge [source=connector, destination=client, tupleType=GLOBAL_GAME_STATE]=0.01, AppEdge [source=classifier, destination=connector, tupleType=PLAYER_GAME_STATE]=0.001}
+SELF_STATE_UPDATE
+CLASSIFICATION
+GLOBAL_STATE_UPDATE
+_SENSOR
+Placed Modules : [EEG, DISPLAY, client, classifier]
+Modules to place : [connector]
+
+[15, 5, 4, 3]
+m-0-3
+d-0
+proxy-server
+cloud
+connector XXXXX Upstream Device : cloud
+proxy-server : 3 modules of Operator connector is already placed on device cloud
+On device cloud
+3
+{AppEdge [source=classifier, destination=client, tupleType=CLASSIFICATION]=0.09000000000000001, AppEdge [source=client, destination=DISPLAY, tupleType=GLOBAL_STATE_UPDATE]=0.01, AppEdge [source=client, destination=DISPLAY, tupleType=SELF_STATE_UPDATE]=0.09000000000000001, AppEdge [source=client, destination=classifier, tupleType=_SENSOR]=0.09000000000000001, AppEdge [source=EEG, destination=client, tupleType=EEG]=0.1, AppEdge [source=connector, destination=client, tupleType=GLOBAL_GAME_STATE]=0.01, AppEdge [source=classifier, destination=connector, tupleType=PLAYER_GAME_STATE]=0.001}
+SELF_STATE_UPDATE
+CLASSIFICATION
+GLOBAL_STATE_UPDATE
+_SENSOR
+Placed Modules : [EEG, DISPLAY, client, classifier]
+Modules to place : [connector]
+
+[15, 5, 4, 3]
+m-0-3
+d-0
+proxy-server
+cloud
+connector XXXXX Upstream Device : cloud
+cloud : 3 modules of Operator connector is already placed on device cloud
+Placed Modules : [EEG, DISPLAY, client, classifier, connector]
+Modules to place : []
+You can rest in peace. connector can be created in cloud
+3
+cloud--->[connector]
+3
+Creating connector on device cloud
+4
+proxy-server--->[]
+5
+d-0--->[]
+6
+m-0-0--->[client, classifier]
+6
+Creating client on device m-0-0
+6
+Creating classifier on device m-0-0
+9
+m-0-1--->[client, classifier]
+9
+Creating client on device m-0-1
+9
+Creating classifier on device m-0-1
+12
+m-0-2--->[client, classifier]
+12
+Creating client on device m-0-2
+12
+Creating classifier on device m-0-2
+15
+m-0-3--->[client, classifier]
+15
+Creating client on device m-0-3
+15
+Creating classifier on device m-0-3
+{3={connector=4}, 4={}, 5={}, 6={client=1, classifier=1}, 9={client=1, classifier=1}, 12={client=1, classifier=1}, 15={client=1, classifier=1}}
+cloud Creating 4 instances of module connector
+m-0-0 Creating 1 instances of module client
+m-0-0 Creating 1 instances of module classifier
+m-0-1 Creating 1 instances of module client
+m-0-1 Creating 1 instances of module classifier
+m-0-2 Creating 1 instances of module client
+m-0-2 Creating 1 instances of module classifier
+m-0-3 Creating 1 instances of module client
+m-0-3 Creating 1 instances of module classifier
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 1.0
+Last Utilization : 0.0
+Last Utilization : 1.0
+=========================================
+============== RESULTS ==================
+=========================================
+EXECUTION TIME : 1427
+=========================================
+APPLICATION LOOP DELAYS
+=========================================
+[EEG, client, classifier, client, DISPLAY] ---> 13.114000000000004
+=========================================
+TUPLE CPU EXECUTION DELAY
+=========================================
+GLOBAL_GAME_STATE ---> 0.05091118650599935
+CLASSIFICATION ---> 0.113999999999578
+EEG ---> 2.100008015632993
+PLAYER_GAME_STATE ---> 0.05000000000060633
+_SENSOR ---> 3.600000000000364
+=========================================
+cloud : Energy Consumed = 3708.0
+proxy-server : Energy Consumed = 0.0
+d-0 : Energy Consumed = 0.0
+m-0-0 : Energy Consumed = 323295.55619996495
+m-0-1 : Energy Consumed = 325068.738939963
+m-0-2 : Energy Consumed = 354800.92934005836
+m-0-3 : Energy Consumed = 353361.9361400687
+Cost of execution in cloud = 900.0
+Total network usage = 1435.6
+THESIS RESULTS
+13.114000000000004
+3708.0
+339131.79015501373
+0.0
+1428
+0.05091118650599935
+0.113999999999578
+2.100008015632993
+0.05000000000060633
+3.600000000000364
+1435.6

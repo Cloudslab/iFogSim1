@@ -70,6 +70,8 @@ public class CleanFromJson {
 			
 			PhysicalTopology physicalTopology = JsonToTopology.getPhysicalTopology(broker.getId(), appId, "topologies/routerTopology");
 			
+			
+			
 			/*List<Sensor> sensors = new ArrayList<Sensor>(){{add(s0);add(s1);}};
 			List<Actuator> actuators = new ArrayList<Actuator>(){{add(actuator0);add(actuator1);}};*/
 						
@@ -90,12 +92,6 @@ public class CleanFromJson {
 			Controller controller = new Controller("master-controller", physicalTopology.getFogDevices(), physicalTopology.getSensors(), 
 					physicalTopology.getActuators(), moduleMapping);
 			
-			/*s0.setControllerId(controller.getId());
-			s1.setControllerId(controller.getId());
-			s0.setApp(application);
-			s1.setApp(application);
-			actuator0.setApp(application);
-			actuator1.setApp(application);*/
 			
 			controller.submitApplication(application, 0);
 			
@@ -147,59 +143,11 @@ public class CleanFromJson {
 	 * @param name the name
 	 *
 	 * @return the datacenter
+	 * @throws Exception 
 	 */
-	private static FogDevice createFogDevice(String name, int mips, GeoCoverage geoCoverage, double uplinkBandwidth, double downlinkBandwidth, double latency, double ratePerMips) {
-
-		// 2. A Machine contains one or more PEs or CPUs/Cores.
-		// In this example, it will have only one core.
-		List<Pe> peList = new ArrayList<Pe>();
-
-		// 3. Create PEs and add these into a list.
-		peList.add(new Pe(0, new PeProvisionerOverbooking(mips))); // need to store Pe id and MIPS Rating
-
-		int hostId = FogUtils.generateEntityId();
-		int ram = 2048; // host memory (MB)
-		long storage = 1000000; // host storage
-		int bw = 10000;
-
-		PowerHost host = new PowerHost(
-				hostId,
-				new RamProvisionerSimple(ram),
-				new BwProvisionerOverbooking(bw),
-				storage,
-				peList,
-				new StreamOperatorScheduler(peList),
-				new PowerModelLinear(100, 40)
-			);
-
-		List<Host> hostList = new ArrayList<Host>();
-		hostList.add(host);
-
-		String arch = "x86"; // system architecture
-		String os = "Linux"; // operating system
-		String vmm = "Xen";
-		double time_zone = 10.0; // time zone this resource located
-		double cost = 3.0; // the cost of using processing in this resource
-		double costPerMem = 0.05; // the cost of using memory in this resource
-		double costPerStorage = 0.001; // the cost of using storage in this
-										// resource
-		double costPerBw = 0.0; // the cost of using bw in this resource
-		LinkedList<Storage> storageList = new LinkedList<Storage>(); // we are not adding SAN
-													// devices by now
-
-		FogDeviceCharacteristics characteristics = new FogDeviceCharacteristics(
-				arch, os, vmm, host, time_zone, cost, costPerMem,
-				costPerStorage, costPerBw);
-
-		FogDevice fogdevice = null;
-		try {
-			fogdevice = new FogDevice(name, characteristics, 
-					new AppModuleAllocationPolicy(hostList), storageList, 10, uplinkBandwidth, downlinkBandwidth, latency, ratePerMips);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return fogdevice;
+	private static FogDevice createFogDevice(String name, long mips, int ram, int level, GeoCoverage geoCoverage, double uplinkBandwidth, double downlinkBandwidth, double ratePerMips) throws Exception {
+		FogDevice fogDevice = new FogDevice(name, mips, ram, uplinkBandwidth, downlinkBandwidth, 0, ratePerMips);
+		return fogDevice;
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked", "serial" })

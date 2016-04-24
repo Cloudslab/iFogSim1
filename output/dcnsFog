@@ -1,0 +1,664 @@
+Starting DCNS...
+0.0 Submitted application dcns
+On device m-0-0
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0}
+MOTION_VIDEO_STREAM
+AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]
+motion_detector----->object_detector : 0.1
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]
+object_detector----->user_interface : 0.005000000000000001
+OBJECT_LOCATION
+AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]
+object_detector----->object_tracker : 0.1
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+
+m-0-0 : 0 modules of Operator motion_detector is already placed on device m-0-0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-0-0
+
+m-0-0 : 0 modules of Operator object_detector is already placed on device cloud
+On device r-0
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+r-0 : 0 modules of Operator object_detector is already placed on device cloud
+On device proxy-server
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+proxy-server : 0 modules of Operator object_detector is already placed on device cloud
+On device cloud
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+cloud : 0 modules of Operator object_detector is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in cloud
+
+cloud : 0 modules of Operator object_tracker is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in cloud
+
+cloud : 0 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+On device m-0-1
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0}
+MOTION_VIDEO_STREAM
+AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]
+motion_detector----->object_detector : 0.1
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]
+object_detector----->user_interface : 0.005000000000000001
+OBJECT_LOCATION
+AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]
+object_detector----->object_tracker : 0.1
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+
+m-0-1 : 0 modules of Operator motion_detector is already placed on device m-0-1
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-0-1
+
+m-0-1 : 1 modules of Operator object_detector is already placed on device cloud
+On device r-0
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+r-0 : 1 modules of Operator object_detector is already placed on device cloud
+On device proxy-server
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+proxy-server : 1 modules of Operator object_detector is already placed on device cloud
+On device cloud
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+cloud : 1 modules of Operator object_detector is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in cloud
+
+cloud : 1 modules of Operator object_tracker is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in cloud
+
+cloud : 1 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+On device m-0-2
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0}
+MOTION_VIDEO_STREAM
+AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]
+motion_detector----->object_detector : 0.1
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]
+object_detector----->user_interface : 0.005000000000000001
+OBJECT_LOCATION
+AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]
+object_detector----->object_tracker : 0.1
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+
+m-0-2 : 0 modules of Operator motion_detector is already placed on device m-0-2
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-0-2
+
+m-0-2 : 2 modules of Operator object_detector is already placed on device cloud
+On device r-0
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+r-0 : 2 modules of Operator object_detector is already placed on device cloud
+On device proxy-server
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+proxy-server : 2 modules of Operator object_detector is already placed on device cloud
+On device cloud
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+cloud : 2 modules of Operator object_detector is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in cloud
+
+cloud : 2 modules of Operator object_tracker is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in cloud
+
+cloud : 2 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+On device m-1-0
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0}
+MOTION_VIDEO_STREAM
+AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]
+motion_detector----->object_detector : 0.1
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]
+object_detector----->user_interface : 0.005000000000000001
+OBJECT_LOCATION
+AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]
+object_detector----->object_tracker : 0.1
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+
+m-1-0 : 0 modules of Operator motion_detector is already placed on device m-1-0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-1-0
+
+m-1-0 : 3 modules of Operator object_detector is already placed on device cloud
+On device r-1
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+r-1 : 3 modules of Operator object_detector is already placed on device cloud
+On device proxy-server
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+proxy-server : 3 modules of Operator object_detector is already placed on device cloud
+On device cloud
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+cloud : 3 modules of Operator object_detector is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in cloud
+
+cloud : 3 modules of Operator object_tracker is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in cloud
+
+cloud : 3 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+On device m-1-1
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0}
+MOTION_VIDEO_STREAM
+AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]
+motion_detector----->object_detector : 0.1
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]
+object_detector----->user_interface : 0.005000000000000001
+OBJECT_LOCATION
+AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]
+object_detector----->object_tracker : 0.1
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+
+m-1-1 : 0 modules of Operator motion_detector is already placed on device m-1-1
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-1-1
+
+m-1-1 : 4 modules of Operator object_detector is already placed on device cloud
+On device r-1
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+r-1 : 4 modules of Operator object_detector is already placed on device cloud
+On device proxy-server
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+proxy-server : 4 modules of Operator object_detector is already placed on device cloud
+On device cloud
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+cloud : 4 modules of Operator object_detector is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in cloud
+
+cloud : 4 modules of Operator object_tracker is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in cloud
+
+cloud : 4 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+On device m-1-2
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0}
+MOTION_VIDEO_STREAM
+AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]
+motion_detector----->object_detector : 0.1
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]
+object_detector----->user_interface : 0.005000000000000001
+OBJECT_LOCATION
+AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]
+object_detector----->object_tracker : 0.1
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+
+m-1-2 : 0 modules of Operator motion_detector is already placed on device m-1-2
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-1-2
+
+m-1-2 : 5 modules of Operator object_detector is already placed on device cloud
+On device r-1
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+r-1 : 5 modules of Operator object_detector is already placed on device cloud
+On device proxy-server
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+proxy-server : 5 modules of Operator object_detector is already placed on device cloud
+On device cloud
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+cloud : 5 modules of Operator object_detector is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in cloud
+
+cloud : 5 modules of Operator object_tracker is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in cloud
+
+cloud : 5 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+On device m-2-0
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0}
+MOTION_VIDEO_STREAM
+AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]
+motion_detector----->object_detector : 0.1
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]
+object_detector----->user_interface : 0.005000000000000001
+OBJECT_LOCATION
+AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]
+object_detector----->object_tracker : 0.1
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+
+m-2-0 : 0 modules of Operator motion_detector is already placed on device m-2-0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-2-0
+
+m-2-0 : 6 modules of Operator object_detector is already placed on device cloud
+On device r-2
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+r-2 : 6 modules of Operator object_detector is already placed on device cloud
+On device proxy-server
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+proxy-server : 6 modules of Operator object_detector is already placed on device cloud
+On device cloud
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+cloud : 6 modules of Operator object_detector is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in cloud
+
+cloud : 6 modules of Operator object_tracker is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in cloud
+
+cloud : 6 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+On device m-2-1
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0}
+MOTION_VIDEO_STREAM
+AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]
+motion_detector----->object_detector : 0.1
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]
+object_detector----->user_interface : 0.005000000000000001
+OBJECT_LOCATION
+AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]
+object_detector----->object_tracker : 0.1
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+
+m-2-1 : 0 modules of Operator motion_detector is already placed on device m-2-1
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-2-1
+
+m-2-1 : 7 modules of Operator object_detector is already placed on device cloud
+On device r-2
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+r-2 : 7 modules of Operator object_detector is already placed on device cloud
+On device proxy-server
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+proxy-server : 7 modules of Operator object_detector is already placed on device cloud
+On device cloud
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+cloud : 7 modules of Operator object_detector is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in cloud
+
+cloud : 7 modules of Operator object_tracker is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in cloud
+
+cloud : 7 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+On device m-2-2
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0}
+MOTION_VIDEO_STREAM
+AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]
+motion_detector----->object_detector : 0.1
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]
+object_detector----->user_interface : 0.005000000000000001
+OBJECT_LOCATION
+AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]
+object_detector----->object_tracker : 0.1
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+
+m-2-2 : 0 modules of Operator motion_detector is already placed on device m-2-2
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-2-2
+
+m-2-2 : 8 modules of Operator object_detector is already placed on device cloud
+On device r-2
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+r-2 : 8 modules of Operator object_detector is already placed on device cloud
+On device proxy-server
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+proxy-server : 8 modules of Operator object_detector is already placed on device cloud
+On device cloud
+{AppEdge [source=object_tracker, destination=PTZ_CONTROL, tupleType=PTZ_PARAMS]=0.01, AppEdge [source=object_detector, destination=object_tracker, tupleType=OBJECT_LOCATION]=0.1, AppEdge [source=object_detector, destination=user_interface, tupleType=DETECTED_OBJECT]=0.005000000000000001, AppEdge [source=CAMERA, destination=motion_detector, tupleType=CAMERA]=1.0, AppEdge [source=motion_detector, destination=object_detector, tupleType=MOTION_VIDEO_STREAM]=0.1}
+MOTION_VIDEO_STREAM
+DETECTED_OBJECT
+OBJECT_LOCATION
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+
+cloud : 8 modules of Operator object_detector is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in cloud
+
+cloud : 8 modules of Operator object_tracker is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in cloud
+
+cloud : 8 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, object_detector, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+m-2-2--->[motion_detector]
+Creating motion_detector on device m-2-2
+cloud--->[object_tracker, user_interface, object_detector]
+Creating object_tracker on device cloud
+Creating user_interface on device cloud
+Creating object_detector on device cloud
+proxy-server--->[]
+r-0--->[]
+m-0-0--->[motion_detector]
+Creating motion_detector on device m-0-0
+m-0-1--->[motion_detector]
+Creating motion_detector on device m-0-1
+m-0-2--->[motion_detector]
+Creating motion_detector on device m-0-2
+r-1--->[]
+m-1-0--->[motion_detector]
+Creating motion_detector on device m-1-0
+m-1-1--->[motion_detector]
+Creating motion_detector on device m-1-1
+m-1-2--->[motion_detector]
+Creating motion_detector on device m-1-2
+r-2--->[]
+m-2-0--->[motion_detector]
+Creating motion_detector on device m-2-0
+m-2-1--->[motion_detector]
+Creating motion_detector on device m-2-1
+32 : m-2-2
+3 : cloud
+4 : proxy-server
+5 : r-0
+6 : m-0-0
+9 : m-0-1
+12 : m-0-2
+15 : r-1
+16 : m-1-0
+19 : m-1-1
+22 : m-1-2
+25 : r-2
+26 : m-2-0
+29 : m-2-1
+{32={motion_detector=1}, 3={user_interface=9, object_tracker=9, object_detector=9}, 4={}, 5={}, 6={motion_detector=1}, 9={motion_detector=1}, 12={motion_detector=1}, 15={}, 16={motion_detector=1}, 19={motion_detector=1}, 22={motion_detector=1}, 25={}, 26={motion_detector=1}, 29={motion_detector=1}}
+cloud Creating 9 instances of module object_tracker
+cloud Creating 9 instances of module user_interface
+cloud Creating 9 instances of module object_detector
+m-0-0 Creating 1 instances of module motion_detector
+m-0-1 Creating 1 instances of module motion_detector
+m-0-2 Creating 1 instances of module motion_detector
+m-1-0 Creating 1 instances of module motion_detector
+m-1-1 Creating 1 instances of module motion_detector
+m-1-2 Creating 1 instances of module motion_detector
+m-2-0 Creating 1 instances of module motion_detector
+m-2-1 Creating 1 instances of module motion_detector
+m-2-2 Creating 1 instances of module motion_detector
+=========================================
+============== RESULTS ==================
+=========================================
+EXECUTION TIME : 2660
+=========================================
+APPLICATION LOOP DELAYS
+=========================================
+[motion_detector, object_detector, object_tracker] ---> 218.301613280333
+[object_tracker, PTZ_CONTROL] ---> 205.17000000000132
+=========================================
+TUPLE CPU EXECUTION DELAY
+=========================================
+MOTION_VIDEO_STREAM ---> 2.181734584272113
+CAMERA ---> 1.1000000000003638
+OBJECT_LOCATION ---> 0.2000031003723634
+DETECTED_OBJECT ---> 4.129297210380269
+=========================================
+cloud : Energy Consumed = 7922389.200000703
+proxy-server : Energy Consumed = 0.0
+r-0 : Energy Consumed = 0.0
+m-0-0 : Energy Consumed = 458403.36300012283
+m-0-1 : Energy Consumed = 458403.36300012283
+m-0-2 : Energy Consumed = 458403.36300012283
+r-1 : Energy Consumed = 0.0
+m-1-0 : Energy Consumed = 458403.36300012283
+m-1-1 : Energy Consumed = 458403.36300012283
+m-1-2 : Energy Consumed = 458403.36300012283
+r-2 : Energy Consumed = 0.0
+m-2-0 : Energy Consumed = 458403.36300012283
+m-2-1 : Energy Consumed = 458403.36300012283
+m-2-2 : Energy Consumed = 458403.36300012283
+Cost of execution in cloud = 1922910.0000002144
+Total network usage = 1780753.28

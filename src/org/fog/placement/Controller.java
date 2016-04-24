@@ -1,5 +1,6 @@
 package org.fog.placement;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,8 @@ import org.fog.entities.Sensor;
 import org.fog.utils.Config;
 import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
+import org.fog.utils.ModuleLaunchConfig;
+import org.fog.utils.NetworkUsageMonitor;
 import org.fog.utils.TimeKeeper;
 
 public class Controller extends SimEntity{
@@ -97,11 +100,72 @@ public class Controller extends SimEntity{
 			printTimeDetails();
 			printPowerDetails();
 			printCostDetails();
+			printNetworkUsageDetails();
+			
+			printResultsForThesis();
+			
 			System.exit(0);
 			break;
 		}
 	}
 	
+	private void printResultsForThesis() {
+		System.out.println("THESIS RESULTS");
+		for(Integer loopId : TimeKeeper.getInstance().getLoopIdToTupleIds().keySet()){
+			double average = 0, count = 0;
+			for(int tupleId : TimeKeeper.getInstance().getLoopIdToTupleIds().get(loopId)){
+				Double startTime = 	TimeKeeper.getInstance().getEmitTimes().get(tupleId);
+				Double endTime = 	TimeKeeper.getInstance().getEndTimes().get(tupleId);
+				if(startTime == null || endTime == null)
+					break;
+				average += endTime-startTime;
+				count += 1;
+			}
+			System.out.println((average/count));
+		}
+		
+		double sum=0;int num=0;
+		for(FogDevice fogDevice : getFogDevices()){
+			if(fogDevice.getName().contains("cloud"))
+				System.out.println(fogDevice.getEnergyConsumption());
+		}
+		sum=0;num=0;
+		for(FogDevice fogDevice : getFogDevices()){
+			if(fogDevice.getName().startsWith("m")){
+				sum+=fogDevice.getEnergyConsumption();
+				num++;
+			}
+		}
+		System.out.println(sum/num);
+		sum=0;num=0;
+		for(FogDevice fogDevice : getFogDevices()){
+			if(fogDevice.getName().startsWith("d")){
+				sum+=fogDevice.getEnergyConsumption();
+				num++;
+			}
+		}
+		System.out.println(sum/num);
+		
+		System.out.println((Calendar.getInstance().getTimeInMillis() - TimeKeeper.getInstance().getSimulationStartTime()));
+		
+		for(String tupleType : TimeKeeper.getInstance().getTupleTypeToAverageCpuTime().keySet()){
+			System.out.println(TimeKeeper.getInstance().getTupleTypeToAverageCpuTime().get(tupleType));
+		}
+		
+		System.out.println(NetworkUsageMonitor.getNetworkUsage()/Config.MAX_SIMULATION_TIME);
+		
+		
+	}
+
+
+
+	private void printNetworkUsageDetails() {
+		System.out.println("Total network usage = "+NetworkUsageMonitor.getNetworkUsage()/Config.MAX_SIMULATION_TIME);
+		
+	}
+
+
+
 	private FogDevice getCloud(){
 		for(FogDevice dev : getFogDevices())
 			if(dev.getName().equals("cloud"))
@@ -133,8 +197,11 @@ public class Controller extends SimEntity{
 		System.out.println("=========================================");
 		System.out.println("============== RESULTS ==================");
 		System.out.println("=========================================");
+		System.out.println("EXECUTION TIME : "+ (Calendar.getInstance().getTimeInMillis() - TimeKeeper.getInstance().getSimulationStartTime()));
+		System.out.println("=========================================");
+		System.out.println("APPLICATION LOOP DELAYS");
+		System.out.println("=========================================");
 		for(Integer loopId : TimeKeeper.getInstance().getLoopIdToTupleIds().keySet()){
-			System.out.println(loopId);
 			double average = 0, count = 0;
 			for(int tupleId : TimeKeeper.getInstance().getLoopIdToTupleIds().get(loopId)){
 				Double startTime = 	TimeKeeper.getInstance().getEmitTimes().get(tupleId);
@@ -147,6 +214,14 @@ public class Controller extends SimEntity{
 			System.out.println(getStringForLoopId(loopId) + " ---> "+(average/count));
 			
 		}
+		System.out.println("=========================================");
+		System.out.println("TUPLE CPU EXECUTION DELAY");
+		System.out.println("=========================================");
+		
+		for(String tupleType : TimeKeeper.getInstance().getTupleTypeToAverageCpuTime().keySet()){
+			System.out.println(tupleType + " ---> "+TimeKeeper.getInstance().getTupleTypeToAverageCpuTime().get(tupleType));
+		}
+		
 		System.out.println("=========================================");
 	}
 
@@ -202,18 +277,24 @@ public class Controller extends SimEntity{
 				(new ModulePlacementOnlyCloud(getFogDevices(), application))
 				:(new ModulePlacementEdgewards(getFogDevices(), getSensors(), getActuators(), application, getModuleMapping()));*/
 		
+		//ModulePlacement modulePlacement = new ModulePlacementOnlyCloud(getFogDevices(), getSensors(), getActuators(), application);
+		
 		ModulePlacement modulePlacement = new ModulePlacementEdgewards(getFogDevices(), getSensors(), getActuators(), application, getModuleMapping());
-		//ModulePlacement modulePlacement = new ModulePlacementOnlyCloud(getFogDevices(), application);
+		
+		//ModulePlacement modulePlacement = new ModulePlacementMapping(getFogDevices(), application, getModuleMapping());
 		
 		for(FogDevice fogDevice : fogDevices){
 			sendNow(fogDevice.getId(), FogEvents.ACTIVE_APP_UPDATE, application);
 		}
 		
 		Map<Integer, List<AppModule>> deviceToModuleMap = modulePlacement.getDeviceToModuleMap();
+		Map<Integer, Map<String, Integer>> instanceCountMap = modulePlacement.getModuleInstanceCountMap();
 		for(Integer deviceId : deviceToModuleMap.keySet()){
 			for(AppModule module : deviceToModuleMap.get(deviceId)){
 				sendNow(deviceId, FogEvents.APP_SUBMIT, application);
 				sendNow(deviceId, FogEvents.LAUNCH_MODULE, module);
+				sendNow(deviceId, FogEvents.LAUNCH_MODULE_INSTANCE, 
+						new ModuleLaunchConfig(module, instanceCountMap.get(deviceId).get(module.getName())));
 			}
 		}
 	}

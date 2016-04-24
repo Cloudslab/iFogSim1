@@ -8,28 +8,33 @@ import java.util.Map;
 public class ModuleMapping {
 
 
-	protected Map<String, List<String>> moduleMapping;
+	protected Map<String, Map<String, Integer>> moduleMapping;
 	
 	public static ModuleMapping createModuleMapping(){
 		return new ModuleMapping();
 	}
 
-	public Map<String, List<String>> getModuleMapping() {
+	public Map<String, Map<String, Integer>> getModuleMapping() {
 		return moduleMapping;
 	}
 	
-	public void setModuleMapping(Map<String, List<String>> moduleMapping) {
+	public void setModuleMapping(Map<String, Map<String, Integer>> moduleMapping) {
 		this.moduleMapping = moduleMapping;
 	}
 
 	protected ModuleMapping(){
-		setModuleMapping(new HashMap<String, List<String>>());
+		setModuleMapping(new HashMap<String, Map<String, Integer>>());
 	}
 	
 	public void addModuleToDevice(String moduleName, String deviceName){
+		addModuleToDevice(moduleName, deviceName, 1);
+	}
+	
+	public void addModuleToDevice(String moduleName, String deviceName, int instanceCount){
 		if(!getModuleMapping().containsKey(deviceName))
-			getModuleMapping().put(deviceName, new ArrayList<String>());
-		getModuleMapping().get(deviceName).add(moduleName);
+			getModuleMapping().put(deviceName, new HashMap<String, Integer>());
+		if(!getModuleMapping().get(deviceName).containsKey(moduleName))
+			getModuleMapping().get(deviceName).put(moduleName, instanceCount);
 	}
 	
 }

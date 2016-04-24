@@ -20,6 +20,7 @@ public abstract class ModulePlacement {
 	private Application application;
 	private Map<String, List<Integer>> moduleToDeviceMap;
 	private Map<Integer, List<AppModule>> deviceToModuleMap;
+	private Map<Integer, Map<String, Integer>> moduleInstanceCountMap;
 	
 	protected abstract void mapModules();
 	
@@ -32,6 +33,7 @@ public abstract class ModulePlacement {
 	}
 	
 	protected FogDevice getFogDeviceById(int fogDeviceId){
+		System.out.println(fogDeviceId);
 		return (FogDevice)CloudSim.getEntity(fogDeviceId);
 	}
 	
@@ -110,6 +112,14 @@ public abstract class ModulePlacement {
 
 	public void setDeviceToModuleMap(Map<Integer, List<AppModule>> deviceToModuleMap) {
 		this.deviceToModuleMap = deviceToModuleMap;
+	}
+
+	public Map<Integer, Map<String, Integer>> getModuleInstanceCountMap() {
+		return moduleInstanceCountMap;
+	}
+
+	public void setModuleInstanceCountMap(Map<Integer, Map<String, Integer>> moduleInstanceCountMap) {
+		this.moduleInstanceCountMap = moduleInstanceCountMap;
 	}
 
 }

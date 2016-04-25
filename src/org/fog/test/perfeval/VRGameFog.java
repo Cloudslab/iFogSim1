@@ -39,7 +39,7 @@ public class VRGameFog {
 	
 	static boolean CLOUD = false;
 	
-	static int numOfDepts = 1;
+	static int numOfDepts = 16;
 	static int numOfMobilesPerDept = 4;
 	//static double EEG_TRANSMISSION_TIME = 5.1;
 	static double EEG_TRANSMISSION_TIME = 10;
@@ -129,6 +129,7 @@ public class VRGameFog {
 		FogDevice dept = createFogDevice("d-"+id, 2800, 4000, 10000, 10000, 1, 0.0, 107.339, 83.4333);
 		fogDevices.add(dept);
 		dept.setParentId(parentId);
+		dept.setUplinkLatency(4);
 		for(int i=0;i<numOfMobilesPerDept;i++){
 			String mobileId = id+"-"+i;
 			FogDevice mobile = addMobile(mobileId, userId, appId, dept.getId());
@@ -220,15 +221,15 @@ public class VRGameFog {
 		application.addTupleMapping("client", "GLOBAL_GAME_STATE", "GLOBAL_STATE_UPDATE", 1.0);
 	
 		if(EEG_TRANSMISSION_TIME==10)
-			application.addAppEdge("EEG", "client", 2000, 50, "EEG", Tuple.UP, AppEdge.SENSOR);
+			application.addAppEdge("EEG", "client", 2000, 500, "EEG", Tuple.UP, AppEdge.SENSOR);
 		else
-			application.addAppEdge("EEG", "client", 3000, 50, "EEG", Tuple.UP, AppEdge.SENSOR);
-		application.addAppEdge("client", "classifier", 3500, 50, "_SENSOR", Tuple.UP, AppEdge.MODULE);
+			application.addAppEdge("EEG", "client", 3000, 500, "EEG", Tuple.UP, AppEdge.SENSOR);
+		application.addAppEdge("client", "classifier", 3500, 500, "_SENSOR", Tuple.UP, AppEdge.MODULE);
 		application.addAppEdge("classifier", "connector", 1000, 1000, 1000, "PLAYER_GAME_STATE", Tuple.UP, AppEdge.MODULE);
 		application.addAppEdge("classifier", "client", 14, 500, "CLASSIFICATION", Tuple.DOWN, AppEdge.MODULE);
 		application.addAppEdge("connector", "client", 100, 28, 1000, "GLOBAL_GAME_STATE", Tuple.DOWN, AppEdge.MODULE);
-		application.addAppEdge("client", "DISPLAY", 1000, 5, "SELF_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
-		application.addAppEdge("client", "DISPLAY", 1000, 5, "GLOBAL_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
+		application.addAppEdge("client", "DISPLAY", 1000, 500, "SELF_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
+		application.addAppEdge("client", "DISPLAY", 1000, 500, "GLOBAL_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
 		
 		
 		final AppLoop loop1 = new AppLoop(new ArrayList<String>(){{add("EEG");add("client");add("classifier");add("client");add("DISPLAY");}});

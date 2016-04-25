@@ -28,6 +28,7 @@ import org.fog.placement.Controller;
 import org.fog.placement.ModuleMapping;
 import org.fog.policy.AppModuleAllocationPolicy;
 import org.fog.scheduler.StreamOperatorScheduler;
+import org.fog.utils.FogLinearPowerModel;
 import org.fog.utils.FogUtils;
 import org.fog.utils.TimeKeeper;
 import org.fog.utils.distribution.DeterministicDistribution;
@@ -36,10 +37,10 @@ public class DCNSFog {
 	static List<FogDevice> fogDevices = new ArrayList<FogDevice>();
 	static List<Sensor> sensors = new ArrayList<Sensor>();
 	static List<Actuator> actuators = new ArrayList<Actuator>();
-	static int numOfAreas = 3;
-	static int numOfCamerasPerArea = 3;
+	static int numOfAreas = 1;
+	static int numOfCamerasPerArea = 4;
 	
-	private static boolean CLOUD = true;
+	private static boolean CLOUD = false;
 	
 	public static void main(String[] args) {
 
@@ -95,11 +96,12 @@ public class DCNSFog {
 	}
 
 	private static void createFogDevices(int userId, String appId) {
-		FogDevice cloud = createFogDevice("cloud", 20000, 40000, 100, 10000, 0, 0.01, 8*103, 8*83.25);
+		FogDevice cloud = createFogDevice("cloud", 40000, 40000, 100, 10000, 0, 0.01, 16*103, 16*83.25);
+		cloud.setParentId(-1);
 		fogDevices.add(cloud);
 		FogDevice proxy = createFogDevice("proxy-server", 2800, 4000, 10000, 10000, 1, 0.0, 107.339, 83.4333);
 		proxy.setParentId(cloud.getId());
-		proxy.setUplinkLatency(200);
+		proxy.setUplinkLatency(100);
 		fogDevices.add(proxy);
 		for(int i=0;i<numOfAreas;i++){
 			addArea(i+"", userId, appId, proxy.getId());
@@ -107,7 +109,7 @@ public class DCNSFog {
 	}
 
 	private static FogDevice addArea(String id, int userId, String appId, int parentId){
-		FogDevice router = createFogDevice("r-"+id, 2800, 4000, 10000, 10000, 1, 0.0, 107.339, 83.4333);
+		FogDevice router = createFogDevice("d-"+id, 2800, 4000, 10000, 10000, 1, 0.0, 107.339, 83.4333);
 		fogDevices.add(router);
 		router.setUplinkLatency(2);
 		for(int i=0;i<numOfCamerasPerArea;i++){
@@ -121,9 +123,9 @@ public class DCNSFog {
 	}
 	
 	private static FogDevice addCamera(String id, int userId, String appId, int parentId){
-		FogDevice camera = createFogDevice("m-"+id, 1000, 1000, 10000, 270, 3, 0, 87.53, 82.44);
+		FogDevice camera = createFogDevice("m-"+id, 500, 1000, 10000, 10000, 3, 0, 87.53, 82.44);
 		camera.setParentId(parentId);
-		Sensor sensor = new Sensor("s-"+id, "CAMERA", userId, appId, new DeterministicDistribution(1));
+		Sensor sensor = new Sensor("s-"+id, "CAMERA", userId, appId, new DeterministicDistribution(5));
 		sensors.add(sensor);
 		Actuator ptz = new Actuator("ptz-"+id, userId, appId, "PTZ_CONTROL");
 		actuators.add(ptz);
@@ -153,7 +155,7 @@ public class DCNSFog {
 				storage,
 				peList,
 				new StreamOperatorScheduler(peList),
-				new PowerModelLinear(busyPower, idlePower)
+				new FogLinearPowerModel(busyPower, idlePower)
 			);
 
 		List<Host> hostList = new ArrayList<Host>();
@@ -192,18 +194,18 @@ public class DCNSFog {
 	private static Application createApplication(String appId, int userId){
 		
 		Application application = Application.createApplication(appId, userId);
-		application.addAppModule("motion_detector", 10);
 		application.addAppModule("object_detector", 10);
+		application.addAppModule("motion_detector", 10);
 		application.addAppModule("object_tracker", 10);
 		application.addAppModule("user_interface", 10);
 		
-		application.addTupleMapping("motion_detector", "CAMERA", "MOTION_VIDEO_STREAM", 0.1);
+		application.addTupleMapping("motion_detector", "CAMERA", "MOTION_VIDEO_STREAM", 1.0);
 		application.addTupleMapping("object_detector", "MOTION_VIDEO_STREAM", "OBJECT_LOCATION", 1.0);
 		application.addTupleMapping("object_detector", "MOTION_VIDEO_STREAM", "DETECTED_OBJECT", 0.05);
 	
 		application.addAppEdge("CAMERA", "motion_detector", 1000, 20000, "CAMERA", Tuple.UP, AppEdge.SENSOR);
-		application.addAppEdge("motion_detector", "object_detector", 10000, 20000, "MOTION_VIDEO_STREAM", Tuple.UP, AppEdge.MODULE);
-		application.addAppEdge("object_detector", "user_interface", 5000, 20000, "DETECTED_OBJECT", Tuple.UP, AppEdge.MODULE);
+		application.addAppEdge("motion_detector", "object_detector", 2000, 2000, "MOTION_VIDEO_STREAM", Tuple.UP, AppEdge.MODULE);
+		application.addAppEdge("object_detector", "user_interface", 500, 2000, "DETECTED_OBJECT", Tuple.UP, AppEdge.MODULE);
 		application.addAppEdge("object_detector", "object_tracker", 1000, 100, "OBJECT_LOCATION", Tuple.UP, AppEdge.MODULE);
 		application.addAppEdge("object_tracker", "PTZ_CONTROL", 100, 28, 100, "PTZ_PARAMS", Tuple.DOWN, AppEdge.ACTUATOR);
 		

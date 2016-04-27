@@ -185,7 +185,6 @@ public class FogDevice extends PowerDatacenter {
 		double costPerMem = Config.FOG_DEVICE_COST_PER_MEMORY;
 		double costPerStorage = Config.FOG_DEVICE_COST_PER_STORAGE;
 		double costPerBw = Config.FOG_DEVICE_COST_PER_BW;
-		LinkedList<Storage> storageList = new LinkedList<Storage>();
 
 		FogDeviceCharacteristics characteristics = new FogDeviceCharacteristics(
 				arch, os, vmm, host, time_zone, cost, costPerMem,
@@ -241,8 +240,7 @@ public class FogDevice extends PowerDatacenter {
 	 * @post $none
 	 */
 	protected void registerOtherEntity() {
-		//updateResourceUsage();
-		//performAdativeReplacement(null);
+		
 	}
 	
 	@Override
@@ -286,6 +284,10 @@ public class FogDevice extends PowerDatacenter {
 		}
 	}
 	
+	/**
+	 * Updating the number of modules of an application module on this device
+	 * @param ev instance of SimEvent containing the module and no of instances 
+	 */
 	private void updateModuleInstanceCount(SimEvent ev) {
 		ModuleLaunchConfig config = (ModuleLaunchConfig)ev.getData();
 		String appId = config.getModule().getAppId();
@@ -295,6 +297,10 @@ public class FogDevice extends PowerDatacenter {
 		System.out.println(getName()+ " Creating "+config.getInstanceCount()+" instances of module "+config.getModule().getName());
 	}
 
+	/**
+	 * Sending periodic tuple for an application edge. Note that for multiple instances of a single source module, only one tuple is sent DOWN while instanceCount number of tuples are sent UP.
+	 * @param ev SimEvent instance containing the edge to send tuple on
+	 */
 	private void sendPeriodicTuple(SimEvent ev) {
 		AppEdge edge = (AppEdge)ev.getData();
 		String srcModule = edge.getSource();
@@ -310,12 +316,14 @@ public class FogDevice extends PowerDatacenter {
 		
 		int instanceCount = getModuleInstanceCount().get(module.getAppId()).get(srcModule);
 		
+		/*
+		 * Since tuples sent through a DOWN application edge are anyways broadcasted, only UP tuples are replicated
+		 */
 		for(int i = 0;i<((edge.getDirection()==Tuple.UP)?instanceCount:1);i++){
 			Tuple tuple = applicationMap.get(module.getAppId()).createTuple(edge, getId());
 			updateTimingsOnSending(tuple);
 			sendToSelf(tuple);			
 		}
-		//System.out.println(getName()+" SENT TUPLES OF TYPE "+edge.getTupleType());
 		send(getId(), edge.getPeriodicity(), FogEvents.SEND_PERIODIC_TUPLE, edge);
 	}
 
@@ -616,7 +624,6 @@ public class FogDevice extends PowerDatacenter {
 		
 		if(appToModulesMap.containsKey(tuple.getAppId())){
 			if(appToModulesMap.get(tuple.getAppId()).contains(tuple.getDestModuleName())){
-				String moduleName = tuple.getDestModuleName();
 				int vmId = -1;
 				for(Vm vm : getHost().getVmList()){
 					if(((AppModule)vm).getName().equals(tuple.getDestModuleName()))
@@ -651,18 +658,15 @@ public class FogDevice extends PowerDatacenter {
 					sendDown(tuple, childId);
 			}
 		}
-		//System.out.println("After allocation : "+getHost().getVmList());
 	}
 
 	protected void updateTimingsOnReceipt(Tuple tuple) {
-		// TODO NEED TO FILL THIS WITH CODE FOR UPDATING TIMINGS IN CASE A LOOP ENDS HERE
 		Application app = getApplicationMap().get(tuple.getAppId());
 		String srcModule = tuple.getSrcModuleName();
 		String destModule = tuple.getDestModuleName();
 		List<AppLoop> loops = app.getLoops();
 		for(AppLoop loop : loops){
 			if(loop.hasEdge(srcModule, destModule) && loop.isEndModule(destModule)){				
-				//TimeKeeper.getInstance().getEndTimes().put(tuple.getActualTupleId(), CloudSim.clock());
 				Double startTime = TimeKeeper.getInstance().getEmitTimes().get(tuple.getActualTupleId());
 				if(startTime==null)
 					break;
@@ -719,7 +723,6 @@ public class FogDevice extends PowerDatacenter {
 	}
 	
 	private void initializePeriodicTuples(AppModule module) {
-		// TODO Auto-generated method stub
 		String appId = module.getAppId();
 		Application app = getApplicationMap().get(appId);
 		List<AppEdge> periodicEdges = app.getPeriodicEdges(module.getName());

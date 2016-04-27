@@ -33,7 +33,6 @@ public abstract class ModulePlacement {
 	}
 	
 	protected FogDevice getFogDeviceById(int fogDeviceId){
-		System.out.println(fogDeviceId);
 		return (FogDevice)CloudSim.getEntity(fogDeviceId);
 	}
 	

@@ -1,6 +1,5 @@
 package org.fog.entities;
 
-import java.lang.management.GarbageCollectorMXBean;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -34,7 +33,6 @@ import org.fog.scheduler.StreamOperatorScheduler;
 import org.fog.utils.Config;
 import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
-import org.fog.utils.GeoCoverage;
 import org.fog.utils.Logger;
 import org.fog.utils.ModuleLaunchConfig;
 import org.fog.utils.NetworkUsageMonitor;
@@ -49,8 +47,7 @@ public class FogDevice extends PowerDatacenter {
 	protected Map<String, Application> applicationMap;
 	protected Map<String, List<String>> appToModulesMap;
 	protected Map<Integer, Double> childToLatencyMap;
-
-	protected Map<String, Queue<Double>> utilization; 
+ 
 	
 	protected Map<Integer, Integer> cloudTrafficMap;
 	
@@ -136,7 +133,6 @@ public class FogDevice extends PowerDatacenter {
 		setNorthLinkBusy(false);
 		setSouthLinkBusy(false);
 		
-		this.utilization = new HashMap<String, Queue<Double>>();
 		
 		setChildrenIds(new ArrayList<Integer>());
 		setChildToOperatorsMap(new HashMap<Integer, List<String>>());
@@ -222,7 +218,6 @@ public class FogDevice extends PowerDatacenter {
 		setNorthLinkBusy(false);
 		setSouthLinkBusy(false);
 		
-		this.utilization = new HashMap<String, Queue<Double>>();
 		
 		setChildrenIds(new ArrayList<Integer>());
 		setChildToOperatorsMap(new HashMap<Integer, List<String>>());
@@ -336,18 +331,6 @@ public class FogDevice extends PowerDatacenter {
 		getActiveApplications().add(app.getAppId());
 	}
 
-	/**
-	 * Calculates utilization of each operator.
-	 * @param operatorName
-	 * @return
-	 */
-	public double getUtilizationOfOperator(String operatorName){
-		double total = 0;
-		for(Double d : utilization.get(operatorName)){
-			total += d;
-		}
-		return total/utilization.get(operatorName).size();
-	}
 	
 	public String getOperatorName(int vmId){
 		for(Vm vm : this.getHost().getVmList()){
@@ -483,9 +466,9 @@ public class FogDevice extends PowerDatacenter {
 				int tupleId = TimeKeeper.getInstance().getUniqueId();
 				resTuple.setActualTupleId(tupleId);
 				
-				if(!TimeKeeper.getInstance().getLoopIdToTupleIds().containsKey(loop.getLoopId()))
-					TimeKeeper.getInstance().getLoopIdToTupleIds().put(loop.getLoopId(), new ArrayList<Integer>());
-				TimeKeeper.getInstance().getLoopIdToTupleIds().get(loop.getLoopId()).add(tupleId);
+				//if(!TimeKeeper.getInstance().getLoopIdToTupleIds().containsKey(loop.getLoopId()))
+					//TimeKeeper.getInstance().getLoopIdToTupleIds().put(loop.getLoopId(), new ArrayList<Integer>());
+				//TimeKeeper.getInstance().getLoopIdToTupleIds().get(loop.getLoopId()).add(tupleId);
 				TimeKeeper.getInstance().getEmitTimes().put(tupleId, CloudSim.clock());
 				
 				//Logger.debug(getName(), "\tSENDING\t"+tuple.getActualTupleId()+"\tSrc:"+srcModule+"\tDest:"+destModule);
@@ -537,10 +520,12 @@ public class FogDevice extends PowerDatacenter {
 		double currentEnergyConsumption = getEnergyConsumption();
 		double newEnergyConsumption = currentEnergyConsumption + (timeNow-lastUtilizationUpdateTime)*getHost().getPowerModel().getPower(lastUtilization);
 		setEnergyConsumption(newEnergyConsumption);
-		
-		if(getName().equals("cloud"))
-			System.out.println("Last Utilization : "+lastUtilization);
-		
+	
+		/*if(getName().startsWith("d")){
+			System.out.println("Util="+lastUtilization);
+			System.out.println("Power="+getHost().getPowerModel().getPower(lastUtilization));
+		}
+		*/
 		double currentCost = getTotalCost();
 		double newcost = currentCost + (timeNow-lastUtilizationUpdateTime)*getRatePerMips()*lastUtilization*getHost().getTotalMips();
 		setTotalCost(newcost);
@@ -608,9 +593,6 @@ public class FogDevice extends PowerDatacenter {
 		send(ev.getSource(), CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ACK);
 		
 		if(FogUtils.appIdToGeoCoverageMap.containsKey(tuple.getAppId())){
-			GeoCoverage geo = FogUtils.appIdToGeoCoverageMap.get(tuple.getAppId());
-			//if(!(getGeoCoverage().covers(geo) || geo.covers(geoCoverage)))
-			//	return;
 		}
 		
 		if(tuple.getDirection() == Tuple.ACTUATOR){
@@ -680,9 +662,22 @@ public class FogDevice extends PowerDatacenter {
 		String destModule = tuple.getDestModuleName();
 		List<AppLoop> loops = app.getLoops();
 		for(AppLoop loop : loops){
-			if(loop.hasEdge(srcModule, destModule) && loop.isEndModule(destModule)){
-				//Logger.debug(getName(), "\tRECEIVE\t"+tuple.getActualTupleId());
-				TimeKeeper.getInstance().getEndTimes().put(tuple.getActualTupleId(), CloudSim.clock());
+			if(loop.hasEdge(srcModule, destModule) && loop.isEndModule(destModule)){				
+				//TimeKeeper.getInstance().getEndTimes().put(tuple.getActualTupleId(), CloudSim.clock());
+				Double startTime = TimeKeeper.getInstance().getEmitTimes().get(tuple.getActualTupleId());
+				if(startTime==null)
+					break;
+				if(!TimeKeeper.getInstance().getLoopIdToCurrentAverage().containsKey(loop.getLoopId())){
+					TimeKeeper.getInstance().getLoopIdToCurrentAverage().put(loop.getLoopId(), 0.0);
+					TimeKeeper.getInstance().getLoopIdToCurrentNum().put(loop.getLoopId(), 0);
+				}
+				double currentAverage = TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loop.getLoopId());
+				int currentCount = TimeKeeper.getInstance().getLoopIdToCurrentNum().get(loop.getLoopId());
+				double delay = CloudSim.clock()- TimeKeeper.getInstance().getEmitTimes().get(tuple.getActualTupleId());
+				TimeKeeper.getInstance().getEmitTimes().remove(tuple.getActualTupleId());
+				double newAverage = (currentAverage*currentCount + delay)/(currentCount+1);
+				TimeKeeper.getInstance().getLoopIdToCurrentAverage().put(loop.getLoopId(), newAverage);
+				TimeKeeper.getInstance().getLoopIdToCurrentNum().put(loop.getLoopId(), currentCount+1);
 				break;
 			}
 		}
@@ -717,7 +712,6 @@ public class FogDevice extends PowerDatacenter {
 		if (module.isBeingInstantiated()) {
 			module.setBeingInstantiated(false);
 		}
-		utilization.put(module.getName(), new LinkedList<Double>());
 		
 		initializePeriodicTuples(module);
 		

@@ -20,6 +20,9 @@ public class TimeKeeper {
 	private Map<String, Double> tupleTypeToAverageCpuTime;
 	private Map<String, Integer> tupleTypeToExecutedTupleCount;
 	
+	private Map<Integer, Double> loopIdToCurrentAverage;
+	private Map<Integer, Integer> loopIdToCurrentNum;
+	
 	public static TimeKeeper getInstance(){
 		if(instance == null)
 			instance = new TimeKeeper();
@@ -60,6 +63,8 @@ public class TimeKeeper {
 		setTupleTypeToAverageCpuTime(new HashMap<String, Double>());
 		setTupleTypeToExecutedTupleCount(new HashMap<String, Integer>());
 		setTupleIdToCpuStartTime(new HashMap<Integer, Double>());
+		setLoopIdToCurrentAverage(new HashMap<Integer, Double>());
+		setLoopIdToCurrentNum(new HashMap<Integer, Integer>());
 	}
 	
 	public int getCount() {
@@ -126,6 +131,22 @@ public class TimeKeeper {
 
 	public void setSimulationStartTime(long simulationStartTime) {
 		this.simulationStartTime = simulationStartTime;
+	}
+
+	public Map<Integer, Double> getLoopIdToCurrentAverage() {
+		return loopIdToCurrentAverage;
+	}
+
+	public void setLoopIdToCurrentAverage(Map<Integer, Double> loopIdToCurrentAverage) {
+		this.loopIdToCurrentAverage = loopIdToCurrentAverage;
+	}
+
+	public Map<Integer, Integer> getLoopIdToCurrentNum() {
+		return loopIdToCurrentNum;
+	}
+
+	public void setLoopIdToCurrentNum(Map<Integer, Integer> loopIdToCurrentNum) {
+		this.loopIdToCurrentNum = loopIdToCurrentNum;
 	}
 	
 	

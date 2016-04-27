@@ -111,7 +111,7 @@ public class Controller extends SimEntity{
 	
 	private void printResultsForThesis() {
 		System.out.println("THESIS RESULTS");
-		for(Integer loopId : TimeKeeper.getInstance().getLoopIdToTupleIds().keySet()){
+		/*for(Integer loopId : TimeKeeper.getInstance().getLoopIdToTupleIds().keySet()){
 			double average = 0, count = 0;
 			for(int tupleId : TimeKeeper.getInstance().getLoopIdToTupleIds().get(loopId)){
 				Double startTime = 	TimeKeeper.getInstance().getEmitTimes().get(tupleId);
@@ -122,6 +122,9 @@ public class Controller extends SimEntity{
 				count += 1;
 			}
 			System.out.println((average/count));
+		}*/
+		for(Integer loopId : TimeKeeper.getInstance().getLoopIdToTupleIds().keySet()){
+			System.out.println(getStringForLoopId(loopId) + " ---> "+TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loopId));
 		}
 		
 		double sum=0;int num=0;
@@ -136,7 +139,7 @@ public class Controller extends SimEntity{
 				num++;
 			}
 		}
-		System.out.println(sum/num);
+		System.out.println(sum);
 		sum=0;num=0;
 		for(FogDevice fogDevice : getFogDevices()){
 			if(fogDevice.getName().startsWith("d")){
@@ -144,7 +147,7 @@ public class Controller extends SimEntity{
 				num++;
 			}
 		}
-		System.out.println(sum/num);
+		System.out.println(sum);
 		
 		System.out.println((Calendar.getInstance().getTimeInMillis() - TimeKeeper.getInstance().getSimulationStartTime()));
 		
@@ -202,7 +205,7 @@ public class Controller extends SimEntity{
 		System.out.println("APPLICATION LOOP DELAYS");
 		System.out.println("=========================================");
 		for(Integer loopId : TimeKeeper.getInstance().getLoopIdToTupleIds().keySet()){
-			double average = 0, count = 0;
+			/*double average = 0, count = 0;
 			for(int tupleId : TimeKeeper.getInstance().getLoopIdToTupleIds().get(loopId)){
 				Double startTime = 	TimeKeeper.getInstance().getEmitTimes().get(tupleId);
 				Double endTime = 	TimeKeeper.getInstance().getEndTimes().get(tupleId);
@@ -211,8 +214,8 @@ public class Controller extends SimEntity{
 				average += endTime-startTime;
 				count += 1;
 			}
-			System.out.println(getStringForLoopId(loopId) + " ---> "+(average/count));
-			
+			System.out.println(getStringForLoopId(loopId) + " ---> "+(average/count));*/
+			System.out.println(getStringForLoopId(loopId) + " ---> "+TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loopId));
 		}
 		System.out.println("=========================================");
 		System.out.println("TUPLE CPU EXECUTION DELAY");

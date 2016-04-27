@@ -28,6 +28,7 @@ import org.fog.placement.Controller;
 import org.fog.placement.ModuleMapping;
 import org.fog.policy.AppModuleAllocationPolicy;
 import org.fog.scheduler.StreamOperatorScheduler;
+import org.fog.utils.FogLinearPowerModel;
 import org.fog.utils.FogUtils;
 import org.fog.utils.TimeKeeper;
 import org.fog.utils.distribution.DeterministicDistribution;
@@ -39,13 +40,13 @@ public class VRGameFog {
 	
 	static boolean CLOUD = false;
 	
-	static int numOfDepts = 16;
+	static int numOfDepts = 1;
 	static int numOfMobilesPerDept = 4;
-	//static double EEG_TRANSMISSION_TIME = 5.1;
-	static double EEG_TRANSMISSION_TIME = 10;
+	static double EEG_TRANSMISSION_TIME = 5.1;
+	//static double EEG_TRANSMISSION_TIME = 10;
 	public static void main(String[] args) {
 
-		/*if(args.length < 4){
+		if(args.length < 4){
 			System.out.println("PLEASE ENTER #depts, #mobiles_per_dept and EEG inter-transmission time.");
 			System.exit(0);
 		}
@@ -53,8 +54,8 @@ public class VRGameFog {
 		CLOUD = (args[0].equals("CLOUD"))?true:false;
 		numOfDepts = Integer.parseInt(args[1]);
 		numOfMobilesPerDept = Integer.parseInt(args[2]);
-		EEG_TRANSMISSION_TIME = Integer.parseInt(args[3]);
-*/		
+		EEG_TRANSMISSION_TIME = (Integer.parseInt(args[3])==10)?10.0:5.1;
+		
 		Log.printLine("Starting VRGame...");
 
 		try {
@@ -172,7 +173,7 @@ public class VRGameFog {
 				storage,
 				peList,
 				new StreamOperatorScheduler(peList),
-				new PowerModelLinear(busyPower, idlePower)
+				new FogLinearPowerModel(busyPower, idlePower)
 			);
 
 		List<Host> hostList = new ArrayList<Host>();

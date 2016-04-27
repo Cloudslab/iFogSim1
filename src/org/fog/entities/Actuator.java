@@ -63,7 +63,23 @@ public class Actuator extends SimEntity{
 		for(AppLoop loop : app.getLoops()){
 			if(loop.hasEdge(srcModule, destModule) && loop.isEndModule(destModule)){
 				//Logger.debug(getName(), "\tRECEIVE\t"+tuple.getActualTupleId());
-				TimeKeeper.getInstance().getEndTimes().put(tuple.getActualTupleId(), CloudSim.clock());
+				
+				//TimeKeeper.getInstance().getEndTimes().put(tuple.getActualTupleId(), CloudSim.clock());
+				
+				Double startTime = TimeKeeper.getInstance().getEmitTimes().get(tuple.getActualTupleId());
+				if(startTime==null)
+					break;
+				if(!TimeKeeper.getInstance().getLoopIdToCurrentAverage().containsKey(loop.getLoopId())){
+					TimeKeeper.getInstance().getLoopIdToCurrentAverage().put(loop.getLoopId(), 0.0);
+					TimeKeeper.getInstance().getLoopIdToCurrentNum().put(loop.getLoopId(), 0);
+				}
+				double currentAverage = TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loop.getLoopId());
+				int currentCount = TimeKeeper.getInstance().getLoopIdToCurrentNum().get(loop.getLoopId());
+				double delay = CloudSim.clock()- TimeKeeper.getInstance().getEmitTimes().get(tuple.getActualTupleId());
+				TimeKeeper.getInstance().getEmitTimes().remove(tuple.getActualTupleId());
+				double newAverage = (currentAverage*currentCount + delay)/(currentCount+1);
+				TimeKeeper.getInstance().getLoopIdToCurrentAverage().put(loop.getLoopId(), newAverage);
+				TimeKeeper.getInstance().getLoopIdToCurrentNum().put(loop.getLoopId(), currentCount+1);
 				break;
 			}
 		}

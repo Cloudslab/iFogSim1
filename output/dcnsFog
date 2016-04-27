@@ -428,10 +428,12 @@ m-0-3 Creating 1 instances of module motion_detector
 =========================================
 ============== RESULTS ==================
 =========================================
-EXECUTION TIME : 1832
+EXECUTION TIME : 1446
 =========================================
 APPLICATION LOOP DELAYS
 =========================================
+[motion_detector, object_detector, object_tracker] ---> 5.357142857143801
+[object_tracker, PTZ_CONTROL] ---> 3.110000000000363
 =========================================
 TUPLE CPU EXECUTION DELAY
 =========================================
@@ -440,22 +442,24 @@ CAMERA ---> 2.100000000000364
 OBJECT_LOCATION ---> 1.5285714285710128
 DETECTED_OBJECT ---> 0.1124999999992724
 =========================================
-cloud : Energy Consumed = 1.3329400114286121E7
+cloud : Energy Consumed = 1.332996891428614E7
 proxy-server : Energy Consumed = 0.0
 d-0 : Energy Consumed = 1009892.3440571827
 m-0-0 : Energy Consumed = 841743.7020000643
 m-0-1 : Energy Consumed = 841743.7020000643
 m-0-2 : Energy Consumed = 841743.7020000643
 m-0-3 : Energy Consumed = 841743.7020000643
-Cost of execution in cloud = 14984.999999994692
-Total network usage = 9523.92
+Cost of execution in cloud = 15704.99999999836
+Total network usage = 9809.52
 THESIS RESULTS
-1.3329400114286121E7
+[motion_detector, object_detector, object_tracker] ---> 5.357142857143801
+[object_tracker, PTZ_CONTROL] ---> 3.110000000000363
+1.332996891428614E7
 3366974.8080002572
 1009892.3440571827
-1833
+1447
 2.957142857143481
 2.100000000000364
 1.5285714285710128
 0.1124999999992724
-9523.92
+9809.52

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.math3.util.Pair;
 import org.cloudbus.cloudsim.UtilizationModelFull;
+import org.fog.application.selectivity.SelectivityModel;
 import org.fog.entities.Tuple;
 import org.fog.scheduler.TupleScheduler;
 import org.fog.utils.FogUtils;
@@ -36,7 +37,7 @@ public class Application {
 		String vmm = "Xen";
 		
 		AppModule module = new AppModule(FogUtils.generateEntityId(), moduleName, null, appId, userId, 
-				mips, ram, bw, size, vmm, new TupleScheduler(mips, 1), new HashMap<Pair<String, String>, Double>());
+				mips, ram, bw, size, vmm, new TupleScheduler(mips, 1), new HashMap<Pair<String, String>, SelectivityModel>());
 		
 		getModules().add(module);
 		
@@ -56,9 +57,9 @@ public class Application {
 		getEdgeMap().put(edge.getTupleType(), edge);
 	}
 	
-	public void addTupleMapping(String moduleName, String inputTupleType, String outputTupleType, double selectivity){
+	public void addTupleMapping(String moduleName, String inputTupleType, String outputTupleType, SelectivityModel selectivityModel){
 		AppModule module = getModuleByName(moduleName);
-		module.getSelectivityMap().put(new Pair<String, String>(inputTupleType, outputTupleType), selectivity);
+		module.getSelectivityMap().put(new Pair<String, String>(inputTupleType, outputTupleType), selectivityModel);
 	}
 	
 	public List<AppEdge> getPeriodicEdges(String srcModule){
@@ -110,9 +111,8 @@ public class Application {
 				
 				if(module.getSelectivityMap().get(pair)==null)
 					continue;
-				double selectivity = module.getSelectivityMap().get(pair);
-				if(Math.random() < selectivity){
-					
+				SelectivityModel selectivityModel = module.getSelectivityMap().get(pair);
+				if(selectivityModel.canSelect()){
 					//TODO check if the edge is ACTUATOR, then create multiple tuples
 					if(edge.getEdgeType() == AppEdge.ACTUATOR){
 						//for(Integer actuatorId : module.getActuatorSubscriptions().get(edge.getTupleType())){

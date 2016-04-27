@@ -465,10 +465,9 @@ public class FogDevice extends PowerDatacenter {
 			if(loop.hasEdge(srcModule, destModule) && loop.isStartModule(srcModule)){
 				int tupleId = TimeKeeper.getInstance().getUniqueId();
 				resTuple.setActualTupleId(tupleId);
-				
-				//if(!TimeKeeper.getInstance().getLoopIdToTupleIds().containsKey(loop.getLoopId()))
-					//TimeKeeper.getInstance().getLoopIdToTupleIds().put(loop.getLoopId(), new ArrayList<Integer>());
-				//TimeKeeper.getInstance().getLoopIdToTupleIds().get(loop.getLoopId()).add(tupleId);
+				if(!TimeKeeper.getInstance().getLoopIdToTupleIds().containsKey(loop.getLoopId()))
+					TimeKeeper.getInstance().getLoopIdToTupleIds().put(loop.getLoopId(), new ArrayList<Integer>());
+				TimeKeeper.getInstance().getLoopIdToTupleIds().get(loop.getLoopId()).add(tupleId);
 				TimeKeeper.getInstance().getEmitTimes().put(tupleId, CloudSim.clock());
 				
 				//Logger.debug(getName(), "\tSENDING\t"+tuple.getActualTupleId()+"\tSrc:"+srcModule+"\tDest:"+destModule);

@@ -10,6 +10,7 @@ import org.cloudbus.cloudsim.core.CloudSim;
 import org.fog.application.AppEdge;
 import org.fog.application.AppModule;
 import org.fog.application.Application;
+import org.fog.application.selectivity.SelectivityModel;
 import org.fog.entities.Actuator;
 import org.fog.entities.FogDevice;
 import org.fog.entities.Sensor;
@@ -166,11 +167,10 @@ public class ModulePlacementEdgewards extends ModulePlacement{
 				for(AppEdge edge : rateMap.keySet()){
 					AppModule destModule = getApplication().getModuleByName(edge.getDestination());
 					if(destModule == null)continue;
-					Map<Pair<String, String>, Double> map = destModule.getSelectivityMap();
+					Map<Pair<String, String>, SelectivityModel> map = destModule.getSelectivityMap();
 					for(Pair<String, String> pair : map.keySet()){
 						if(pair.getFirst().equals(edge.getTupleType())){
-							double selectivity = map.get(pair);
-							double outputRate = appEdgeToRate.get(edge)*selectivity;
+							double outputRate = appEdgeToRate.get(edge)*map.get(pair).getMeanRate();
 							AppEdge outputEdge = getApplication().getEdgeMap().get(pair.getSecond());
 							if(!appEdgeToRate.containsKey(outputEdge) || appEdgeToRate.get(outputEdge)!=outputRate){
 								System.out.println(outputEdge.getSource()+"----->"+outputEdge.getDestination()+" : "+outputRate);

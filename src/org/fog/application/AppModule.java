@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.commons.math3.util.Pair;
 import org.cloudbus.cloudsim.CloudletScheduler;
 import org.cloudbus.cloudsim.power.PowerVm;
+import org.fog.application.selectivity.SelectivityModel;
 import org.fog.scheduler.TupleScheduler;
 import org.fog.utils.FogUtils;
 import org.fog.utils.GeoCoverage;
@@ -17,7 +18,7 @@ public class AppModule extends PowerVm{
 	private String name;
 	private GeoCoverage geoCoverage;
 	private String appId;
-	private Map<Pair<String, String>, Double> selectivityMap;
+	private Map<Pair<String, String>, SelectivityModel> selectivityMap;
 	
 	/**
 	 * Mapping from tupleType emitted by this AppModule to Actuators subscribing to that tupleType
@@ -36,7 +37,7 @@ public class AppModule extends PowerVm{
 			long size,
 			String vmm,
 			CloudletScheduler cloudletScheduler,
-			Map<Pair<String, String>, Double> selectivityMap) {
+			Map<Pair<String, String>, SelectivityModel> selectivityMap) {
 		super(id, userId, mips, 1, ram, bw, size, 1, vmm, cloudletScheduler, 300);
 		setName(name);
 		setId(id);
@@ -92,10 +93,10 @@ public class AppModule extends PowerVm{
 	public void setGeoCoverage(GeoCoverage geoCoverage) {
 		this.geoCoverage = geoCoverage;
 	}
-	public Map<Pair<String, String>, Double> getSelectivityMap() {
+	public Map<Pair<String, String>, SelectivityModel> getSelectivityMap() {
 		return selectivityMap;
 	}
-	public void setSelectivityMap(Map<Pair<String, String>, Double> selectivityMap) {
+	public void setSelectivityMap(Map<Pair<String, String>, SelectivityModel> selectivityMap) {
 		this.selectivityMap = selectivityMap;
 	}
 	public String getAppId() {

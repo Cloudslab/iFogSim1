@@ -403,6 +403,3633 @@ cloud : 3 modules of Operator user_interface is already placed on device cloud
 Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
 Modules to place : []
 You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-1-0
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[19, 18, 4, 3]
+m-1-0
+d-1
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-1-0
+m-1-0 : 0 modules of Operator motion_detector is already placed on device m-1-0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-1-0
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[19, 18, 4, 3]
+m-1-0
+d-1
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : null
++++++++++++++++++++++++++
+MOTION_VIDEO_STREAM
+Tuple type = MOTION_VIDEO_STREAM
+Rate = 0.2
+Cpu Load = 400.0
+Trying to place module object_detector
+Placement of operator object_detectorNOT POSSIBLE on device m-1-0
+CPU load = 400.0
+Current CPU load = 200.0
+Max mips = 500
+On device d-1
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[19, 18, 4, 3]
+m-1-0
+d-1
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : null
++++++++++++++++++++++++++
+MOTION_VIDEO_STREAM
+Tuple type = MOTION_VIDEO_STREAM
+Rate = 0.2
+Cpu Load = 400.0
+Trying to place module object_detector
+Placement of operator object_detector on device d-1
+Updated CPU load = 400.0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+Number of instances for operator object_detector = 1
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[19, 18, 4, 3]
+m-1-0
+d-1
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : null
++++++++++++++++++++++++++
+OBJECT_LOCATION
+Tuple type = OBJECT_LOCATION
+Rate = 0.2
+Cpu Load = 200.0
+Trying to place module object_tracker
+Placement of operator object_tracker on device d-1
+Updated CPU load = 600.0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+Number of instances for operator object_tracker = 1
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[19, 18, 4, 3]
+m-1-0
+d-1
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-1 : 4 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[19, 18, 4, 3]
+m-1-0
+d-1
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 4 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[19, 18, 4, 3]
+m-1-0
+d-1
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 4 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-1-1
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[22, 18, 4, 3]
+m-1-1
+d-1
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-1-1
+m-1-1 : 0 modules of Operator motion_detector is already placed on device m-1-1
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-1-1
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[22, 18, 4, 3]
+m-1-1
+d-1
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-1
+m-1-1 : 1 modules of Operator object_detector is already placed on device d-1
+On device d-1
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[22, 18, 4, 3]
+m-1-1
+d-1
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-1
+d-1 : 1 modules of Operator object_detector is already placed on device d-1
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-1
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[22, 18, 4, 3]
+m-1-1
+d-1
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-1
+d-1 : 1 modules of Operator object_tracker is already placed on device d-1
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-1
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[22, 18, 4, 3]
+m-1-1
+d-1
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-1 : 5 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[22, 18, 4, 3]
+m-1-1
+d-1
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 5 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[22, 18, 4, 3]
+m-1-1
+d-1
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 5 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-1-2
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[25, 18, 4, 3]
+m-1-2
+d-1
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-1-2
+m-1-2 : 0 modules of Operator motion_detector is already placed on device m-1-2
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-1-2
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[25, 18, 4, 3]
+m-1-2
+d-1
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-1
+m-1-2 : 2 modules of Operator object_detector is already placed on device d-1
+On device d-1
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[25, 18, 4, 3]
+m-1-2
+d-1
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-1
+d-1 : 2 modules of Operator object_detector is already placed on device d-1
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-1
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[25, 18, 4, 3]
+m-1-2
+d-1
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-1
+d-1 : 2 modules of Operator object_tracker is already placed on device d-1
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-1
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[25, 18, 4, 3]
+m-1-2
+d-1
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-1 : 6 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[25, 18, 4, 3]
+m-1-2
+d-1
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 6 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[25, 18, 4, 3]
+m-1-2
+d-1
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 6 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-1-3
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[28, 18, 4, 3]
+m-1-3
+d-1
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-1-3
+m-1-3 : 0 modules of Operator motion_detector is already placed on device m-1-3
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-1-3
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[28, 18, 4, 3]
+m-1-3
+d-1
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-1
+m-1-3 : 3 modules of Operator object_detector is already placed on device d-1
+On device d-1
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[28, 18, 4, 3]
+m-1-3
+d-1
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-1
+d-1 : 3 modules of Operator object_detector is already placed on device d-1
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-1
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[28, 18, 4, 3]
+m-1-3
+d-1
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-1
+d-1 : 3 modules of Operator object_tracker is already placed on device d-1
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-1
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[28, 18, 4, 3]
+m-1-3
+d-1
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-1 : 7 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[28, 18, 4, 3]
+m-1-3
+d-1
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 7 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[28, 18, 4, 3]
+m-1-3
+d-1
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 7 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-2-0
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[32, 31, 4, 3]
+m-2-0
+d-2
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-2-0
+m-2-0 : 0 modules of Operator motion_detector is already placed on device m-2-0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-2-0
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[32, 31, 4, 3]
+m-2-0
+d-2
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : null
++++++++++++++++++++++++++
+MOTION_VIDEO_STREAM
+Tuple type = MOTION_VIDEO_STREAM
+Rate = 0.2
+Cpu Load = 400.0
+Trying to place module object_detector
+Placement of operator object_detectorNOT POSSIBLE on device m-2-0
+CPU load = 400.0
+Current CPU load = 200.0
+Max mips = 500
+On device d-2
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[32, 31, 4, 3]
+m-2-0
+d-2
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : null
++++++++++++++++++++++++++
+MOTION_VIDEO_STREAM
+Tuple type = MOTION_VIDEO_STREAM
+Rate = 0.2
+Cpu Load = 400.0
+Trying to place module object_detector
+Placement of operator object_detector on device d-2
+Updated CPU load = 400.0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+Number of instances for operator object_detector = 1
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[32, 31, 4, 3]
+m-2-0
+d-2
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : null
++++++++++++++++++++++++++
+OBJECT_LOCATION
+Tuple type = OBJECT_LOCATION
+Rate = 0.2
+Cpu Load = 200.0
+Trying to place module object_tracker
+Placement of operator object_tracker on device d-2
+Updated CPU load = 600.0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+Number of instances for operator object_tracker = 1
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[32, 31, 4, 3]
+m-2-0
+d-2
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-2 : 8 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[32, 31, 4, 3]
+m-2-0
+d-2
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 8 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[32, 31, 4, 3]
+m-2-0
+d-2
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 8 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-2-1
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[35, 31, 4, 3]
+m-2-1
+d-2
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-2-1
+m-2-1 : 0 modules of Operator motion_detector is already placed on device m-2-1
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-2-1
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[35, 31, 4, 3]
+m-2-1
+d-2
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-2
+m-2-1 : 1 modules of Operator object_detector is already placed on device d-2
+On device d-2
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[35, 31, 4, 3]
+m-2-1
+d-2
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-2
+d-2 : 1 modules of Operator object_detector is already placed on device d-2
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-2
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[35, 31, 4, 3]
+m-2-1
+d-2
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-2
+d-2 : 1 modules of Operator object_tracker is already placed on device d-2
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-2
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[35, 31, 4, 3]
+m-2-1
+d-2
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-2 : 9 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[35, 31, 4, 3]
+m-2-1
+d-2
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 9 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[35, 31, 4, 3]
+m-2-1
+d-2
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 9 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-2-2
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[38, 31, 4, 3]
+m-2-2
+d-2
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-2-2
+m-2-2 : 0 modules of Operator motion_detector is already placed on device m-2-2
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-2-2
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[38, 31, 4, 3]
+m-2-2
+d-2
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-2
+m-2-2 : 2 modules of Operator object_detector is already placed on device d-2
+On device d-2
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[38, 31, 4, 3]
+m-2-2
+d-2
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-2
+d-2 : 2 modules of Operator object_detector is already placed on device d-2
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-2
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[38, 31, 4, 3]
+m-2-2
+d-2
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-2
+d-2 : 2 modules of Operator object_tracker is already placed on device d-2
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-2
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[38, 31, 4, 3]
+m-2-2
+d-2
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-2 : 10 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[38, 31, 4, 3]
+m-2-2
+d-2
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 10 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[38, 31, 4, 3]
+m-2-2
+d-2
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 10 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-2-3
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[41, 31, 4, 3]
+m-2-3
+d-2
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-2-3
+m-2-3 : 0 modules of Operator motion_detector is already placed on device m-2-3
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-2-3
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[41, 31, 4, 3]
+m-2-3
+d-2
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-2
+m-2-3 : 3 modules of Operator object_detector is already placed on device d-2
+On device d-2
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[41, 31, 4, 3]
+m-2-3
+d-2
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-2
+d-2 : 3 modules of Operator object_detector is already placed on device d-2
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-2
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[41, 31, 4, 3]
+m-2-3
+d-2
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-2
+d-2 : 3 modules of Operator object_tracker is already placed on device d-2
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-2
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[41, 31, 4, 3]
+m-2-3
+d-2
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-2 : 11 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[41, 31, 4, 3]
+m-2-3
+d-2
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 11 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[41, 31, 4, 3]
+m-2-3
+d-2
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 11 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-3-0
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[45, 44, 4, 3]
+m-3-0
+d-3
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-3-0
+m-3-0 : 0 modules of Operator motion_detector is already placed on device m-3-0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-3-0
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[45, 44, 4, 3]
+m-3-0
+d-3
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : null
++++++++++++++++++++++++++
+MOTION_VIDEO_STREAM
+Tuple type = MOTION_VIDEO_STREAM
+Rate = 0.2
+Cpu Load = 400.0
+Trying to place module object_detector
+Placement of operator object_detectorNOT POSSIBLE on device m-3-0
+CPU load = 400.0
+Current CPU load = 200.0
+Max mips = 500
+On device d-3
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[45, 44, 4, 3]
+m-3-0
+d-3
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : null
++++++++++++++++++++++++++
+MOTION_VIDEO_STREAM
+Tuple type = MOTION_VIDEO_STREAM
+Rate = 0.2
+Cpu Load = 400.0
+Trying to place module object_detector
+Placement of operator object_detector on device d-3
+Updated CPU load = 400.0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+Number of instances for operator object_detector = 1
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[45, 44, 4, 3]
+m-3-0
+d-3
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : null
++++++++++++++++++++++++++
+OBJECT_LOCATION
+Tuple type = OBJECT_LOCATION
+Rate = 0.2
+Cpu Load = 200.0
+Trying to place module object_tracker
+Placement of operator object_tracker on device d-3
+Updated CPU load = 600.0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+Number of instances for operator object_tracker = 1
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[45, 44, 4, 3]
+m-3-0
+d-3
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-3 : 12 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[45, 44, 4, 3]
+m-3-0
+d-3
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 12 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[45, 44, 4, 3]
+m-3-0
+d-3
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 12 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-3-1
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[48, 44, 4, 3]
+m-3-1
+d-3
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-3-1
+m-3-1 : 0 modules of Operator motion_detector is already placed on device m-3-1
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-3-1
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[48, 44, 4, 3]
+m-3-1
+d-3
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-3
+m-3-1 : 1 modules of Operator object_detector is already placed on device d-3
+On device d-3
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[48, 44, 4, 3]
+m-3-1
+d-3
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-3
+d-3 : 1 modules of Operator object_detector is already placed on device d-3
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-3
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[48, 44, 4, 3]
+m-3-1
+d-3
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-3
+d-3 : 1 modules of Operator object_tracker is already placed on device d-3
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-3
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[48, 44, 4, 3]
+m-3-1
+d-3
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-3 : 13 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[48, 44, 4, 3]
+m-3-1
+d-3
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 13 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[48, 44, 4, 3]
+m-3-1
+d-3
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 13 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-3-2
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[51, 44, 4, 3]
+m-3-2
+d-3
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-3-2
+m-3-2 : 0 modules of Operator motion_detector is already placed on device m-3-2
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-3-2
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[51, 44, 4, 3]
+m-3-2
+d-3
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-3
+m-3-2 : 2 modules of Operator object_detector is already placed on device d-3
+On device d-3
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[51, 44, 4, 3]
+m-3-2
+d-3
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-3
+d-3 : 2 modules of Operator object_detector is already placed on device d-3
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-3
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[51, 44, 4, 3]
+m-3-2
+d-3
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-3
+d-3 : 2 modules of Operator object_tracker is already placed on device d-3
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-3
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[51, 44, 4, 3]
+m-3-2
+d-3
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-3 : 14 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[51, 44, 4, 3]
+m-3-2
+d-3
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 14 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[51, 44, 4, 3]
+m-3-2
+d-3
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 14 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-3-3
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[54, 44, 4, 3]
+m-3-3
+d-3
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-3-3
+m-3-3 : 0 modules of Operator motion_detector is already placed on device m-3-3
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-3-3
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[54, 44, 4, 3]
+m-3-3
+d-3
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-3
+m-3-3 : 3 modules of Operator object_detector is already placed on device d-3
+On device d-3
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[54, 44, 4, 3]
+m-3-3
+d-3
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-3
+d-3 : 3 modules of Operator object_detector is already placed on device d-3
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-3
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[54, 44, 4, 3]
+m-3-3
+d-3
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-3
+d-3 : 3 modules of Operator object_tracker is already placed on device d-3
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-3
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[54, 44, 4, 3]
+m-3-3
+d-3
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-3 : 15 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[54, 44, 4, 3]
+m-3-3
+d-3
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 15 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[54, 44, 4, 3]
+m-3-3
+d-3
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 15 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-4-0
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[58, 57, 4, 3]
+m-4-0
+d-4
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-4-0
+m-4-0 : 0 modules of Operator motion_detector is already placed on device m-4-0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-4-0
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[58, 57, 4, 3]
+m-4-0
+d-4
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : null
++++++++++++++++++++++++++
+MOTION_VIDEO_STREAM
+Tuple type = MOTION_VIDEO_STREAM
+Rate = 0.2
+Cpu Load = 400.0
+Trying to place module object_detector
+Placement of operator object_detectorNOT POSSIBLE on device m-4-0
+CPU load = 400.0
+Current CPU load = 200.0
+Max mips = 500
+On device d-4
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[58, 57, 4, 3]
+m-4-0
+d-4
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : null
++++++++++++++++++++++++++
+MOTION_VIDEO_STREAM
+Tuple type = MOTION_VIDEO_STREAM
+Rate = 0.2
+Cpu Load = 400.0
+Trying to place module object_detector
+Placement of operator object_detector on device d-4
+Updated CPU load = 400.0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+Number of instances for operator object_detector = 1
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[58, 57, 4, 3]
+m-4-0
+d-4
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : null
++++++++++++++++++++++++++
+OBJECT_LOCATION
+Tuple type = OBJECT_LOCATION
+Rate = 0.2
+Cpu Load = 200.0
+Trying to place module object_tracker
+Placement of operator object_tracker on device d-4
+Updated CPU load = 600.0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+Number of instances for operator object_tracker = 1
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[58, 57, 4, 3]
+m-4-0
+d-4
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-4 : 16 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[58, 57, 4, 3]
+m-4-0
+d-4
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 16 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[58, 57, 4, 3]
+m-4-0
+d-4
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 16 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-4-1
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[61, 57, 4, 3]
+m-4-1
+d-4
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-4-1
+m-4-1 : 0 modules of Operator motion_detector is already placed on device m-4-1
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-4-1
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[61, 57, 4, 3]
+m-4-1
+d-4
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-4
+m-4-1 : 1 modules of Operator object_detector is already placed on device d-4
+On device d-4
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[61, 57, 4, 3]
+m-4-1
+d-4
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-4
+d-4 : 1 modules of Operator object_detector is already placed on device d-4
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-4
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[61, 57, 4, 3]
+m-4-1
+d-4
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-4
+d-4 : 1 modules of Operator object_tracker is already placed on device d-4
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-4
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[61, 57, 4, 3]
+m-4-1
+d-4
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-4 : 17 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[61, 57, 4, 3]
+m-4-1
+d-4
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 17 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[61, 57, 4, 3]
+m-4-1
+d-4
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 17 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-4-2
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[64, 57, 4, 3]
+m-4-2
+d-4
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-4-2
+m-4-2 : 0 modules of Operator motion_detector is already placed on device m-4-2
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-4-2
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[64, 57, 4, 3]
+m-4-2
+d-4
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-4
+m-4-2 : 2 modules of Operator object_detector is already placed on device d-4
+On device d-4
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[64, 57, 4, 3]
+m-4-2
+d-4
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-4
+d-4 : 2 modules of Operator object_detector is already placed on device d-4
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-4
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[64, 57, 4, 3]
+m-4-2
+d-4
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-4
+d-4 : 2 modules of Operator object_tracker is already placed on device d-4
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-4
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[64, 57, 4, 3]
+m-4-2
+d-4
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-4 : 18 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[64, 57, 4, 3]
+m-4-2
+d-4
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 18 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[64, 57, 4, 3]
+m-4-2
+d-4
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 18 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-4-3
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[67, 57, 4, 3]
+m-4-3
+d-4
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-4-3
+m-4-3 : 0 modules of Operator motion_detector is already placed on device m-4-3
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-4-3
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[67, 57, 4, 3]
+m-4-3
+d-4
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-4
+m-4-3 : 3 modules of Operator object_detector is already placed on device d-4
+On device d-4
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[67, 57, 4, 3]
+m-4-3
+d-4
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-4
+d-4 : 3 modules of Operator object_detector is already placed on device d-4
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-4
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[67, 57, 4, 3]
+m-4-3
+d-4
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-4
+d-4 : 3 modules of Operator object_tracker is already placed on device d-4
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-4
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[67, 57, 4, 3]
+m-4-3
+d-4
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-4 : 19 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[67, 57, 4, 3]
+m-4-3
+d-4
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 19 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[67, 57, 4, 3]
+m-4-3
+d-4
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 19 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-5-0
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[71, 70, 4, 3]
+m-5-0
+d-5
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-5-0
+m-5-0 : 0 modules of Operator motion_detector is already placed on device m-5-0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-5-0
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[71, 70, 4, 3]
+m-5-0
+d-5
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : null
++++++++++++++++++++++++++
+MOTION_VIDEO_STREAM
+Tuple type = MOTION_VIDEO_STREAM
+Rate = 0.2
+Cpu Load = 400.0
+Trying to place module object_detector
+Placement of operator object_detectorNOT POSSIBLE on device m-5-0
+CPU load = 400.0
+Current CPU load = 200.0
+Max mips = 500
+On device d-5
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[71, 70, 4, 3]
+m-5-0
+d-5
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : null
++++++++++++++++++++++++++
+MOTION_VIDEO_STREAM
+Tuple type = MOTION_VIDEO_STREAM
+Rate = 0.2
+Cpu Load = 400.0
+Trying to place module object_detector
+Placement of operator object_detector on device d-5
+Updated CPU load = 400.0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+Number of instances for operator object_detector = 1
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[71, 70, 4, 3]
+m-5-0
+d-5
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : null
++++++++++++++++++++++++++
+OBJECT_LOCATION
+Tuple type = OBJECT_LOCATION
+Rate = 0.2
+Cpu Load = 200.0
+Trying to place module object_tracker
+Placement of operator object_tracker on device d-5
+Updated CPU load = 600.0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+Number of instances for operator object_tracker = 1
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[71, 70, 4, 3]
+m-5-0
+d-5
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-5 : 20 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[71, 70, 4, 3]
+m-5-0
+d-5
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 20 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[71, 70, 4, 3]
+m-5-0
+d-5
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 20 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-5-1
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[74, 70, 4, 3]
+m-5-1
+d-5
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-5-1
+m-5-1 : 0 modules of Operator motion_detector is already placed on device m-5-1
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-5-1
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[74, 70, 4, 3]
+m-5-1
+d-5
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-5
+m-5-1 : 1 modules of Operator object_detector is already placed on device d-5
+On device d-5
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[74, 70, 4, 3]
+m-5-1
+d-5
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-5
+d-5 : 1 modules of Operator object_detector is already placed on device d-5
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-5
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[74, 70, 4, 3]
+m-5-1
+d-5
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-5
+d-5 : 1 modules of Operator object_tracker is already placed on device d-5
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-5
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[74, 70, 4, 3]
+m-5-1
+d-5
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-5 : 21 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[74, 70, 4, 3]
+m-5-1
+d-5
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 21 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[74, 70, 4, 3]
+m-5-1
+d-5
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 21 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-5-2
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[77, 70, 4, 3]
+m-5-2
+d-5
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-5-2
+m-5-2 : 0 modules of Operator motion_detector is already placed on device m-5-2
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-5-2
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[77, 70, 4, 3]
+m-5-2
+d-5
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-5
+m-5-2 : 2 modules of Operator object_detector is already placed on device d-5
+On device d-5
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[77, 70, 4, 3]
+m-5-2
+d-5
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-5
+d-5 : 2 modules of Operator object_detector is already placed on device d-5
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-5
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[77, 70, 4, 3]
+m-5-2
+d-5
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-5
+d-5 : 2 modules of Operator object_tracker is already placed on device d-5
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-5
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[77, 70, 4, 3]
+m-5-2
+d-5
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-5 : 22 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[77, 70, 4, 3]
+m-5-2
+d-5
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 22 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[77, 70, 4, 3]
+m-5-2
+d-5
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 22 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-5-3
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[80, 70, 4, 3]
+m-5-3
+d-5
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-5-3
+m-5-3 : 0 modules of Operator motion_detector is already placed on device m-5-3
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-5-3
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[80, 70, 4, 3]
+m-5-3
+d-5
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-5
+m-5-3 : 3 modules of Operator object_detector is already placed on device d-5
+On device d-5
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[80, 70, 4, 3]
+m-5-3
+d-5
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-5
+d-5 : 3 modules of Operator object_detector is already placed on device d-5
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-5
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[80, 70, 4, 3]
+m-5-3
+d-5
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-5
+d-5 : 3 modules of Operator object_tracker is already placed on device d-5
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-5
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[80, 70, 4, 3]
+m-5-3
+d-5
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-5 : 23 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[80, 70, 4, 3]
+m-5-3
+d-5
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 23 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[80, 70, 4, 3]
+m-5-3
+d-5
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 23 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-6-0
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[84, 83, 4, 3]
+m-6-0
+d-6
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-6-0
+m-6-0 : 0 modules of Operator motion_detector is already placed on device m-6-0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-6-0
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[84, 83, 4, 3]
+m-6-0
+d-6
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : null
++++++++++++++++++++++++++
+MOTION_VIDEO_STREAM
+Tuple type = MOTION_VIDEO_STREAM
+Rate = 0.2
+Cpu Load = 400.0
+Trying to place module object_detector
+Placement of operator object_detectorNOT POSSIBLE on device m-6-0
+CPU load = 400.0
+Current CPU load = 200.0
+Max mips = 500
+On device d-6
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[84, 83, 4, 3]
+m-6-0
+d-6
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : null
++++++++++++++++++++++++++
+MOTION_VIDEO_STREAM
+Tuple type = MOTION_VIDEO_STREAM
+Rate = 0.2
+Cpu Load = 400.0
+Trying to place module object_detector
+Placement of operator object_detector on device d-6
+Updated CPU load = 400.0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+Number of instances for operator object_detector = 1
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[84, 83, 4, 3]
+m-6-0
+d-6
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : null
++++++++++++++++++++++++++
+OBJECT_LOCATION
+Tuple type = OBJECT_LOCATION
+Rate = 0.2
+Cpu Load = 200.0
+Trying to place module object_tracker
+Placement of operator object_tracker on device d-6
+Updated CPU load = 600.0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+Number of instances for operator object_tracker = 1
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[84, 83, 4, 3]
+m-6-0
+d-6
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-6 : 24 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[84, 83, 4, 3]
+m-6-0
+d-6
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 24 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[84, 83, 4, 3]
+m-6-0
+d-6
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 24 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-6-1
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[87, 83, 4, 3]
+m-6-1
+d-6
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-6-1
+m-6-1 : 0 modules of Operator motion_detector is already placed on device m-6-1
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-6-1
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[87, 83, 4, 3]
+m-6-1
+d-6
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-6
+m-6-1 : 1 modules of Operator object_detector is already placed on device d-6
+On device d-6
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[87, 83, 4, 3]
+m-6-1
+d-6
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-6
+d-6 : 1 modules of Operator object_detector is already placed on device d-6
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-6
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[87, 83, 4, 3]
+m-6-1
+d-6
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-6
+d-6 : 1 modules of Operator object_tracker is already placed on device d-6
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-6
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[87, 83, 4, 3]
+m-6-1
+d-6
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-6 : 25 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[87, 83, 4, 3]
+m-6-1
+d-6
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 25 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[87, 83, 4, 3]
+m-6-1
+d-6
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 25 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-6-2
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[90, 83, 4, 3]
+m-6-2
+d-6
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-6-2
+m-6-2 : 0 modules of Operator motion_detector is already placed on device m-6-2
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-6-2
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[90, 83, 4, 3]
+m-6-2
+d-6
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-6
+m-6-2 : 2 modules of Operator object_detector is already placed on device d-6
+On device d-6
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[90, 83, 4, 3]
+m-6-2
+d-6
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-6
+d-6 : 2 modules of Operator object_detector is already placed on device d-6
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-6
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[90, 83, 4, 3]
+m-6-2
+d-6
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-6
+d-6 : 2 modules of Operator object_tracker is already placed on device d-6
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-6
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[90, 83, 4, 3]
+m-6-2
+d-6
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-6 : 26 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[90, 83, 4, 3]
+m-6-2
+d-6
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 26 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[90, 83, 4, 3]
+m-6-2
+d-6
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 26 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-6-3
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[93, 83, 4, 3]
+m-6-3
+d-6
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-6-3
+m-6-3 : 0 modules of Operator motion_detector is already placed on device m-6-3
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-6-3
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[93, 83, 4, 3]
+m-6-3
+d-6
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-6
+m-6-3 : 3 modules of Operator object_detector is already placed on device d-6
+On device d-6
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[93, 83, 4, 3]
+m-6-3
+d-6
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-6
+d-6 : 3 modules of Operator object_detector is already placed on device d-6
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-6
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[93, 83, 4, 3]
+m-6-3
+d-6
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-6
+d-6 : 3 modules of Operator object_tracker is already placed on device d-6
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-6
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[93, 83, 4, 3]
+m-6-3
+d-6
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-6 : 27 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[93, 83, 4, 3]
+m-6-3
+d-6
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 27 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[93, 83, 4, 3]
+m-6-3
+d-6
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 27 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-7-0
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[97, 96, 4, 3]
+m-7-0
+d-7
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-7-0
+m-7-0 : 0 modules of Operator motion_detector is already placed on device m-7-0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-7-0
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[97, 96, 4, 3]
+m-7-0
+d-7
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : null
++++++++++++++++++++++++++
+MOTION_VIDEO_STREAM
+Tuple type = MOTION_VIDEO_STREAM
+Rate = 0.2
+Cpu Load = 400.0
+Trying to place module object_detector
+Placement of operator object_detectorNOT POSSIBLE on device m-7-0
+CPU load = 400.0
+Current CPU load = 200.0
+Max mips = 500
+On device d-7
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[97, 96, 4, 3]
+m-7-0
+d-7
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : null
++++++++++++++++++++++++++
+MOTION_VIDEO_STREAM
+Tuple type = MOTION_VIDEO_STREAM
+Rate = 0.2
+Cpu Load = 400.0
+Trying to place module object_detector
+Placement of operator object_detector on device d-7
+Updated CPU load = 400.0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+Number of instances for operator object_detector = 1
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[97, 96, 4, 3]
+m-7-0
+d-7
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : null
++++++++++++++++++++++++++
+OBJECT_LOCATION
+Tuple type = OBJECT_LOCATION
+Rate = 0.2
+Cpu Load = 200.0
+Trying to place module object_tracker
+Placement of operator object_tracker on device d-7
+Updated CPU load = 600.0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+Number of instances for operator object_tracker = 1
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[97, 96, 4, 3]
+m-7-0
+d-7
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-7 : 28 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[97, 96, 4, 3]
+m-7-0
+d-7
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 28 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[97, 96, 4, 3]
+m-7-0
+d-7
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 28 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-7-1
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[100, 96, 4, 3]
+m-7-1
+d-7
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-7-1
+m-7-1 : 0 modules of Operator motion_detector is already placed on device m-7-1
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-7-1
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[100, 96, 4, 3]
+m-7-1
+d-7
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-7
+m-7-1 : 1 modules of Operator object_detector is already placed on device d-7
+On device d-7
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[100, 96, 4, 3]
+m-7-1
+d-7
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-7
+d-7 : 1 modules of Operator object_detector is already placed on device d-7
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-7
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[100, 96, 4, 3]
+m-7-1
+d-7
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-7
+d-7 : 1 modules of Operator object_tracker is already placed on device d-7
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-7
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[100, 96, 4, 3]
+m-7-1
+d-7
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-7 : 29 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[100, 96, 4, 3]
+m-7-1
+d-7
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 29 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[100, 96, 4, 3]
+m-7-1
+d-7
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 29 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-7-2
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[103, 96, 4, 3]
+m-7-2
+d-7
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-7-2
+m-7-2 : 0 modules of Operator motion_detector is already placed on device m-7-2
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-7-2
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[103, 96, 4, 3]
+m-7-2
+d-7
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-7
+m-7-2 : 2 modules of Operator object_detector is already placed on device d-7
+On device d-7
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[103, 96, 4, 3]
+m-7-2
+d-7
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-7
+d-7 : 2 modules of Operator object_detector is already placed on device d-7
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-7
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[103, 96, 4, 3]
+m-7-2
+d-7
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-7
+d-7 : 2 modules of Operator object_tracker is already placed on device d-7
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-7
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[103, 96, 4, 3]
+m-7-2
+d-7
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-7 : 30 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[103, 96, 4, 3]
+m-7-2
+d-7
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 30 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[103, 96, 4, 3]
+m-7-2
+d-7
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 30 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-7-3
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[106, 96, 4, 3]
+m-7-3
+d-7
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-7-3
+m-7-3 : 0 modules of Operator motion_detector is already placed on device m-7-3
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-7-3
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[106, 96, 4, 3]
+m-7-3
+d-7
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-7
+m-7-3 : 3 modules of Operator object_detector is already placed on device d-7
+On device d-7
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[106, 96, 4, 3]
+m-7-3
+d-7
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-7
+d-7 : 3 modules of Operator object_detector is already placed on device d-7
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-7
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[106, 96, 4, 3]
+m-7-3
+d-7
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-7
+d-7 : 3 modules of Operator object_tracker is already placed on device d-7
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-7
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[106, 96, 4, 3]
+m-7-3
+d-7
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-7 : 31 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[106, 96, 4, 3]
+m-7-3
+d-7
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 31 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[106, 96, 4, 3]
+m-7-3
+d-7
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 31 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-8-0
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[110, 109, 4, 3]
+m-8-0
+d-8
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-8-0
+m-8-0 : 0 modules of Operator motion_detector is already placed on device m-8-0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-8-0
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[110, 109, 4, 3]
+m-8-0
+d-8
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : null
++++++++++++++++++++++++++
+MOTION_VIDEO_STREAM
+Tuple type = MOTION_VIDEO_STREAM
+Rate = 0.2
+Cpu Load = 400.0
+Trying to place module object_detector
+Placement of operator object_detectorNOT POSSIBLE on device m-8-0
+CPU load = 400.0
+Current CPU load = 200.0
+Max mips = 500
+On device d-8
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[110, 109, 4, 3]
+m-8-0
+d-8
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : null
++++++++++++++++++++++++++
+MOTION_VIDEO_STREAM
+Tuple type = MOTION_VIDEO_STREAM
+Rate = 0.2
+Cpu Load = 400.0
+Trying to place module object_detector
+Placement of operator object_detector on device d-8
+Updated CPU load = 400.0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+Number of instances for operator object_detector = 1
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[110, 109, 4, 3]
+m-8-0
+d-8
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : null
++++++++++++++++++++++++++
+OBJECT_LOCATION
+Tuple type = OBJECT_LOCATION
+Rate = 0.2
+Cpu Load = 200.0
+Trying to place module object_tracker
+Placement of operator object_tracker on device d-8
+Updated CPU load = 600.0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+Number of instances for operator object_tracker = 1
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[110, 109, 4, 3]
+m-8-0
+d-8
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-8 : 32 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[110, 109, 4, 3]
+m-8-0
+d-8
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 32 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[110, 109, 4, 3]
+m-8-0
+d-8
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 32 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-8-1
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[113, 109, 4, 3]
+m-8-1
+d-8
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-8-1
+m-8-1 : 0 modules of Operator motion_detector is already placed on device m-8-1
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-8-1
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[113, 109, 4, 3]
+m-8-1
+d-8
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-8
+m-8-1 : 1 modules of Operator object_detector is already placed on device d-8
+On device d-8
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[113, 109, 4, 3]
+m-8-1
+d-8
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-8
+d-8 : 1 modules of Operator object_detector is already placed on device d-8
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-8
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[113, 109, 4, 3]
+m-8-1
+d-8
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-8
+d-8 : 1 modules of Operator object_tracker is already placed on device d-8
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-8
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[113, 109, 4, 3]
+m-8-1
+d-8
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-8 : 33 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[113, 109, 4, 3]
+m-8-1
+d-8
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 33 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[113, 109, 4, 3]
+m-8-1
+d-8
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 33 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-8-2
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[116, 109, 4, 3]
+m-8-2
+d-8
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-8-2
+m-8-2 : 0 modules of Operator motion_detector is already placed on device m-8-2
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-8-2
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[116, 109, 4, 3]
+m-8-2
+d-8
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-8
+m-8-2 : 2 modules of Operator object_detector is already placed on device d-8
+On device d-8
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[116, 109, 4, 3]
+m-8-2
+d-8
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-8
+d-8 : 2 modules of Operator object_detector is already placed on device d-8
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-8
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[116, 109, 4, 3]
+m-8-2
+d-8
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-8
+d-8 : 2 modules of Operator object_tracker is already placed on device d-8
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-8
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[116, 109, 4, 3]
+m-8-2
+d-8
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-8 : 34 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[116, 109, 4, 3]
+m-8-2
+d-8
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 34 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[116, 109, 4, 3]
+m-8-2
+d-8
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 34 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-8-3
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[119, 109, 4, 3]
+m-8-3
+d-8
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-8-3
+m-8-3 : 0 modules of Operator motion_detector is already placed on device m-8-3
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-8-3
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[119, 109, 4, 3]
+m-8-3
+d-8
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-8
+m-8-3 : 3 modules of Operator object_detector is already placed on device d-8
+On device d-8
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[119, 109, 4, 3]
+m-8-3
+d-8
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-8
+d-8 : 3 modules of Operator object_detector is already placed on device d-8
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-8
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[119, 109, 4, 3]
+m-8-3
+d-8
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-8
+d-8 : 3 modules of Operator object_tracker is already placed on device d-8
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-8
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[119, 109, 4, 3]
+m-8-3
+d-8
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-8 : 35 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[119, 109, 4, 3]
+m-8-3
+d-8
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 35 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[119, 109, 4, 3]
+m-8-3
+d-8
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 35 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-9-0
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[123, 122, 4, 3]
+m-9-0
+d-9
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-9-0
+m-9-0 : 0 modules of Operator motion_detector is already placed on device m-9-0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-9-0
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[123, 122, 4, 3]
+m-9-0
+d-9
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : null
++++++++++++++++++++++++++
+MOTION_VIDEO_STREAM
+Tuple type = MOTION_VIDEO_STREAM
+Rate = 0.2
+Cpu Load = 400.0
+Trying to place module object_detector
+Placement of operator object_detectorNOT POSSIBLE on device m-9-0
+CPU load = 400.0
+Current CPU load = 200.0
+Max mips = 500
+On device d-9
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[123, 122, 4, 3]
+m-9-0
+d-9
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : null
++++++++++++++++++++++++++
+MOTION_VIDEO_STREAM
+Tuple type = MOTION_VIDEO_STREAM
+Rate = 0.2
+Cpu Load = 400.0
+Trying to place module object_detector
+Placement of operator object_detector on device d-9
+Updated CPU load = 400.0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+Number of instances for operator object_detector = 1
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[123, 122, 4, 3]
+m-9-0
+d-9
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : null
++++++++++++++++++++++++++
+OBJECT_LOCATION
+Tuple type = OBJECT_LOCATION
+Rate = 0.2
+Cpu Load = 200.0
+Trying to place module object_tracker
+Placement of operator object_tracker on device d-9
+Updated CPU load = 600.0
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+Number of instances for operator object_tracker = 1
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[123, 122, 4, 3]
+m-9-0
+d-9
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-9 : 36 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[123, 122, 4, 3]
+m-9-0
+d-9
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 36 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[123, 122, 4, 3]
+m-9-0
+d-9
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 36 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-9-1
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[126, 122, 4, 3]
+m-9-1
+d-9
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-9-1
+m-9-1 : 0 modules of Operator motion_detector is already placed on device m-9-1
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-9-1
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[126, 122, 4, 3]
+m-9-1
+d-9
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-9
+m-9-1 : 1 modules of Operator object_detector is already placed on device d-9
+On device d-9
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[126, 122, 4, 3]
+m-9-1
+d-9
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-9
+d-9 : 1 modules of Operator object_detector is already placed on device d-9
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-9
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[126, 122, 4, 3]
+m-9-1
+d-9
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-9
+d-9 : 1 modules of Operator object_tracker is already placed on device d-9
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-9
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[126, 122, 4, 3]
+m-9-1
+d-9
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-9 : 37 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[126, 122, 4, 3]
+m-9-1
+d-9
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 37 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[126, 122, 4, 3]
+m-9-1
+d-9
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 37 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-9-2
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[129, 122, 4, 3]
+m-9-2
+d-9
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-9-2
+m-9-2 : 0 modules of Operator motion_detector is already placed on device m-9-2
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-9-2
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[129, 122, 4, 3]
+m-9-2
+d-9
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-9
+m-9-2 : 2 modules of Operator object_detector is already placed on device d-9
+On device d-9
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[129, 122, 4, 3]
+m-9-2
+d-9
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-9
+d-9 : 2 modules of Operator object_detector is already placed on device d-9
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-9
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[129, 122, 4, 3]
+m-9-2
+d-9
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-9
+d-9 : 2 modules of Operator object_tracker is already placed on device d-9
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-9
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[129, 122, 4, 3]
+m-9-2
+d-9
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-9 : 38 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[129, 122, 4, 3]
+m-9-2
+d-9
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 38 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[129, 122, 4, 3]
+m-9-2
+d-9
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 38 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
+NEW PATH
+On device m-9-3
+Currently placed operators = [CAMERA, PTZ_CONTROL]
+motion_detector----->object_detector : 0.2
+object_detector----->user_interface : 0.010000000000000002
+object_detector----->object_tracker : 0.2
+Placed Modules : [CAMERA, PTZ_CONTROL]
+Modules to place : [motion_detector]
+BEGINNING OF LOOP : Operators to Place : [motion_detector]
+
+[132, 122, 4, 3]
+m-9-3
+d-9
+proxy-server
+cloud
+motion_detector XXXXX Upstream Device : m-9-3
+m-9-3 : 0 modules of Operator motion_detector is already placed on device m-9-3
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector]
+Modules to place : [object_detector]
+You can rest in peace. motion_detector can be created in m-9-3
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[132, 122, 4, 3]
+m-9-3
+d-9
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-9
+m-9-3 : 3 modules of Operator object_detector is already placed on device d-9
+On device d-9
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector]
+Modules to place : [object_detector]
+BEGINNING OF LOOP : Operators to Place : [object_detector]
+
+[132, 122, 4, 3]
+m-9-3
+d-9
+proxy-server
+cloud
+object_detector XXXXX Upstream Device : d-9
+d-9 : 3 modules of Operator object_detector is already placed on device d-9
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector]
+Modules to place : [object_tracker, user_interface]
+You can rest in peace. object_detector can be created in d-9
+BEGINNING OF LOOP : Operators to Place : [object_tracker, user_interface]
+
+[132, 122, 4, 3]
+m-9-3
+d-9
+proxy-server
+cloud
+object_tracker XXXXX Upstream Device : d-9
+d-9 : 3 modules of Operator object_tracker is already placed on device d-9
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker]
+Modules to place : [user_interface]
+You can rest in peace. object_tracker can be created in d-9
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[132, 122, 4, 3]
+m-9-3
+d-9
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+d-9 : 39 modules of Operator user_interface is already placed on device cloud
+On device proxy-server
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[132, 122, 4, 3]
+m-9-3
+d-9
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+proxy-server : 39 modules of Operator user_interface is already placed on device cloud
+On device cloud
+Currently placed operators = [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker]
+Modules to place : [user_interface]
+BEGINNING OF LOOP : Operators to Place : [user_interface]
+
+[132, 122, 4, 3]
+m-9-3
+d-9
+proxy-server
+cloud
+user_interface XXXXX Upstream Device : cloud
+cloud : 39 modules of Operator user_interface is already placed on device cloud
+Placed Modules : [CAMERA, PTZ_CONTROL, motion_detector, motion_detector, object_detector, object_detector, object_tracker, object_tracker, user_interface]
+Modules to place : []
+You can rest in peace. user_interface can be created in cloud
 cloud--->[user_interface]
 Creating user_interface on device cloud
 proxy-server--->[]
@@ -411,55 +4038,170 @@ Creating object_detector on device d-0
 Creating object_tracker on device d-0
 m-0-0--->[motion_detector]
 Creating motion_detector on device m-0-0
+m-9-2--->[motion_detector]
+Creating motion_detector on device m-9-2
 m-0-1--->[motion_detector]
 Creating motion_detector on device m-0-1
 m-0-2--->[motion_detector]
 Creating motion_detector on device m-0-2
+m-9-3--->[motion_detector]
+Creating motion_detector on device m-9-3
 m-0-3--->[motion_detector]
 Creating motion_detector on device m-0-3
-{3={user_interface=4}, 4={}, 5={object_tracker=4, object_detector=4}, 6={motion_detector=1}, 9={motion_detector=1}, 12={motion_detector=1}, 15={motion_detector=1}}
-cloud Creating 4 instances of module user_interface
+m-1-0--->[motion_detector]
+Creating motion_detector on device m-1-0
+d-1--->[object_detector, object_tracker]
+Creating object_detector on device d-1
+Creating object_tracker on device d-1
+m-1-1--->[motion_detector]
+Creating motion_detector on device m-1-1
+m-1-2--->[motion_detector]
+Creating motion_detector on device m-1-2
+m-1-3--->[motion_detector]
+Creating motion_detector on device m-1-3
+d-2--->[object_detector, object_tracker]
+Creating object_detector on device d-2
+Creating object_tracker on device d-2
+m-2-1--->[motion_detector]
+Creating motion_detector on device m-2-1
+m-2-0--->[motion_detector]
+Creating motion_detector on device m-2-0
+m-2-2--->[motion_detector]
+Creating motion_detector on device m-2-2
+m-2-3--->[motion_detector]
+Creating motion_detector on device m-2-3
+d-3--->[object_detector, object_tracker]
+Creating object_detector on device d-3
+Creating object_tracker on device d-3
+m-3-0--->[motion_detector]
+Creating motion_detector on device m-3-0
+m-3-2--->[motion_detector]
+Creating motion_detector on device m-3-2
+m-3-1--->[motion_detector]
+Creating motion_detector on device m-3-1
+m-3-3--->[motion_detector]
+Creating motion_detector on device m-3-3
+m-4-0--->[motion_detector]
+Creating motion_detector on device m-4-0
+d-4--->[object_detector, object_tracker]
+Creating object_detector on device d-4
+Creating object_tracker on device d-4
+m-4-1--->[motion_detector]
+Creating motion_detector on device m-4-1
+d-5--->[object_detector, object_tracker]
+Creating object_detector on device d-5
+Creating object_tracker on device d-5
+m-5-0--->[motion_detector]
+Creating motion_detector on device m-5-0
+m-4-2--->[motion_detector]
+Creating motion_detector on device m-4-2
+m-4-3--->[motion_detector]
+Creating motion_detector on device m-4-3
+m-5-2--->[motion_detector]
+Creating motion_detector on device m-5-2
+m-5-1--->[motion_detector]
+Creating motion_detector on device m-5-1
+m-6-0--->[motion_detector]
+Creating motion_detector on device m-6-0
+m-6-1--->[motion_detector]
+Creating motion_detector on device m-6-1
+m-5-3--->[motion_detector]
+Creating motion_detector on device m-5-3
+d-6--->[object_detector, object_tracker]
+Creating object_detector on device d-6
+Creating object_tracker on device d-6
+m-6-3--->[motion_detector]
+Creating motion_detector on device m-6-3
+m-6-2--->[motion_detector]
+Creating motion_detector on device m-6-2
+m-7-2--->[motion_detector]
+Creating motion_detector on device m-7-2
+m-7-1--->[motion_detector]
+Creating motion_detector on device m-7-1
+d-7--->[object_detector, object_tracker]
+Creating object_detector on device d-7
+Creating object_tracker on device d-7
+m-7-0--->[motion_detector]
+Creating motion_detector on device m-7-0
+m-8-0--->[motion_detector]
+Creating motion_detector on device m-8-0
+d-8--->[object_detector, object_tracker]
+Creating object_detector on device d-8
+Creating object_tracker on device d-8
+m-7-3--->[motion_detector]
+Creating motion_detector on device m-7-3
+m-8-3--->[motion_detector]
+Creating motion_detector on device m-8-3
+m-8-2--->[motion_detector]
+Creating motion_detector on device m-8-2
+m-8-1--->[motion_detector]
+Creating motion_detector on device m-8-1
+m-9-1--->[motion_detector]
+Creating motion_detector on device m-9-1
+m-9-0--->[motion_detector]
+Creating motion_detector on device m-9-0
+d-9--->[object_detector, object_tracker]
+Creating object_detector on device d-9
+Creating object_tracker on device d-9
+{3={user_interface=40}, 4={}, 5={object_tracker=4, object_detector=4}, 6={motion_detector=1}, 129={motion_detector=1}, 9={motion_detector=1}, 12={motion_detector=1}, 132={motion_detector=1}, 15={motion_detector=1}, 19={motion_detector=1}, 18={object_tracker=4, object_detector=4}, 22={motion_detector=1}, 25={motion_detector=1}, 28={motion_detector=1}, 31={object_tracker=4, object_detector=4}, 35={motion_detector=1}, 32={motion_detector=1}, 38={motion_detector=1}, 41={motion_detector=1}, 44={object_tracker=4, object_detector=4}, 45={motion_detector=1}, 51={motion_detector=1}, 48={motion_detector=1}, 54={motion_detector=1}, 58={motion_detector=1}, 57={object_tracker=4, object_detector=4}, 61={motion_detector=1}, 70={object_tracker=4, object_detector=4}, 71={motion_detector=1}, 64={motion_detector=1}, 67={motion_detector=1}, 77={motion_detector=1}, 74={motion_detector=1}, 84={motion_detector=1}, 87={motion_detector=1}, 80={motion_detector=1}, 83={object_tracker=4, object_detector=4}, 93={motion_detector=1}, 90={motion_detector=1}, 103={motion_detector=1}, 100={motion_detector=1}, 96={object_tracker=4, object_detector=4}, 97={motion_detector=1}, 110={motion_detector=1}, 109={object_tracker=4, object_detector=4}, 106={motion_detector=1}, 119={motion_detector=1}, 116={motion_detector=1}, 113={motion_detector=1}, 126={motion_detector=1}, 123={motion_detector=1}, 122={object_tracker=4, object_detector=4}}
+cloud Creating 40 instances of module user_interface
 d-0 Creating 4 instances of module object_detector
 d-0 Creating 4 instances of module object_tracker
 m-0-0 Creating 1 instances of module motion_detector
 m-0-1 Creating 1 instances of module motion_detector
 m-0-2 Creating 1 instances of module motion_detector
 m-0-3 Creating 1 instances of module motion_detector
-=========================================
-============== RESULTS ==================
-=========================================
-EXECUTION TIME : 1446
-=========================================
-APPLICATION LOOP DELAYS
-=========================================
-[motion_detector, object_detector, object_tracker] ---> 5.357142857143801
-[object_tracker, PTZ_CONTROL] ---> 3.110000000000363
-=========================================
-TUPLE CPU EXECUTION DELAY
-=========================================
-MOTION_VIDEO_STREAM ---> 2.957142857143481
-CAMERA ---> 2.100000000000364
-OBJECT_LOCATION ---> 1.5285714285710128
-DETECTED_OBJECT ---> 0.1124999999992724
-=========================================
-cloud : Energy Consumed = 1.332996891428614E7
-proxy-server : Energy Consumed = 0.0
-d-0 : Energy Consumed = 1009892.3440571827
-m-0-0 : Energy Consumed = 841743.7020000643
-m-0-1 : Energy Consumed = 841743.7020000643
-m-0-2 : Energy Consumed = 841743.7020000643
-m-0-3 : Energy Consumed = 841743.7020000643
-Cost of execution in cloud = 15704.99999999836
-Total network usage = 9809.52
-THESIS RESULTS
-[motion_detector, object_detector, object_tracker] ---> 5.357142857143801
-[object_tracker, PTZ_CONTROL] ---> 3.110000000000363
-1.332996891428614E7
-3366974.8080002572
-1009892.3440571827
-1447
-2.957142857143481
-2.100000000000364
-1.5285714285710128
-0.1124999999992724
-9809.52
+d-1 Creating 4 instances of module object_detector
+d-1 Creating 4 instances of module object_tracker
+m-1-0 Creating 1 instances of module motion_detector
+m-1-1 Creating 1 instances of module motion_detector
+m-1-2 Creating 1 instances of module motion_detector
+m-1-3 Creating 1 instances of module motion_detector
+d-2 Creating 4 instances of module object_detector
+d-2 Creating 4 instances of module object_tracker
+m-2-0 Creating 1 instances of module motion_detector
+m-2-1 Creating 1 instances of module motion_detector
+m-2-2 Creating 1 instances of module motion_detector
+m-2-3 Creating 1 instances of module motion_detector
+d-3 Creating 4 instances of module object_detector
+d-3 Creating 4 instances of module object_tracker
+m-3-0 Creating 1 instances of module motion_detector
+m-3-1 Creating 1 instances of module motion_detector
+m-3-2 Creating 1 instances of module motion_detector
+m-3-3 Creating 1 instances of module motion_detector
+d-4 Creating 4 instances of module object_detector
+d-4 Creating 4 instances of module object_tracker
+m-4-0 Creating 1 instances of module motion_detector
+m-4-1 Creating 1 instances of module motion_detector
+m-4-2 Creating 1 instances of module motion_detector
+m-4-3 Creating 1 instances of module motion_detector
+d-5 Creating 4 instances of module object_detector
+d-5 Creating 4 instances of module object_tracker
+m-5-0 Creating 1 instances of module motion_detector
+m-5-1 Creating 1 instances of module motion_detector
+m-5-2 Creating 1 instances of module motion_detector
+m-5-3 Creating 1 instances of module motion_detector
+d-6 Creating 4 instances of module object_detector
+d-6 Creating 4 instances of module object_tracker
+m-6-0 Creating 1 instances of module motion_detector
+m-6-1 Creating 1 instances of module motion_detector
+m-6-2 Creating 1 instances of module motion_detector
+m-6-3 Creating 1 instances of module motion_detector
+d-7 Creating 4 instances of module object_detector
+d-7 Creating 4 instances of module object_tracker
+m-7-0 Creating 1 instances of module motion_detector
+m-7-1 Creating 1 instances of module motion_detector
+m-7-2 Creating 1 instances of module motion_detector
+m-7-3 Creating 1 instances of module motion_detector
+d-8 Creating 4 instances of module object_detector
+d-8 Creating 4 instances of module object_tracker
+m-8-0 Creating 1 instances of module motion_detector
+m-8-1 Creating 1 instances of module motion_detector
+m-8-2 Creating 1 instances of module motion_detector
+m-8-3 Creating 1 instances of module motion_detector
+d-9 Creating 4 instances of module object_detector
+d-9 Creating 4 instances of module object_tracker
+m-9-0 Creating 1 instances of module motion_detector
+m-9-1 Creating 1 instances of module motion_detector
+m-9-2 Creating 1 instances of module motion_detector
+m-9-3 Creating 1 instances of module motion_detector

@@ -18,6 +18,7 @@ import org.cloudbus.cloudsim.sdn.overbooking.PeProvisionerOverbooking;
 import org.fog.application.AppEdge;
 import org.fog.application.AppLoop;
 import org.fog.application.Application;
+import org.fog.application.selectivity.FractionalSelectivity;
 import org.fog.entities.Actuator;
 import org.fog.entities.FogBroker;
 import org.fog.entities.FogDevice;
@@ -193,10 +194,10 @@ public class VRGameCloud {
 		application.addAppModule("classifier", 10);
 		application.addAppModule("connector", 10);
 		
-		application.addTupleMapping("client", "EEG", "_SENSOR", 1.0);
-		application.addTupleMapping("client", "CLASSIFICATION", "SELF_STATE_UPDATE", 1.0);
-		application.addTupleMapping("classifier", "_SENSOR", "CLASSIFICATION", 1.0);
-		application.addTupleMapping("client", "GLOBAL_GAME_STATE", "GLOBAL_STATE_UPDATE", 1.0);
+		application.addTupleMapping("client", "EEG", "_SENSOR", new FractionalSelectivity(1.0));
+		application.addTupleMapping("client", "CLASSIFICATION", "SELF_STATE_UPDATE", new FractionalSelectivity(1.0));
+		application.addTupleMapping("classifier", "_SENSOR", "CLASSIFICATION", new FractionalSelectivity(1.0));
+		application.addTupleMapping("client", "GLOBAL_GAME_STATE", "GLOBAL_STATE_UPDATE", new FractionalSelectivity(1.0));
 	
 		application.addAppEdge("EEG", "client", 1400, 50, "EEG", Tuple.UP, AppEdge.SENSOR);
 		application.addAppEdge("client", "classifier", 2000, 50, "_SENSOR", Tuple.UP, AppEdge.MODULE);

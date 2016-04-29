@@ -279,11 +279,22 @@ public class FogDevice extends PowerDatacenter {
 		case FogEvents.LAUNCH_MODULE_INSTANCE:
 			updateModuleInstanceCount(ev);
 			break;
+		case FogEvents.RESOURCE_MGMT:
+			manageResources(ev);
 		default:
 			break;
 		}
 	}
 	
+	/**
+	 * Perform miscellaneous resource management tasks
+	 * @param ev
+	 */
+	private void manageResources(SimEvent ev) {
+		updateEnergyConsumption();
+		send(getId(), Config.RESOURCE_MGMT_INTERVAL, FogEvents.RESOURCE_MGMT);
+	}
+
 	/**
 	 * Updating the number of modules of an application module on this device
 	 * @param ev instance of SimEvent containing the module and no of instances 
@@ -515,6 +526,12 @@ public class FogDevice extends PowerDatacenter {
 				{add(0.0);}});
 			}
 		}
+		
+		updateEnergyConsumption();
+		
+	}
+	
+	private void updateEnergyConsumption() {
 		double totalMipsAllocated = 0;
 		for(final Vm vm : getHost().getVmList()){
 			AppModule operator = (AppModule)vm;
@@ -528,11 +545,12 @@ public class FogDevice extends PowerDatacenter {
 		double newEnergyConsumption = currentEnergyConsumption + (timeNow-lastUtilizationUpdateTime)*getHost().getPowerModel().getPower(lastUtilization);
 		setEnergyConsumption(newEnergyConsumption);
 	
-		/*if(getName().startsWith("d")){
+		if(getName().startsWith("proxy")){
+			System.out.println("-----------------------------------------------------------");
 			System.out.println("Util="+lastUtilization);
 			System.out.println("Power="+getHost().getPowerModel().getPower(lastUtilization));
 		}
-		*/
+		
 		double currentCost = getTotalCost();
 		double newcost = currentCost + (timeNow-lastUtilizationUpdateTime)*getRatePerMips()*lastUtilization*getHost().getTotalMips();
 		setTotalCost(newcost);
@@ -540,7 +558,7 @@ public class FogDevice extends PowerDatacenter {
 		lastUtilization = Math.min(1, totalMipsAllocated/getHost().getTotalMips());
 		lastUtilizationUpdateTime = timeNow;
 	}
-	
+
 	protected void processAppSubmit(SimEvent ev) {
 		Application app = (Application)ev.getData();
 		applicationMap.put(app.getAppId(), app);

@@ -37,7 +37,7 @@ public class DCNSFog {
 	static List<FogDevice> fogDevices = new ArrayList<FogDevice>();
 	static List<Sensor> sensors = new ArrayList<Sensor>();
 	static List<Actuator> actuators = new ArrayList<Actuator>();
-	static int numOfAreas = 10;
+	static int numOfAreas = 2;
 	static int numOfCamerasPerArea = 4;
 	
 	private static boolean CLOUD = false;

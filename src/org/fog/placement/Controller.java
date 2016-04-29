@@ -81,6 +81,9 @@ public class Controller extends SimEntity{
 		send(getId(), Config.RESOURCE_MANAGE_INTERVAL, FogEvents.CONTROLLER_RESOURCE_MANAGE);
 		
 		send(getId(), Config.MAX_SIMULATION_TIME, FogEvents.STOP_SIMULATION);
+		
+		for(FogDevice dev : getFogDevices())
+			sendNow(dev.getId(), FogEvents.RESOURCE_MGMT);
 	}
 
 	@Override
@@ -103,9 +106,9 @@ public class Controller extends SimEntity{
 			printNetworkUsageDetails();
 			
 			printResultsForThesis();
-			
 			System.exit(0);
 			break;
+			
 		}
 	}
 	
@@ -160,14 +163,10 @@ public class Controller extends SimEntity{
 		
 	}
 
-
-
 	private void printNetworkUsageDetails() {
 		System.out.println("Total network usage = "+NetworkUsageMonitor.getNetworkUsage()/Config.MAX_SIMULATION_TIME);
 		
 	}
-
-
 
 	private FogDevice getCloud(){
 		for(FogDevice dev : getFogDevices())

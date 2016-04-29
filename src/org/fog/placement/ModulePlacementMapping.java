@@ -14,7 +14,6 @@ public class ModulePlacementMapping extends ModulePlacement{
 	
 	@Override
 	protected void mapModules() {
-		//TODO Sending module instances to fog devices
 		Map<String, Map<String, Integer>> mapping = moduleMapping.getModuleMapping();
 		System.out.println(mapping);
 		for(String deviceName : mapping.keySet()){

@@ -443,7 +443,7 @@ public class FogDevice extends PowerDatacenter {
 		return minTime;
 	}
 
-	
+
 	protected void checkCloudletCompletion() {
 		boolean cloudletCompleted = false;
 		List<? extends Host> list = getVmAllocationPolicy().getHostList();
@@ -545,11 +545,12 @@ public class FogDevice extends PowerDatacenter {
 		double newEnergyConsumption = currentEnergyConsumption + (timeNow-lastUtilizationUpdateTime)*getHost().getPowerModel().getPower(lastUtilization);
 		setEnergyConsumption(newEnergyConsumption);
 	
-		if(getName().startsWith("proxy")){
-			System.out.println("-----------------------------------------------------------");
-			System.out.println("Util="+lastUtilization);
-			System.out.println("Power="+getHost().getPowerModel().getPower(lastUtilization));
-		}
+		/*if(getName().equals("d-0")){
+			System.out.println("------------------------");
+			System.out.println("Utilization = "+lastUtilization);
+			System.out.println("Power = "+getHost().getPowerModel().getPower(lastUtilization));
+			System.out.println(timeNow-lastUtilizationUpdateTime);
+		}*/
 		
 		double currentCost = getTotalCost();
 		double newcost = currentCost + (timeNow-lastUtilizationUpdateTime)*getRatePerMips()*lastUtilization*getHost().getTotalMips();
@@ -605,7 +606,7 @@ public class FogDevice extends PowerDatacenter {
 			sendDown(tuple, childId);
 		}
 	}
-	
+	int numClients=0;
 	protected void processTupleArrival(SimEvent ev){
 		Tuple tuple = (Tuple)ev.getData();
 		
@@ -613,6 +614,9 @@ public class FogDevice extends PowerDatacenter {
 			updateCloudTraffic();
 		}
 		
+		/*if(getName().equals("d-0") && tuple.getTupleType().equals("_SENSOR")){
+			System.out.println(++numClients);
+		}*/
 		Logger.debug(getName(), "Received tuple "+tuple.getCloudletId()+"with tupleType = "+tuple.getTupleType()+"\t| Source : "+
 		CloudSim.getEntityName(ev.getSource())+"|Dest : "+CloudSim.getEntityName(ev.getDestination()));
 		send(ev.getSource(), CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ACK);
@@ -705,7 +709,6 @@ public class FogDevice extends PowerDatacenter {
 	}
 
 	protected void processSensorJoining(SimEvent ev){
-		//TODO Process sensor joining
 		send(ev.getSource(), CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ACK);
 	}
 	

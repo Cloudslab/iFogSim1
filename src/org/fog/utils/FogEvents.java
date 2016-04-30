@@ -26,4 +26,6 @@ public class FogEvents {
 	public static final int SEND_PERIODIC_TUPLE = BASE+22;
 	public static final int LAUNCH_MODULE_INSTANCE = BASE+23;
 	public static final int RESOURCE_MGMT = BASE+24;
+	public static final int INITIALIZE_SENSOR = BASE+24;
+	public static final int EMIT_TUPLE = BASE+25;
 }

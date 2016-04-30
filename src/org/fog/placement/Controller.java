@@ -84,6 +84,7 @@ public class Controller extends SimEntity{
 		
 		for(FogDevice dev : getFogDevices())
 			sendNow(dev.getId(), FogEvents.RESOURCE_MGMT);
+
 	}
 
 	@Override
@@ -127,7 +128,8 @@ public class Controller extends SimEntity{
 			System.out.println((average/count));
 		}*/
 		for(Integer loopId : TimeKeeper.getInstance().getLoopIdToTupleIds().keySet()){
-			System.out.println(getStringForLoopId(loopId) + " ---> "+TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loopId));
+			//System.out.println(getStringForLoopId(loopId) + " ---> "+TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loopId));
+			System.out.println(TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loopId));
 		}
 		
 		double sum=0;int num=0;

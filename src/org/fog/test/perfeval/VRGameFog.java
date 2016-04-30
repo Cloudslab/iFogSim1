@@ -11,7 +11,6 @@ import org.cloudbus.cloudsim.Pe;
 import org.cloudbus.cloudsim.Storage;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.power.PowerHost;
-import org.cloudbus.cloudsim.power.models.PowerModelLinear;
 import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
 import org.cloudbus.cloudsim.sdn.overbooking.BwProvisionerOverbooking;
 import org.cloudbus.cloudsim.sdn.overbooking.PeProvisionerOverbooking;
@@ -39,7 +38,7 @@ public class VRGameFog {
 	static List<Sensor> sensors = new ArrayList<Sensor>();
 	static List<Actuator> actuators = new ArrayList<Actuator>();
 	
-	static boolean CLOUD = false;
+	static boolean CLOUD = true;
 	
 	static int numOfDepts = 1;
 	static int numOfMobilesPerDept = 4;
@@ -47,7 +46,7 @@ public class VRGameFog {
 	//static double EEG_TRANSMISSION_TIME = 10;
 	public static void main(String[] args) {
 
-		if(args.length < 4){
+		/*if(args.length < 4){
 			System.out.println("PLEASE ENTER #depts, #mobiles_per_dept and EEG inter-transmission time.");
 			System.exit(0);
 		}
@@ -55,7 +54,7 @@ public class VRGameFog {
 		CLOUD = (args[0].equals("CLOUD"))?true:false;
 		numOfDepts = Integer.parseInt(args[1]);
 		numOfMobilesPerDept = Integer.parseInt(args[2]);
-		EEG_TRANSMISSION_TIME = (Integer.parseInt(args[3])==10)?10.0:5.1;
+		EEG_TRANSMISSION_TIME = (Integer.parseInt(args[3])==10)?10.0:5.1;*/
 		
 		Log.printLine("Starting VRGame...");
 
@@ -112,7 +111,7 @@ public class VRGameFog {
 	}
 
 	private static void createFogDevices(int userId, String appId) {
-		FogDevice cloud = createFogDevice("cloud", 40000, 40000, 100, 10000, 0, 0.01, 16*103, 16*83.25);
+		FogDevice cloud = createFogDevice("cloud", 44800, 40000, 100, 10000, 0, 0.01, 16*103, 16*83.25);
 		cloud.setParentId(-1);
 		FogDevice proxy = createFogDevice("proxy-server", 2800, 4000, 10000, 10000, 1, 0.0, 107.339, 83.4333);
 		proxy.setParentId(cloud.getId());
@@ -227,12 +226,11 @@ public class VRGameFog {
 		else
 			application.addAppEdge("EEG", "client", 3000, 500, "EEG", Tuple.UP, AppEdge.SENSOR);
 		application.addAppEdge("client", "classifier", 3500, 500, "_SENSOR", Tuple.UP, AppEdge.MODULE);
-		application.addAppEdge("classifier", "connector", 1000, 1000, 1000, "PLAYER_GAME_STATE", Tuple.UP, AppEdge.MODULE);
+		application.addAppEdge("classifier", "connector", 100, 1000, 1000, "PLAYER_GAME_STATE", Tuple.UP, AppEdge.MODULE);
 		application.addAppEdge("classifier", "client", 14, 500, "CLASSIFICATION", Tuple.DOWN, AppEdge.MODULE);
 		application.addAppEdge("connector", "client", 100, 28, 1000, "GLOBAL_GAME_STATE", Tuple.DOWN, AppEdge.MODULE);
 		application.addAppEdge("client", "DISPLAY", 1000, 500, "SELF_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
 		application.addAppEdge("client", "DISPLAY", 1000, 500, "GLOBAL_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
-		
 		
 		final AppLoop loop1 = new AppLoop(new ArrayList<String>(){{add("EEG");add("client");add("classifier");add("client");add("DISPLAY");}});
 		List<AppLoop> loops = new ArrayList<AppLoop>(){{add(loop1);}};

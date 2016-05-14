@@ -18,7 +18,6 @@ public class Actuator extends SimEntity{
 	private String appId;
 	private int userId;
 	private String actuatorType;
-	private String srcModuleName;
 	private Application app;
 	
 	public Actuator(String name, int userId, String appId, int gatewayDeviceId, double latency, GeoLocation geoLocation, String actuatorType, String srcModuleName) {
@@ -28,7 +27,6 @@ public class Actuator extends SimEntity{
 		this.geoLocation = geoLocation;
 		setUserId(userId);
 		setActuatorType(actuatorType);
-		setSrcModuleName(srcModuleName);
 		setLatency(latency);
 	}
 	
@@ -62,9 +60,6 @@ public class Actuator extends SimEntity{
 		
 		for(AppLoop loop : app.getLoops()){
 			if(loop.hasEdge(srcModule, destModule) && loop.isEndModule(destModule)){
-				//Logger.debug(getName(), "\tRECEIVE\t"+tuple.getActualTupleId());
-				
-				//TimeKeeper.getInstance().getEndTimes().put(tuple.getActualTupleId(), CloudSim.clock());
 				
 				Double startTime = TimeKeeper.getInstance().getEmitTimes().get(tuple.getActualTupleId());
 				if(startTime==null)
@@ -128,14 +123,6 @@ public class Actuator extends SimEntity{
 
 	public void setActuatorType(String actuatorType) {
 		this.actuatorType = actuatorType;
-	}
-
-	public String getSrcModuleName() {
-		return srcModuleName;
-	}
-
-	public void setSrcModuleName(String srcModuleName) {
-		this.srcModuleName = srcModuleName;
 	}
 
 	public Application getApp() {

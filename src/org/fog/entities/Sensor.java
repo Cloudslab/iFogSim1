@@ -25,8 +25,6 @@ public class Sensor extends SimEntity{
 	private int userId;
 	private String tupleType;
 	private String sensorName;
-	private int tupleCpuSize;
-	private int tupleNwSize;
 	private String destModuleName;
 	private Distribution transmitDistribution;
 	private int controllerId;
@@ -42,8 +40,6 @@ public class Sensor extends SimEntity{
 		this.outputSize = 3;
 		this.setTransmitDistribution(transmitDistribution);
 		setUserId(userId);
-		setTupleCpuSize(cpuLength);
-		setTupleNwSize(nwLength);
 		setDestModuleName(destModuleName);
 		setTupleType(tupleType);
 		setSensorName(sensorName);
@@ -171,22 +167,6 @@ public class Sensor extends SimEntity{
 
 	public void setUserId(int userId) {
 		this.userId = userId;
-	}
-
-	public int getTupleCpuSize() {
-		return tupleCpuSize;
-	}
-
-	public void setTupleCpuSize(int tupleCpuSize) {
-		this.tupleCpuSize = tupleCpuSize;
-	}
-
-	public int getTupleNwSize() {
-		return tupleNwSize;
-	}
-
-	public void setTupleNwSize(int tupleNwSize) {
-		this.tupleNwSize = tupleNwSize;
 	}
 
 	public String getTupleType() {

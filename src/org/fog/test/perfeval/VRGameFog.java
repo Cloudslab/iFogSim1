@@ -46,7 +46,7 @@ public class VRGameFog {
 	//static double EEG_TRANSMISSION_TIME = 10;
 	public static void main(String[] args) {
 
-		/*if(args.length < 4){
+		if(args.length < 4){
 			System.out.println("PLEASE ENTER #depts, #mobiles_per_dept and EEG inter-transmission time.");
 			System.exit(0);
 		}
@@ -54,7 +54,7 @@ public class VRGameFog {
 		CLOUD = (args[0].equals("CLOUD"))?true:false;
 		numOfDepts = Integer.parseInt(args[1]);
 		numOfMobilesPerDept = Integer.parseInt(args[2]);
-		EEG_TRANSMISSION_TIME = (Integer.parseInt(args[3])==10)?10.0:5.1;*/
+		EEG_TRANSMISSION_TIME = (Integer.parseInt(args[3])==10)?10.0:5.1;
 		
 		Log.printLine("Starting VRGame...");
 

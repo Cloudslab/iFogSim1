@@ -15,15 +15,12 @@ public class ModulePlacementMapping extends ModulePlacement{
 	@Override
 	protected void mapModules() {
 		Map<String, Map<String, Integer>> mapping = moduleMapping.getModuleMapping();
-		System.out.println(mapping);
 		for(String deviceName : mapping.keySet()){
 			FogDevice device = getDeviceByName(deviceName);
 			for(String moduleName : mapping.get(deviceName).keySet()){
+				
 				AppModule module = getApplication().getModuleByName(moduleName);
-				System.out.println("==========="+deviceName);
 				createModuleInstanceOnDevice(module, device);
-				System.out.println(moduleName);
-				System.out.println(deviceName);
 				getModuleInstanceCountMap().get(device.getId()).put(moduleName, mapping.get(deviceName).get(moduleName));
 			}
 		}

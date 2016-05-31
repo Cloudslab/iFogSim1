@@ -17,6 +17,11 @@ import org.fog.placement.Controller;
 import org.fog.placement.ModuleMapping;
 import org.fog.utils.JsonToTopology;
 
+/**
+ * Simulation setup for EEG Beam Tractor Game extracting physical topology 
+ * @author Harshit Gupta
+ *
+ */
 public class CleanFromJson {
 
 	public static void main(String[] args) {
@@ -38,9 +43,12 @@ public class CleanFromJson {
 			Application application = createApplication(appId, broker.getId());
 			application.setUserId(broker.getId());
 			
+			/*
+			 * Creating the physical topology from specified JSON file
+			 */
 			PhysicalTopology physicalTopology = JsonToTopology.getPhysicalTopology(broker.getId(), appId, "topologies/routerTopology");
 						
-			ModuleMapping moduleMapping = ModuleMapping.createModuleMapping();
+			ModuleMapping moduleMapping = ModuleMapping.createModuleMapping(); // create empty module to device mapping
 			
 			Controller controller = new Controller("master-controller", physicalTopology.getFogDevices(), physicalTopology.getSensors(), 
 					physicalTopology.getActuators(), moduleMapping);
@@ -58,6 +66,7 @@ public class CleanFromJson {
 			Log.printLine("Unwanted errors happen");
 		}
 	}
+	
 	
 	@SuppressWarnings({ "serial" })
 	private static Application createApplication(String appId, int userId){

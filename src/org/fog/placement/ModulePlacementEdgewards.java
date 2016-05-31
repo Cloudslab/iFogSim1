@@ -450,10 +450,11 @@ public class ModulePlacementEdgewards extends ModulePlacement{
 		}
 		return endpoints;
 	}
-
+	
+	@SuppressWarnings("serial")
 	protected List<List<Integer>> getPaths(final int fogDeviceId){
 		FogDevice device = (FogDevice)CloudSim.getEntity(fogDeviceId); 
-		if(device.getChildrenIds().size() == 0){
+		if(device.getChildrenIds().size() == 0){		
 			final List<Integer> path =  (new ArrayList<Integer>(){{add(fogDeviceId);}});
 			List<List<Integer>> paths = (new ArrayList<List<Integer>>(){{add(path);}});
 			return paths;

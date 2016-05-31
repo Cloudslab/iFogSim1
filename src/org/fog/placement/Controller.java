@@ -105,66 +105,12 @@ public class Controller extends SimEntity{
 			printPowerDetails();
 			printCostDetails();
 			printNetworkUsageDetails();
-			
-			printResultsForThesis();
 			System.exit(0);
 			break;
 			
 		}
 	}
 	
-	private void printResultsForThesis() {
-		System.out.println("THESIS RESULTS");
-		/*for(Integer loopId : TimeKeeper.getInstance().getLoopIdToTupleIds().keySet()){
-			double average = 0, count = 0;
-			for(int tupleId : TimeKeeper.getInstance().getLoopIdToTupleIds().get(loopId)){
-				Double startTime = 	TimeKeeper.getInstance().getEmitTimes().get(tupleId);
-				Double endTime = 	TimeKeeper.getInstance().getEndTimes().get(tupleId);
-				if(startTime == null || endTime == null)
-					break;
-				average += endTime-startTime;
-				count += 1;
-			}
-			System.out.println((average/count));
-		}*/
-		for(Integer loopId : TimeKeeper.getInstance().getLoopIdToTupleIds().keySet()){
-			//System.out.println(getStringForLoopId(loopId) + " ---> "+TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loopId));
-			System.out.println(TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loopId));
-		}
-		
-		double sum=0;int num=0;
-		for(FogDevice fogDevice : getFogDevices()){
-			if(fogDevice.getName().contains("cloud"))
-				System.out.println(fogDevice.getEnergyConsumption());
-		}
-		sum=0;num=0;
-		for(FogDevice fogDevice : getFogDevices()){
-			if(fogDevice.getName().startsWith("m")){
-				sum+=fogDevice.getEnergyConsumption();
-				num++;
-			}
-		}
-		System.out.println(sum);
-		sum=0;num=0;
-		for(FogDevice fogDevice : getFogDevices()){
-			if(fogDevice.getName().startsWith("d")){
-				sum+=fogDevice.getEnergyConsumption();
-				num++;
-			}
-		}
-		System.out.println(sum);
-		
-		System.out.println((Calendar.getInstance().getTimeInMillis() - TimeKeeper.getInstance().getSimulationStartTime()));
-		
-		for(String tupleType : TimeKeeper.getInstance().getTupleTypeToAverageCpuTime().keySet()){
-			System.out.println(TimeKeeper.getInstance().getTupleTypeToAverageCpuTime().get(tupleType));
-		}
-		
-		System.out.println(NetworkUsageMonitor.getNetworkUsage()/Config.MAX_SIMULATION_TIME);
-		
-		
-	}
-
 	private void printNetworkUsageDetails() {
 		System.out.println("Total network usage = "+NetworkUsageMonitor.getNetworkUsage()/Config.MAX_SIMULATION_TIME);
 		
@@ -277,15 +223,7 @@ public class Controller extends SimEntity{
 		FogUtils.appIdToGeoCoverageMap.put(application.getAppId(), application.getGeoCoverage());
 		getApplications().put(application.getAppId(), application);
 		
-		/*ModulePlacement modulePlacement = (getModuleMapping()==null)?
-				(new ModulePlacementOnlyCloud(getFogDevices(), application))
-				:(new ModulePlacementEdgewards(getFogDevices(), getSensors(), getActuators(), application, getModuleMapping()));*/
-		
-		//ModulePlacement modulePlacement = new ModulePlacementOnlyCloud(getFogDevices(), getSensors(), getActuators(), application);
-		
 		ModulePlacement modulePlacement = new ModulePlacementEdgewards(getFogDevices(), getSensors(), getActuators(), application, getModuleMapping());
-		
-		//ModulePlacement modulePlacement = new ModulePlacementMapping(getFogDevices(), application, getModuleMapping());
 		
 		for(FogDevice fogDevice : fogDevices){
 			sendNow(fogDevice.getId(), FogEvents.ACTIVE_APP_UPDATE, application);

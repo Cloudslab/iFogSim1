@@ -21,11 +21,6 @@ import org.fog.entities.FogDevice;
 import org.fog.entities.FogDeviceCharacteristics;
 import org.fog.entities.PhysicalTopology;
 import org.fog.entities.Sensor;
-import org.fog.gui.core.ActuatorGui;
-import org.fog.gui.core.Edge;
-import org.fog.gui.core.FogDeviceGui;
-import org.fog.gui.core.Node;
-import org.fog.gui.core.SensorGui;
 import org.fog.policy.AppModuleAllocationPolicy;
 import org.fog.scheduler.StreamOperatorScheduler;
 import org.fog.utils.distribution.DeterministicDistribution;
@@ -41,7 +36,6 @@ public class JsonToTopology {
 	private static List<FogDevice> fogDevices = new ArrayList<FogDevice>();
 	private static List<Sensor> sensors = new ArrayList<Sensor>();
 	private static List<Actuator> actuators = new ArrayList<Actuator>();
-	private static List<Edge> edges = new ArrayList<Edge>();
  
 	private static boolean isFogDevice(String name){
 		for(FogDevice fogDevice : fogDevices){
@@ -182,7 +176,7 @@ public class JsonToTopology {
 				storage,
 				peList,
 				new StreamOperatorScheduler(peList),
-				new PowerModelLinear(100, 40)
+				new PowerModelLinear(107.339, 83.4333)
 			);
 
 		List<Host> hostList = new ArrayList<Host>();

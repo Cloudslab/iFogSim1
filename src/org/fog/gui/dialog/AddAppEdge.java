@@ -41,7 +41,6 @@ public class AddAppEdge extends JDialog {
 	private final Graph graph;
 	private JComboBox sourceNode;
 	private JComboBox targetNode;
-	private JTextField tfName;
 	private JTextField tupleType;
 	private JTextField tupleCpuLen;
 	private JTextField tupleNwLen;

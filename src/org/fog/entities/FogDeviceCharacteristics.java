@@ -96,6 +96,7 @@ public class FogDeviceCharacteristics extends DatacenterCharacteristics{
 	 * @pre costPerStorage >= 0
 	 * @post $none
 	 */
+	@SuppressWarnings("serial")
 	public FogDeviceCharacteristics(
 			String architecture,
 			String os,

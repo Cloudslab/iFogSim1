@@ -139,7 +139,6 @@ public class GraphView extends JPanel {
 					double xDist = canvas.getWidth()/(levelMap.get(i).size()+1);
 					
 					for(int j=1;j<=levelMap.get(i).size();j++){
-						System.out.println(levelMap);
 						Node node = levelMap.get(i).get(j-1);
 						int x = (int)xDist*j;
 						int y = (int)yDist*k;
@@ -159,7 +158,6 @@ public class GraphView extends JPanel {
 					Node node = endpoints.get(i);
 					int x = (int)xDist*(i+1);
 					int y = (int)yDist*k;
-					
 					endpointPlaceHolders.add(new PlaceHolder(x, y));
 					
 					coordForNodes.put(node, new Coordinates(x, y));

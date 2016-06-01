@@ -11,12 +11,15 @@ import org.cloudbus.cloudsim.power.PowerVm;
 import org.fog.application.selectivity.SelectivityModel;
 import org.fog.scheduler.TupleScheduler;
 import org.fog.utils.FogUtils;
-import org.fog.utils.GeoCoverage;
 
+/**
+ * Class representing an application module, the processing elements of the application model of iFogSim.
+ * @author Harshit Gupta
+ *
+ */
 public class AppModule extends PowerVm{
 
 	private String name;
-	private GeoCoverage geoCoverage;
 	private String appId;
 	private Map<Pair<String, String>, SelectivityModel> selectivityMap;
 	
@@ -28,7 +31,6 @@ public class AppModule extends PowerVm{
 	public AppModule(
 			int id,
 			String name,
-			GeoCoverage geoCoverage,
 			String appId,
 			int userId,
 			double mips,
@@ -41,7 +43,6 @@ public class AppModule extends PowerVm{
 		super(id, userId, mips, 1, ram, bw, size, 1, vmm, cloudletScheduler, 300);
 		setName(name);
 		setId(id);
-		setGeoCoverage(geoCoverage);
 		setAppId(appId);
 		setUserId(userId);
 		setUid(getUid(userId, id));
@@ -64,7 +65,6 @@ public class AppModule extends PowerVm{
 	public AppModule(AppModule operator) {
 		super(FogUtils.generateEntityId(), operator.getUserId(), operator.getMips(), 1, operator.getRam(), operator.getBw(), operator.getSize(), 1, operator.getVmm(), new TupleScheduler(operator.getMips(), 1), operator.getSchedulingInterval());
 		setName(operator.getName());
-		setGeoCoverage(operator.getGeoCoverage());
 		setAppId(operator.getAppId());
 		setInMigration(false);
 		setBeingInstantiated(true);
@@ -86,12 +86,6 @@ public class AppModule extends PowerVm{
 	}
 	public void setName(String name) {
 		this.name = name;
-	}
-	public GeoCoverage getGeoCoverage() {
-		return geoCoverage;
-	}
-	public void setGeoCoverage(GeoCoverage geoCoverage) {
-		this.geoCoverage = geoCoverage;
 	}
 	public Map<Pair<String, String>, SelectivityModel> getSelectivityMap() {
 		return selectivityMap;

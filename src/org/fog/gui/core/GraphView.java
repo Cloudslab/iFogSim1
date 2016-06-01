@@ -3,11 +3,8 @@ package org.fog.gui.core;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.QuadCurve2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,9 +25,7 @@ public class GraphView extends JPanel {
 
 	private JPanel canvas;
 	private Graph graph;
-	private final int ARR_SIZE = 10;
 
-	private Image imgDefault;
 	private Image imgHost;
 	private Image imgSensor;
 	private Image imgSwitch;
@@ -85,6 +80,7 @@ public class GraphView extends JPanel {
 		return childrenMap;
 	}
 	
+	@SuppressWarnings("serial")
 	private void initComponents() {
 
 		canvas = new JPanel() {
@@ -97,14 +93,13 @@ public class GraphView extends JPanel {
 
 				Map<Node, Coordinates> coordForNodes = new HashMap<Node, Coordinates>();
 
-				int offsetX = canvas.getWidth() / 2;
-				int offsetY = canvas.getHeight() / 2;
+				/*int offsetX = canvas.getWidth() / 2;
+				int offsetY = canvas.getHeight() / 2;*/
 				System.out.println("sys:"+canvas.getWidth() + ":" + canvas.getHeight());
 
 				int height = 40;
-				int width = 40;
-				double angle = 2 * Math.PI / graph.getAdjacencyList().keySet().size();
-				int radius = offsetY / 2 - 20;
+				/*double angle = 2 * Math.PI / graph.getAdjacencyList().keySet().size();
+				int radius = offsetY / 2 - 20;*/
 				FontMetrics f = g.getFontMetrics();
 				int nodeHeight = Math.max(height, f.getHeight());
 				int nodeWidth = nodeHeight;
@@ -130,7 +125,6 @@ public class GraphView extends JPanel {
 				
 				double yDist = canvas.getHeight()/(maxLevel-minLevel+3);
 				System.out.println("===================\n================\n=============");
-				Map<Node, List<Node>> childrenMap = createChildrenMap();				
 				
 				Map<Integer, List<PlaceHolder>> levelToPlaceHolderMap = new HashMap<Integer, List<PlaceHolder>>();
 				
@@ -139,7 +133,6 @@ public class GraphView extends JPanel {
 					double xDist = canvas.getWidth()/(levelMap.get(i).size()+1);
 					
 					for(int j=1;j<=levelMap.get(i).size();j++){
-						Node node = levelMap.get(i).get(j-1);
 						int x = (int)xDist*j;
 						int y = (int)yDist*k;
 						if(!levelToPlaceHolderMap.containsKey(i))
@@ -164,17 +157,15 @@ public class GraphView extends JPanel {
 					node.setCoordinate(new Coordinates(x, y));
 				}
 				
-				int i = 0;
 				for (Node node : graph.getAdjacencyList().keySet()) {
 					if(node.getType().equals("FOG_DEVICE")||node.getType().equals("SENSOR")||node.getType().equals("ACTUATOR"))
 						continue;
 					// calculate coordinates
-					int x = Double.valueOf(offsetX + Math.cos(i * angle) * radius).intValue();
-					int y = Double.valueOf(offsetY + Math.sin(i * angle) * radius).intValue();
+					/*int x = Double.valueOf(offsetX + Math.cos(i * angle) * radius).intValue();
+					int y = Double.valueOf(offsetY + Math.sin(i * angle) * radius).intValue();*/
 
 					//coordForNodes.put(node, new Coordinates(x, y));
 					//node.setCoordinate(new Coordinates(x, y));
-					i++;
 				}
 
 				
@@ -266,7 +257,7 @@ public class GraphView extends JPanel {
 							drawnList.put(entry.getKey(), nodes);
 						}
 
-						int labelX = (startNode.getX() - targetNode.getX()) / 2;
+						/*int labelX = (startNode.getX() - targetNode.getX()) / 2;
 						int labelY = (startNode.getY() - targetNode.getY()) / 2;
 
 						labelX *= -1;
@@ -274,7 +265,7 @@ public class GraphView extends JPanel {
 
 						labelX += startNode.getX();
 						labelY += startNode.getY();
-
+*/
 						//g.setColor(Color.BLACK);
 						//g.drawString(String.valueOf(edge.getInfo()), labelX - f.stringWidth(String.valueOf(edge.getInfo())) / 2, labelY + f.getHeight() / 2);
 					}
@@ -365,7 +356,7 @@ public class GraphView extends JPanel {
 		return coordForNodesMap;
 	}
 
-	private void drawArrow(Graphics g1, int x1, int y1, int x2, int y2) {
+	/*private void drawArrow(Graphics g1, int x1, int y1, int x2, int y2) {
 		Graphics2D g = (Graphics2D) g1.create();
 		System.out.println("Drawing arrow");
 		double dx = x2 - x1, dy = y2 - y1;
@@ -379,7 +370,7 @@ public class GraphView extends JPanel {
 		QuadCurve2D.Double curve = new QuadCurve2D.Double(0,0,50+0.5*len,50,len,0);
 		g.draw(curve);
 		g.fillPolygon(new int[] { len, len - ARR_SIZE, len - ARR_SIZE, len }, new int[] { 0, -ARR_SIZE, ARR_SIZE, 0 }, 4);
-	}
+	}*/
 	
 	public void setGraph(Graph newGraph){
 		this.graph = newGraph;

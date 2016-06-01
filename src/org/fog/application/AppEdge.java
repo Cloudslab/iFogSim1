@@ -1,19 +1,49 @@
 package org.fog.application;
 
+/**
+ * Class represents application edges which connect modules together and represent data dependency between them.
+ * @author Harshit Gupta
+ *
+ */
 public class AppEdge {
 	
-	public static final int SENSOR = 1;
-	public static final int ACTUATOR = 2;
-	public static final int MODULE = 3;
+	public static final int SENSOR = 1; // App Edge originates from a sensor
+	public static final int ACTUATOR = 2; // App Edge leads to an actuator
+	public static final int MODULE = 3; // App Edge is between application modules
 	
+	/**
+	 * Name of source application module
+	 */
 	private String source;
+	/**
+	 * Name of destination application module
+	 */
 	private String destination;
+	/**
+	 * CPU length (in MIPS) of tuples carried by the application edge
+	 */
 	private double tupleCpuLength;
+	/**
+	 * Network length (in bytes) of tuples carried by the application edge
+	 */
 	private double tupleNwLength;
+	/**
+	 * Type of tuples carried by the application edge
+	 */
 	private String tupleType;
+	/**
+	 * Direction of tuples carried by the application edge.
+	 */
 	private int direction;
 	private int edgeType;
+	
+	/**
+	 * Periodicity of application edge (in case it is periodic).
+	 */
 	private double periodicity;
+	/**
+	 * Denotes if the application edge is a periodic edge.
+	 */
 	private boolean isPeriodic;
 	
 	public AppEdge(){

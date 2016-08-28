@@ -20,6 +20,8 @@ public class ModulePlacementMapping extends ModulePlacement{
 			for(String moduleName : mapping.get(deviceName).keySet()){
 				
 				AppModule module = getApplication().getModuleByName(moduleName);
+				if(module == null)
+					continue;
 				createModuleInstanceOnDevice(module, device);
 				getModuleInstanceCountMap().get(device.getId()).put(moduleName, mapping.get(deviceName).get(moduleName));
 			}

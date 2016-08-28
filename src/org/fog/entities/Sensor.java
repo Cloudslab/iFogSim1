@@ -84,7 +84,6 @@ public class Sensor extends SimEntity{
 			if(edge.getSource().equals(getTupleType()))
 				_edge = edge;
 		}
-		
 		long cpuLength = (long) _edge.getTupleCpuLength();
 		long nwLength = (long) _edge.getTupleNwLength();
 		

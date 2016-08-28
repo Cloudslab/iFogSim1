@@ -15,6 +15,7 @@ import org.fog.entities.PhysicalTopology;
 import org.fog.entities.Tuple;
 import org.fog.placement.Controller;
 import org.fog.placement.ModuleMapping;
+import org.fog.placement.ModulePlacementEdgewards;
 import org.fog.utils.JsonToTopology;
 
 /**
@@ -48,13 +49,12 @@ public class CleanFromJson {
 			 */
 			PhysicalTopology physicalTopology = JsonToTopology.getPhysicalTopology(broker.getId(), appId, "topologies/routerTopology");
 						
-			ModuleMapping moduleMapping = ModuleMapping.createModuleMapping(); // create empty module to device mapping
-			
 			Controller controller = new Controller("master-controller", physicalTopology.getFogDevices(), physicalTopology.getSensors(), 
-					physicalTopology.getActuators(), moduleMapping);
+					physicalTopology.getActuators());
 			
-			
-			controller.submitApplication(application, 0);
+			controller.submitApplication(application, 0, new ModulePlacementEdgewards(physicalTopology.getFogDevices(), 
+					physicalTopology.getSensors(), physicalTopology.getActuators(), 
+					application, ModuleMapping.createModuleMapping()));
 			
 			CloudSim.startSimulation();
 

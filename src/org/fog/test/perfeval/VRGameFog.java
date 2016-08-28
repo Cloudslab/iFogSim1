@@ -26,6 +26,8 @@ import org.fog.entities.Sensor;
 import org.fog.entities.Tuple;
 import org.fog.placement.Controller;
 import org.fog.placement.ModuleMapping;
+import org.fog.placement.ModulePlacementEdgewards;
+import org.fog.placement.ModulePlacementMapping;
 import org.fog.policy.AppModuleAllocationPolicy;
 import org.fog.scheduler.StreamOperatorScheduler;
 import org.fog.utils.FogLinearPowerModel;
@@ -43,7 +45,7 @@ public class VRGameFog {
 	static List<Sensor> sensors = new ArrayList<Sensor>();
 	static List<Actuator> actuators = new ArrayList<Actuator>();
 	
-	static boolean CLOUD = true;
+	static boolean CLOUD = false;
 	
 	static int numOfDepts = 1;
 	static int numOfMobilesPerDept = 4;
@@ -90,9 +92,11 @@ public class VRGameFog {
 			
 			
 			Controller controller = new Controller("master-controller", fogDevices, sensors, 
-					actuators, moduleMapping);
+					actuators);
 			
-			controller.submitApplication(application, 0);
+			controller.submitApplication(application, 0, 
+					(CLOUD)?(new ModulePlacementMapping(fogDevices, application, moduleMapping))
+							:(new ModulePlacementEdgewards(fogDevices, sensors, actuators, application, moduleMapping)));
 
 			TimeKeeper.getInstance().setSimulationStartTime(Calendar.getInstance().getTimeInMillis());
 

@@ -32,13 +32,14 @@ public class Controller extends SimEntity{
 	
 	private Map<String, Application> applications;
 	private Map<String, Integer> appLaunchDelays;
-	private ModuleMapping moduleMapping;
 
-	public Controller(String name, List<FogDevice> fogDevices, List<Sensor> sensors, List<Actuator> actuators, ModuleMapping moduleMapping) {
+	private Map<String, ModulePlacement> appModulePlacementPolicy;
+	
+	public Controller(String name, List<FogDevice> fogDevices, List<Sensor> sensors, List<Actuator> actuators) {
 		super(name);
 		this.applications = new HashMap<String, Application>();
 		setAppLaunchDelays(new HashMap<String, Integer>());
-		setModuleMapping(moduleMapping);
+		setAppModulePlacementPolicy(new HashMap<String, ModulePlacement>());
 		for(FogDevice fogDevice : fogDevices){
 			fogDevice.setControllerId(getId());
 		}
@@ -47,8 +48,6 @@ public class Controller extends SimEntity{
 		setSensors(sensors);
 		connectWithLatencies();
 	}
-
-	
 
 	private FogDevice getFogDeviceById(int id){
 		for(FogDevice fogDevice : getFogDevices()){
@@ -112,8 +111,7 @@ public class Controller extends SimEntity{
 	}
 	
 	private void printNetworkUsageDetails() {
-		System.out.println("Total network usage = "+NetworkUsageMonitor.getNetworkUsage()/Config.MAX_SIMULATION_TIME);
-		
+		System.out.println("Total network usage = "+NetworkUsageMonitor.getNetworkUsage()/Config.MAX_SIMULATION_TIME);		
 	}
 
 	private FogDevice getCloud(){
@@ -126,8 +124,8 @@ public class Controller extends SimEntity{
 	private void printCostDetails(){
 		System.out.println("Cost of execution in cloud = "+getCloud().getTotalCost());
 	}
+	
 	private void printPowerDetails() {
-		// TODO Auto-generated method stub
 		for(FogDevice fogDevice : getFogDevices()){
 			System.out.println(fogDevice.getName() + " : Energy Consumed = "+fogDevice.getEnergyConsumption());
 		}
@@ -183,15 +181,15 @@ public class Controller extends SimEntity{
 	}
 	
 	@Override
-	public void shutdownEntity() {
-		// TODO Auto-generated method stub
-		
+	public void shutdownEntity() {	
 	}
 	
-	public void submitApplication(Application application, int delay){
+	public void submitApplication(Application application, int delay, ModulePlacement modulePlacement){
 		FogUtils.appIdToGeoCoverageMap.put(application.getAppId(), application.getGeoCoverage());
 		getApplications().put(application.getAppId(), application);
 		getAppLaunchDelays().put(application.getAppId(), delay);
+		getAppModulePlacementPolicy().put(application.getAppId(), modulePlacement);
+		
 		for(Sensor sensor : sensors){
 			sensor.setApp(getApplications().get(sensor.getAppId()));
 		}
@@ -207,10 +205,12 @@ public class Controller extends SimEntity{
 						application.getModuleByName(moduleName).subscribeActuator(actuator.getId(), edge.getTupleType());
 				}
 			}
-		}
-		
+		}	
 	}
 	
+	public void submitApplication(Application application, ModulePlacement modulePlacement){
+		submitApplication(application, 0, modulePlacement);
+	}
 	
 	
 	private void processAppSubmit(SimEvent ev){
@@ -223,8 +223,7 @@ public class Controller extends SimEntity{
 		FogUtils.appIdToGeoCoverageMap.put(application.getAppId(), application.getGeoCoverage());
 		getApplications().put(application.getAppId(), application);
 		
-		//ModulePlacement modulePlacement = new ModulePlacementEdgewards(getFogDevices(), getSensors(), getActuators(), application, getModuleMapping());
-		ModulePlacement modulePlacement = new ModulePlacementMapping(getFogDevices(), application, getModuleMapping());
+		ModulePlacement modulePlacement = getAppModulePlacementPolicy().get(application.getAppId());
 		for(FogDevice fogDevice : fogDevices){
 			sendNow(fogDevice.getId(), FogEvents.ACTIVE_APP_UPDATE, application);
 		}
@@ -264,12 +263,6 @@ public class Controller extends SimEntity{
 	public void setApplications(Map<String, Application> applications) {
 		this.applications = applications;
 	}
-	public ModuleMapping getModuleMapping() {
-		return moduleMapping;
-	}
-	public void setModuleMapping(ModuleMapping moduleMapping) {
-		this.moduleMapping = moduleMapping;
-	}
 
 	public List<Sensor> getSensors() {
 		return sensors;
@@ -287,5 +280,13 @@ public class Controller extends SimEntity{
 
 	public void setActuators(List<Actuator> actuators) {
 		this.actuators = actuators;
+	}
+
+	public Map<String, ModulePlacement> getAppModulePlacementPolicy() {
+		return appModulePlacementPolicy;
+	}
+
+	public void setAppModulePlacementPolicy(Map<String, ModulePlacement> appModulePlacementPolicy) {
+		this.appModulePlacementPolicy = appModulePlacementPolicy;
 	}
 }

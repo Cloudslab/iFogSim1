@@ -26,6 +26,7 @@ import org.fog.entities.Sensor;
 import org.fog.entities.Tuple;
 import org.fog.placement.Controller;
 import org.fog.placement.ModuleMapping;
+import org.fog.placement.ModulePlacementMapping;
 import org.fog.policy.AppModuleAllocationPolicy;
 import org.fog.scheduler.StreamOperatorScheduler;
 import org.fog.utils.FogLinearPowerModel;
@@ -78,27 +79,25 @@ public class TwoApps {
 			createEdgeDevices0(broker0.getId(), appId0);
 			createEdgeDevices1(broker1.getId(), appId1);
 			
-			ModuleMapping moduleMapping = ModuleMapping.createModuleMapping(); // initializing a module mapping
+			ModuleMapping moduleMapping_0 = ModuleMapping.createModuleMapping(); // initializing a module mapping
+			ModuleMapping moduleMapping_1 = ModuleMapping.createModuleMapping(); // initializing a module mapping
 			
-			if(true){
-				// if the mode of deployment is cloud-based
-				moduleMapping.addModuleToDevice("connector", "cloud", numOfDepts*numOfMobilesPerDept); // fixing all instances of the Connector module to the Cloud
-				moduleMapping.addModuleToDevice("concentration_calculator", "cloud", numOfDepts*numOfMobilesPerDept); // fixing all instances of the Concentration Calculator module to the Cloud
-				moduleMapping.addModuleToDevice("connector_1", "cloud", numOfDepts*numOfMobilesPerDept); // fixing all instances of the Connector module to the Cloud
-				moduleMapping.addModuleToDevice("concentration_calculator_1", "cloud", numOfDepts*numOfMobilesPerDept); // fixing all instances of the Concentration Calculator module to the Cloud
-				for(FogDevice device : fogDevices){
-					if(device.getName().startsWith("m")){
-						moduleMapping.addModuleToDevice("client", device.getName(), 1);  // fixing all instances of the Client module to the Smartphones
-						moduleMapping.addModuleToDevice("client_1", device.getName(), 1);  // fixing all instances of the Client module to the Smartphones
-					}
+			moduleMapping_0.addModuleToDevice("connector", "cloud", numOfDepts*numOfMobilesPerDept); // fixing all instances of the Connector module to the Cloud
+			moduleMapping_0.addModuleToDevice("concentration_calculator", "cloud", numOfDepts*numOfMobilesPerDept); // fixing all instances of the Concentration Calculator module to the Cloud
+			moduleMapping_1.addModuleToDevice("connector_1", "cloud", numOfDepts*numOfMobilesPerDept); // fixing all instances of the Connector module to the Cloud
+			moduleMapping_1.addModuleToDevice("concentration_calculator_1", "cloud", numOfDepts*numOfMobilesPerDept); // fixing all instances of the Concentration Calculator module to the Cloud
+			for(FogDevice device : fogDevices){
+				if(device.getName().startsWith("m")){
+					moduleMapping_0.addModuleToDevice("client", device.getName(), 1);  // fixing all instances of the Client module to the Smartphones
+					moduleMapping_1.addModuleToDevice("client_1", device.getName(), 1);  // fixing all instances of the Client module to the Smartphones
 				}
 			}
 			
 			Controller controller = new Controller("master-controller", fogDevices, sensors, 
-					actuators, moduleMapping);
+					actuators);
 			
-			controller.submitApplication(application0, 0);
-			controller.submitApplication(application1, 1000);
+			controller.submitApplication(application0, new ModulePlacementMapping(fogDevices, application0, moduleMapping_0));
+			controller.submitApplication(application1, 1000, new ModulePlacementMapping(fogDevices, application1, moduleMapping_1));
 
 			TimeKeeper.getInstance().setSimulationStartTime(Calendar.getInstance().getTimeInMillis());
 

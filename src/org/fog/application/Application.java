@@ -172,7 +172,7 @@ public class Application {
 	 * @param sourceDeviceId
 	 * @return
 	 */
-	public List<Tuple> getResultantTuples(String moduleName, Tuple inputTuple, int sourceDeviceId){
+	public List<Tuple> getResultantTuples(String moduleName, Tuple inputTuple, int sourceDeviceId, int sourceModuleId){
 		List<Tuple> tuples = new ArrayList<Tuple>();
 		AppModule module = getModuleByName(moduleName);
 		for(AppEdge edge : getEdges()){
@@ -203,6 +203,7 @@ public class Application {
 							tuple.setDirection(Tuple.ACTUATOR);
 							tuple.setTupleType(edge.getTupleType());
 							tuple.setSourceDeviceId(sourceDeviceId);
+							tuple.setSourceModuleId(sourceModuleId);
 							//tuple.setActuatorId(actuatorId);
 							
 							tuples.add(tuple);
@@ -224,6 +225,8 @@ public class Application {
 						tuple.setSrcModuleName(edge.getSource());
 						tuple.setDirection(edge.getDirection());
 						tuple.setTupleType(edge.getTupleType());
+						tuple.setSourceModuleId(sourceModuleId);
+
 						tuples.add(tuple);
 					}
 				}
@@ -238,7 +241,7 @@ public class Application {
 	 * @param sourceDeviceId
 	 * @return
 	 */
-	public Tuple createTuple(AppEdge edge, int sourceDeviceId){
+	public Tuple createTuple(AppEdge edge, int sourceDeviceId, int sourceModuleId){
 		AppModule module = getModuleByName(edge.getSource());
 		if(edge.getEdgeType() == AppEdge.ACTUATOR){
 			for(Integer actuatorId : module.getActuatorSubscriptions().get(edge.getTupleType())){
@@ -259,7 +262,8 @@ public class Application {
 				tuple.setTupleType(edge.getTupleType());
 				tuple.setSourceDeviceId(sourceDeviceId);
 				tuple.setActuatorId(actuatorId);
-				
+				tuple.setSourceModuleId(sourceModuleId);
+
 				return tuple;
 			}
 		}else{
@@ -279,6 +283,8 @@ public class Application {
 			tuple.setSrcModuleName(edge.getSource());
 			tuple.setDirection(edge.getDirection());
 			tuple.setTupleType(edge.getTupleType());
+			tuple.setSourceModuleId(sourceModuleId);
+
 			return tuple;
 		}
 		return null;

@@ -308,6 +308,17 @@ public class FogDevice extends PowerDatacenter {
 		System.out.println(getName()+ " Creating "+config.getInstanceCount()+" instances of module "+config.getModule().getName());
 	}
 
+	private AppModule getModuleByName(String moduleName){
+		AppModule module = null;
+		for(Vm vm : getHost().getVmList()){
+			if(((AppModule)vm).getName().equals(moduleName)){
+				module=(AppModule)vm;
+				break;
+			}
+		}
+		return module;
+	}
+	
 	/**
 	 * Sending periodic tuple for an application edge. Note that for multiple instances of a single source module, only one tuple is sent DOWN while instanceCount number of tuples are sent UP.
 	 * @param ev SimEvent instance containing the edge to send tuple on
@@ -315,23 +326,17 @@ public class FogDevice extends PowerDatacenter {
 	private void sendPeriodicTuple(SimEvent ev) {
 		AppEdge edge = (AppEdge)ev.getData();
 		String srcModule = edge.getSource();
-		AppModule module = null;
-		for(Vm vm : getHost().getVmList()){
-			if(((AppModule)vm).getName().equals(srcModule)){
-				module=(AppModule)vm;
-				break;
-			}
-		}
+		AppModule module = getModuleByName(srcModule);
+		
 		if(module == null)
 			return;
 		
-		int instanceCount = getModuleInstanceCount().get(module.getAppId()).get(srcModule);
-		
+		int instanceCount = module.getNumInstances();
 		/*
 		 * Since tuples sent through a DOWN application edge are anyways broadcasted, only UP tuples are replicated
 		 */
 		for(int i = 0;i<((edge.getDirection()==Tuple.UP)?instanceCount:1);i++){
-			Tuple tuple = applicationMap.get(module.getAppId()).createTuple(edge, getId());
+			Tuple tuple = applicationMap.get(module.getAppId()).createTuple(edge, getId(), module.getId());
 			updateTimingsOnSending(tuple);
 			sendToSelf(tuple);			
 		}
@@ -459,7 +464,7 @@ public class FogDevice extends PowerDatacenter {
 						TimeKeeper.getInstance().tupleEndedExecution(tuple);
 						Application application = getApplicationMap().get(tuple.getAppId());
 						Logger.debug(getName(), "Completed execution of tuple "+tuple.getCloudletId()+"on "+tuple.getDestModuleName());
-						List<Tuple> resultantTuples = application.getResultantTuples(tuple.getDestModuleName(), tuple, getId());
+						List<Tuple> resultantTuples = application.getResultantTuples(tuple.getDestModuleName(), tuple, getId(), vm.getId());
 						for(Tuple resTuple : resultantTuples){
 							resTuple.setModuleCopyMap(new HashMap<String, Integer>(tuple.getModuleCopyMap()));
 							resTuple.getModuleCopyMap().put(((AppModule)vm).getName(), vm.getId());
@@ -712,14 +717,30 @@ public class FogDevice extends PowerDatacenter {
 		send(ev.getSource(), CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ACK);
 	}
 	
-	protected void executeTuple(SimEvent ev, String operatorId){
-		//TODO Power funda
-		Logger.debug(getName(), "Executing tuple on module "+operatorId);
+	protected void executeTuple(SimEvent ev, String moduleName){
+		Logger.debug(getName(), "Executing tuple on module "+moduleName);
 		Tuple tuple = (Tuple)ev.getData();
+		
+		AppModule module = getModuleByName(moduleName);
+		
+		if(tuple.getDirection() == Tuple.UP){
+			String srcModule = tuple.getSrcModuleName();
+			if(!module.getDownInstanceIdsMaps().containsKey(srcModule))
+				module.getDownInstanceIdsMaps().put(srcModule, new ArrayList<Integer>());
+			if(!module.getDownInstanceIdsMaps().get(srcModule).contains(tuple.getSourceModuleId()))
+				module.getDownInstanceIdsMaps().get(srcModule).add(tuple.getSourceModuleId());
+			
+			int instances = -1;
+			for(String _moduleName : module.getDownInstanceIdsMaps().keySet()){
+				instances = Math.max(module.getDownInstanceIdsMaps().get(_moduleName).size(), instances);
+			}
+			module.setNumInstances(instances);
+		}
+		
 		TimeKeeper.getInstance().tupleStartedExecution(tuple);
-		updateAllocatedMips(operatorId);
+		updateAllocatedMips(moduleName);
 		processCloudletSubmit(ev, false);
-		updateAllocatedMips(operatorId);
+		updateAllocatedMips(moduleName);
 		/*for(Vm vm : getHost().getVmList()){
 			Logger.error(getName(), "MIPS allocated to "+((AppModule)vm).getName()+" = "+getHost().getTotalAllocatedMipsForVm(vm));
 		}*/
@@ -962,5 +983,4 @@ public class FogDevice extends PowerDatacenter {
 			Map<String, Map<String, Integer>> moduleInstanceCount) {
 		this.moduleInstanceCount = moduleInstanceCount;
 	}
-
 }

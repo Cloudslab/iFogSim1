@@ -21,7 +21,7 @@ public class Tuple extends Cloudlet{
 	private int direction;
 	private int actuatorId;
 	private int sourceDeviceId;
-	
+	private int sourceModuleId;
 	/**
 	 * Map to keep track of which module instances has a tuple traversed.
 	 * 
@@ -113,6 +113,14 @@ public class Tuple extends Cloudlet{
 
 	public void setModuleCopyMap(Map<String, Integer> moduleCopyMap) {
 		this.moduleCopyMap = moduleCopyMap;
+	}
+
+	public int getSourceModuleId() {
+		return sourceModuleId;
+	}
+
+	public void setSourceModuleId(int sourceModuleId) {
+		this.sourceModuleId = sourceModuleId;
 	}
 
 }

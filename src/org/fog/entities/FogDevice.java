@@ -336,6 +336,7 @@ public class FogDevice extends PowerDatacenter {
 		 * Since tuples sent through a DOWN application edge are anyways broadcasted, only UP tuples are replicated
 		 */
 		for(int i = 0;i<((edge.getDirection()==Tuple.UP)?instanceCount:1);i++){
+			//System.out.println(CloudSim.clock()+" : Sending periodic tuple "+edge.getTupleType());
 			Tuple tuple = applicationMap.get(module.getAppId()).createTuple(edge, getId(), module.getId());
 			updateTimingsOnSending(tuple);
 			sendToSelf(tuple);			

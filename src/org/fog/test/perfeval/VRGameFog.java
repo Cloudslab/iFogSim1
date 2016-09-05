@@ -47,8 +47,8 @@ public class VRGameFog {
 	
 	static boolean CLOUD = false;
 	
-	static int numOfDepts = 1;
-	static int numOfMobilesPerDept = 4;
+	static int numOfDepts = 4;
+	static int numOfMobilesPerDept = 6;
 	static double EEG_TRANSMISSION_TIME = 5.1;
 	//static double EEG_TRANSMISSION_TIME = 10;
 	
@@ -77,16 +77,20 @@ public class VRGameFog {
 			
 			if(CLOUD){
 				// if the mode of deployment is cloud-based
-				moduleMapping.addModuleToDevice("connector", "cloud", numOfDepts*numOfMobilesPerDept); // fixing all instances of the Connector module to the Cloud
+				/*moduleMapping.addModuleToDevice("connector", "cloud", numOfDepts*numOfMobilesPerDept); // fixing all instances of the Connector module to the Cloud
 				moduleMapping.addModuleToDevice("concentration_calculator", "cloud", numOfDepts*numOfMobilesPerDept); // fixing all instances of the Concentration Calculator module to the Cloud
+*/				moduleMapping.addModuleToDevice("connector", "cloud"); // fixing all instances of the Connector module to the Cloud
+				moduleMapping.addModuleToDevice("concentration_calculator", "cloud"); // fixing all instances of the Concentration Calculator module to the Cloud
 				for(FogDevice device : fogDevices){
 					if(device.getName().startsWith("m")){
-						moduleMapping.addModuleToDevice("client", device.getName(), 1);  // fixing all instances of the Client module to the Smartphones
+						//moduleMapping.addModuleToDevice("client", device.getName(), 1);  // fixing all instances of the Client module to the Smartphones
+						moduleMapping.addModuleToDevice("client", device.getName());  // fixing all instances of the Client module to the Smartphones
 					}
 				}
 			}else{
 				// if the mode of deployment is cloud-based
-				moduleMapping.addModuleToDevice("connector", "cloud", numOfDepts*numOfMobilesPerDept); // fixing all instances of the Connector module to the Cloud
+				//moduleMapping.addModuleToDevice("connector", "cloud", numOfDepts*numOfMobilesPerDept); // fixing all instances of the Connector module to the Cloud
+				moduleMapping.addModuleToDevice("connector", "cloud"); // fixing all instances of the Connector module to the Cloud
 				// rest of the modules will be placed by the Edge-ward placement policy
 			}
 			

@@ -1,37 +1,30 @@
 package org.fog.placement;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ModuleMapping {
 	/**
 	 * Mapping from node name to list of <moduleName, numInstances> of instances to be launched on node
 	 */
-	protected Map<String, Map<String, Integer>> moduleMapping;
+	protected Map<String, List<String>> moduleMapping;
 	
 	public static ModuleMapping createModuleMapping(){
 		return new ModuleMapping();
 	}
 
-	public Map<String, Map<String, Integer>> getModuleMapping() {
+	public Map<String, List<String>> getModuleMapping() {
 		return moduleMapping;
 	}
 	
-	public void setModuleMapping(Map<String, Map<String, Integer>> moduleMapping) {
+	public void setModuleMapping(Map<String, List<String>> moduleMapping) {
 		this.moduleMapping = moduleMapping;
 	}
 
 	protected ModuleMapping(){
-		setModuleMapping(new HashMap<String, Map<String, Integer>>());
-	}
-	
-	/**
-	 * Add 1 instance of module moduleName to device deviceName
-	 * @param moduleName
-	 * @param deviceName
-	 */
-	public void addModuleToDevice(String moduleName, String deviceName){
-		addModuleToDevice(moduleName, deviceName, 1);
+		setModuleMapping(new HashMap<String, List<String>>());
 	}
 	
 	/**
@@ -40,11 +33,11 @@ public class ModuleMapping {
 	 * @param deviceName
 	 * @param instanceCount
 	 */
-	public void addModuleToDevice(String moduleName, String deviceName, int instanceCount){
+	public void addModuleToDevice(String moduleName, String deviceName){
 		if(!getModuleMapping().containsKey(deviceName))
-			getModuleMapping().put(deviceName, new HashMap<String, Integer>());
-		if(!getModuleMapping().get(deviceName).containsKey(moduleName))
-			getModuleMapping().get(deviceName).put(moduleName, instanceCount);
+			getModuleMapping().put(deviceName, new ArrayList<String>());
+		if(!getModuleMapping().get(deviceName).contains(moduleName))
+			getModuleMapping().get(deviceName).add(moduleName);
 	}
 	
 }

@@ -10,7 +10,7 @@ git init
 ```
 * Add the Git repository of iFogSim as the `origin` remote.
 ```
-git remote add origin https://github.com/harshitgupta1337
+git remote add origin https://github.com/harshitgupta1337/fogsim
 ```
 * Pull the contents of the repository to your machine.
 ```

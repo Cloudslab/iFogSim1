@@ -82,14 +82,14 @@ public class TwoApps {
 			ModuleMapping moduleMapping_0 = ModuleMapping.createModuleMapping(); // initializing a module mapping
 			ModuleMapping moduleMapping_1 = ModuleMapping.createModuleMapping(); // initializing a module mapping
 			
-			moduleMapping_0.addModuleToDevice("connector", "cloud", numOfDepts*numOfMobilesPerDept); // fixing all instances of the Connector module to the Cloud
-			moduleMapping_0.addModuleToDevice("concentration_calculator", "cloud", numOfDepts*numOfMobilesPerDept); // fixing all instances of the Concentration Calculator module to the Cloud
-			moduleMapping_1.addModuleToDevice("connector_1", "cloud", numOfDepts*numOfMobilesPerDept); // fixing all instances of the Connector module to the Cloud
-			moduleMapping_1.addModuleToDevice("concentration_calculator_1", "cloud", numOfDepts*numOfMobilesPerDept); // fixing all instances of the Concentration Calculator module to the Cloud
+			moduleMapping_0.addModuleToDevice("connector", "cloud"); // fixing all instances of the Connector module to the Cloud
+			moduleMapping_0.addModuleToDevice("concentration_calculator", "cloud"); // fixing all instances of the Concentration Calculator module to the Cloud
+			moduleMapping_1.addModuleToDevice("connector_1", "cloud"); // fixing all instances of the Connector module to the Cloud
+			moduleMapping_1.addModuleToDevice("concentration_calculator_1", "cloud"); // fixing all instances of the Concentration Calculator module to the Cloud
 			for(FogDevice device : fogDevices){
 				if(device.getName().startsWith("m")){
-					moduleMapping_0.addModuleToDevice("client", device.getName(), 1);  // fixing all instances of the Client module to the Smartphones
-					moduleMapping_1.addModuleToDevice("client_1", device.getName(), 1);  // fixing all instances of the Client module to the Smartphones
+					moduleMapping_0.addModuleToDevice("client", device.getName());  // fixing all instances of the Client module to the Smartphones
+					moduleMapping_1.addModuleToDevice("client_1", device.getName());  // fixing all instances of the Client module to the Smartphones
 				}
 			}
 			

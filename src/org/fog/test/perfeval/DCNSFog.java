@@ -75,14 +75,14 @@ public class DCNSFog {
 			ModuleMapping moduleMapping = ModuleMapping.createModuleMapping(); // initializing a module mapping
 			for(FogDevice device : fogDevices){
 				if(device.getName().startsWith("m")){ // names of all Smart Cameras start with 'm' 
-					moduleMapping.addModuleToDevice("motion_detector", device.getName(), 1);  // fixing 1 instance of the Motion Detector module to each Smart Camera
+					moduleMapping.addModuleToDevice("motion_detector", device.getName());  // fixing 1 instance of the Motion Detector module to each Smart Camera
 				}
 			}
-			moduleMapping.addModuleToDevice("user_interface", "cloud", 1); // fixing instances of User Interface module in the Cloud
+			moduleMapping.addModuleToDevice("user_interface", "cloud"); // fixing instances of User Interface module in the Cloud
 			if(CLOUD){
 				// if the mode of deployment is cloud-based
-				moduleMapping.addModuleToDevice("object_detector", "cloud", numOfAreas*numOfCamerasPerArea); // placing all instances of Object Detector module in the Cloud
-				moduleMapping.addModuleToDevice("object_tracker", "cloud", numOfAreas*numOfCamerasPerArea); // placing all instances of Object Tracker module in the Cloud
+				moduleMapping.addModuleToDevice("object_detector", "cloud"); // placing all instances of Object Detector module in the Cloud
+				moduleMapping.addModuleToDevice("object_tracker", "cloud"); // placing all instances of Object Tracker module in the Cloud
 			}
 			
 			controller = new Controller("master-controller", fogDevices, sensors, 

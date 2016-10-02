@@ -16,4 +16,5 @@ git remote add origin https://github.com/harshitgupta1337/fogsim
 ```
 git pull origin master
 ```
+* Include the JARs (except the CloudSim ones) to your Eclipse project.  
 * Run the example files (e.g. VRGame.java) to get started. 

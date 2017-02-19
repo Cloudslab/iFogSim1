@@ -9,6 +9,7 @@ import java.util.Queue;
 
 import org.apache.commons.math3.util.Pair;
 import org.cloudbus.cloudsim.Cloudlet;
+import org.cloudbus.cloudsim.CloudletScheduler;
 import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.Pe;
@@ -48,7 +49,6 @@ public class FogDevice extends PowerDatacenter {
 	protected Map<String, List<String>> appToModulesMap;
 	protected Map<Integer, Double> childToLatencyMap;
  
-	
 	protected Map<Integer, Integer> cloudTrafficMap;
 	
 	protected double lockTime;
@@ -242,6 +242,143 @@ public class FogDevice extends PowerDatacenter {
 	protected void registerOtherEntity() {
 		
 	}
+	/*
+	@Override
+	public void processEvent(SimEvent ev) {
+		int srcId = -1;
+		switch (ev.getTag()) {
+		// Resource characteristics inquiry
+			case CloudSimTags.RESOURCE_CHARACTERISTICS:
+				srcId = ((Integer) ev.getData()).intValue();
+				sendNow(srcId, ev.getTag(), getCharacteristics());
+				break;
+
+			// Resource dynamic info inquiry
+			case CloudSimTags.RESOURCE_DYNAMICS:
+				srcId = ((Integer) ev.getData()).intValue();
+				sendNow(srcId, ev.getTag(), 0);
+				break;
+
+			case CloudSimTags.RESOURCE_NUM_PE:
+				srcId = ((Integer) ev.getData()).intValue();
+				int numPE = getCharacteristics().getNumberOfPes();
+				sendNow(srcId, ev.getTag(), numPE);
+				break;
+
+			case CloudSimTags.RESOURCE_NUM_FREE_PE:
+				srcId = ((Integer) ev.getData()).intValue();
+				int freePesNumber = getCharacteristics().getNumberOfFreePes();
+				sendNow(srcId, ev.getTag(), freePesNumber);
+				break;
+
+			// New Cloudlet arrives
+			case CloudSimTags.CLOUDLET_SUBMIT:
+				processCloudletSubmit(ev, false);
+				break;
+
+			// New Cloudlet arrives, but the sender asks for an ack
+			case CloudSimTags.CLOUDLET_SUBMIT_ACK:
+				processCloudletSubmit(ev, true);
+				break;
+
+			// Cancels a previously submitted Cloudlet
+			case CloudSimTags.CLOUDLET_CANCEL:
+				processCloudlet(ev, CloudSimTags.CLOUDLET_CANCEL);
+				break;
+
+			// Pauses a previously submitted Cloudlet
+			case CloudSimTags.CLOUDLET_PAUSE:
+				processCloudlet(ev, CloudSimTags.CLOUDLET_PAUSE);
+				break;
+
+			// Pauses a previously submitted Cloudlet, but the sender
+			// asks for an acknowledgement
+			case CloudSimTags.CLOUDLET_PAUSE_ACK:
+				processCloudlet(ev, CloudSimTags.CLOUDLET_PAUSE_ACK);
+				break;
+
+			// Resumes a previously submitted Cloudlet
+			case CloudSimTags.CLOUDLET_RESUME:
+				processCloudlet(ev, CloudSimTags.CLOUDLET_RESUME);
+				break;
+
+			// Resumes a previously submitted Cloudlet, but the sender
+			// asks for an acknowledgement
+			case CloudSimTags.CLOUDLET_RESUME_ACK:
+				processCloudlet(ev, CloudSimTags.CLOUDLET_RESUME_ACK);
+				break;
+
+			// Moves a previously submitted Cloudlet to a different resource
+			case CloudSimTags.CLOUDLET_MOVE:
+				processCloudletMove((int[]) ev.getData(), CloudSimTags.CLOUDLET_MOVE);
+				break;
+
+			// Moves a previously submitted Cloudlet to a different resource
+			case CloudSimTags.CLOUDLET_MOVE_ACK:
+				processCloudletMove((int[]) ev.getData(), CloudSimTags.CLOUDLET_MOVE_ACK);
+				break;
+
+			// Checks the status of a Cloudlet
+			case CloudSimTags.CLOUDLET_STATUS:
+				processCloudletStatus(ev);
+				break;
+
+			// Ping packet
+			case CloudSimTags.INFOPKT_SUBMIT:
+				processPingRequest(ev);
+				break;
+
+			case CloudSimTags.VM_CREATE:
+				processVmCreate(ev, false);
+				break;
+
+			case CloudSimTags.VM_CREATE_ACK:
+				processVmCreate(ev, true);
+				break;
+
+			case CloudSimTags.VM_DESTROY:
+				processVmDestroy(ev, false);
+				break;
+
+			case CloudSimTags.VM_DESTROY_ACK:
+				processVmDestroy(ev, true);
+				break;
+
+			case CloudSimTags.VM_MIGRATE:
+				processVmMigrate(ev, false);
+				break;
+
+			case CloudSimTags.VM_MIGRATE_ACK:
+				processVmMigrate(ev, true);
+				break;
+
+			case CloudSimTags.VM_DATA_ADD:
+				processDataAdd(ev, false);
+				break;
+
+			case CloudSimTags.VM_DATA_ADD_ACK:
+				processDataAdd(ev, true);
+				break;
+
+			case CloudSimTags.VM_DATA_DEL:
+				processDataDelete(ev, false);
+				break;
+
+			case CloudSimTags.VM_DATA_DEL_ACK:
+				processDataDelete(ev, true);
+				break;
+
+			case CloudSimTags.VM_DATACENTER_EVENT:
+				updateCloudetProcessingWithoutSchedulingFutureEvents();
+				checkCloudletCompletion();
+				break;
+
+			// other unknown tags are processed by this method
+			default:
+				processOtherEvent(ev);
+				break;
+		}
+	}*/
 	
 	@Override
 	protected void processOtherEvent(SimEvent ev) {
@@ -279,8 +416,8 @@ public class FogDevice extends PowerDatacenter {
 		case FogEvents.LAUNCH_MODULE_INSTANCE:
 			updateModuleInstanceCount(ev);
 			break;
-		case FogEvents.RESOURCE_MGMT:
-			manageResources(ev);
+		/*case FogEvents.RESOURCE_MGMT:
+			manageResources(ev);*/
 		default:
 			break;
 		}
@@ -290,10 +427,10 @@ public class FogDevice extends PowerDatacenter {
 	 * Perform miscellaneous resource management tasks
 	 * @param ev
 	 */
-	private void manageResources(SimEvent ev) {
+	/*private void manageResources(SimEvent ev) {
 		updateEnergyConsumption();
 		send(getId(), Config.RESOURCE_MGMT_INTERVAL, FogEvents.RESOURCE_MGMT);
-	}
+	}*/
 
 	/**
 	 * Updating the number of modules of an application module on this device
@@ -339,7 +476,7 @@ public class FogDevice extends PowerDatacenter {
 			//System.out.println(CloudSim.clock()+" : Sending periodic tuple "+edge.getTupleType());
 			Tuple tuple = applicationMap.get(module.getAppId()).createTuple(edge, getId(), module.getId());
 			updateTimingsOnSending(tuple);
-			sendToSelf(tuple);			
+			routeTuple(tuple);			
 		}
 		send(getId(), edge.getPeriodicity(), FogEvents.SEND_PERIODIC_TUPLE, edge);
 	}
@@ -365,6 +502,85 @@ public class FogDevice extends PowerDatacenter {
 		return null;
 	}
 	
+	
+	protected void processCloudletSubmit(SimEvent ev, boolean ack) {
+		updateCloudetProcessingWithoutSchedulingFutureEventsForce();
+		try {
+			// gets the Cloudlet object
+			Cloudlet cl = (Cloudlet) ev.getData();
+			// checks whether this Cloudlet has finished or not
+			if (cl.isFinished()) {
+				String name = CloudSim.getEntityName(cl.getUserId());
+				Log.printLine(getName() + ": Warning - Cloudlet #" + cl.getCloudletId() + " owned by " + name
+						+ " is already completed/finished.");
+				Log.printLine("Therefore, it is not being executed again");
+				Log.printLine();
+
+				// NOTE: If a Cloudlet has finished, then it won't be processed.
+				// So, if ack is required, this method sends back a result.
+				// If ack is not required, this method don't send back a result.
+				// Hence, this might cause CloudSim to be hanged since waiting
+				// for this Cloudlet back.
+				if (ack) {
+					int[] data = new int[3];
+					data[0] = getId();
+					data[1] = cl.getCloudletId();
+					data[2] = CloudSimTags.FALSE;
+
+					// unique tag = operation tag
+					int tag = CloudSimTags.CLOUDLET_SUBMIT_ACK;
+					sendNow(cl.getUserId(), tag, data);
+				}
+
+				sendNow(cl.getUserId(), CloudSimTags.CLOUDLET_RETURN, cl);
+
+				return;
+			}
+
+			// process this Cloudlet to this CloudResource
+			cl.setResourceParameter(getId(), getCharacteristics().getCostPerSecond(), getCharacteristics()
+					.getCostPerBw());
+
+			int userId = cl.getUserId();
+			int vmId = cl.getVmId();
+						// time to transfer the files
+			double fileTransferTime = predictFileTransferTime(cl.getRequiredFiles());
+			Host host = getVmAllocationPolicy().getHost(vmId, userId);
+			Vm vm = host.getVm(vmId, userId);
+			CloudletScheduler scheduler = vm.getCloudletScheduler();
+			double estimatedFinishTime = scheduler.cloudletSubmit(cl, fileTransferTime);
+			
+			// if this cloudlet is in the exec queue
+			if (estimatedFinishTime > 0.0 && !Double.isInfinite(estimatedFinishTime)) {
+				estimatedFinishTime += fileTransferTime;
+				/*	edited by HARSHIT	*/
+				send(getId(), CloudSim.getMinTimeBetweenEvents()
+						+estimatedFinishTime, CloudSimTags.VM_DATACENTER_EVENT);
+				/*	edit done	*/
+			}
+
+			if (ack) {
+				int[] data = new int[3];
+				data[0] = getId();
+				data[1] = cl.getCloudletId();
+				data[2] = CloudSimTags.TRUE;
+
+				// unique tag = operation tag
+				int tag = CloudSimTags.CLOUDLET_SUBMIT_ACK;
+				sendNow(cl.getUserId(), tag, data);
+			}
+		} catch (ClassCastException c) {
+			Log.printLine(getName() + ".processCloudletSubmit(): " + "ClassCastException error.");
+			c.printStackTrace();
+		} catch (Exception e) {
+			Log.printLine(getName() + ".processCloudletSubmit(): " + "Exception error.");
+			e.printStackTrace();
+		}
+
+		checkCloudletCompletion();
+	}
+
+	
 	/**
 	 * Update cloudet processing without scheduling future events.
 	 * 
@@ -377,26 +593,13 @@ public class FogDevice extends PowerDatacenter {
 		double timeFrameDatacenterEnergy = 0.0;
 
 		for (PowerHost host : this.<PowerHost> getHostList()) {
-			Log.printLine();
-
 			double time = host.updateVmsProcessing(currentTime); // inform VMs to update processing
 			if (time < minTime) {
 				minTime = time;
 			}
-
-			Log.formatLine(
-					"%.2f: [Host #%d] utilization is %.2f%%",
-					currentTime,
-					host.getId(),
-					host.getUtilizationOfCpu() * 100);
 		}
 
 		if (timeDiff > 0) {
-			Log.formatLine(
-					"\nEnergy consumption for the last time frame from %.2f to %.2f:",
-					getLastProcessTime(),
-					currentTime);
-
 			for (PowerHost host : this.<PowerHost> getHostList()) {
 				double previousUtilizationOfCpu = host.getPreviousUtilizationOfCpu();
 				double utilizationOfCpu = host.getUtilizationOfCpu();
@@ -405,44 +608,11 @@ public class FogDevice extends PowerDatacenter {
 						utilizationOfCpu,
 						timeDiff);
 				timeFrameDatacenterEnergy += timeFrameHostEnergy;
-
-				Log.printLine();
-				Log.formatLine(
-						"%.2f: [Host #%d] utilization at %.2f was %.2f%%, now is %.2f%%",
-						currentTime,
-						host.getId(),
-						getLastProcessTime(),
-						previousUtilizationOfCpu * 100,
-						utilizationOfCpu * 100);
-				Log.formatLine(
-						"%.2f: [Host #%d] energy is %.2f W*sec",
-						currentTime,
-						host.getId(),
-						timeFrameHostEnergy);
 			}
-
-			Log.formatLine(
-					"\n%.2f: Data center's energy is %.2f W*sec\n",
-					currentTime,
-					timeFrameDatacenterEnergy);
 		}
 
 		setPower(getPower() + timeFrameDatacenterEnergy);
 
-		checkCloudletCompletion();
-
-		/** Remove completed VMs **/
-		/**
-		 * Change made by HARSHIT GUPTA
-		 */
-		/*for (PowerHost host : this.<PowerHost> getHostList()) {
-			for (Vm vm : host.getCompletedVms()) {
-				getVmAllocationPolicy().deallocateHostForVm(vm);
-				getVmList().remove(vm);
-				Log.printLine("VM #" + vm.getId() + " has been deallocated from host #" + host.getId());
-			}
-		}*/
-		
 		Log.printLine();
 
 		setLastProcessTime(currentTime);
@@ -470,7 +640,7 @@ public class FogDevice extends PowerDatacenter {
 							resTuple.setModuleCopyMap(new HashMap<String, Integer>(tuple.getModuleCopyMap()));
 							resTuple.getModuleCopyMap().put(((AppModule)vm).getName(), vm.getId());
 							updateTimingsOnSending(resTuple);
-							sendToSelf(resTuple);
+							routeTuple(resTuple);
 						}
 						sendNow(cl.getUserId(), CloudSimTags.CLOUDLET_RETURN, cl);
 					}
@@ -481,6 +651,36 @@ public class FogDevice extends PowerDatacenter {
 			updateAllocatedMips(null);
 	}
 	
+	private void routeTuple(Tuple tuple) {
+		if(tuple.getDirection() == Tuple.ACTUATOR){
+			sendTupleToActuator(tuple);
+			return;
+		}
+		if(appToModulesMap.containsKey(tuple.getAppId())){
+			if(appToModulesMap.get(tuple.getAppId()).contains(tuple.getDestModuleName())){
+				sendToSelf(tuple);
+			}else if(tuple.getDestModuleName()!=null){
+				if(tuple.getDirection() == Tuple.UP)
+					sendUp(tuple);
+				else if(tuple.getDirection() == Tuple.DOWN){
+					for(int childId : getChildrenIds())
+						sendDown(tuple, childId);
+				}
+			}else{
+				sendUp(tuple);
+			}
+		}else{
+			if(tuple.getDirection() == Tuple.UP)
+				sendUp(tuple);
+			else if(tuple.getDirection() == Tuple.DOWN){
+				for(int childId : getChildrenIds())
+					sendDown(tuple, childId);
+			}
+		}
+
+		
+	}
+
 	protected void updateTimingsOnSending(Tuple resTuple) {
 		// TODO ADD CODE FOR UPDATING TIMINGS WHEN A TUPLE IS GENERATED FROM A PREVIOUSLY RECIEVED TUPLE. 
 		// WILL NEED TO CHECK IF A NEW LOOP STARTS AND INSERT A UNIQUE TUPLE ID TO IT.
@@ -550,13 +750,6 @@ public class FogDevice extends PowerDatacenter {
 		double currentEnergyConsumption = getEnergyConsumption();
 		double newEnergyConsumption = currentEnergyConsumption + (timeNow-lastUtilizationUpdateTime)*getHost().getPowerModel().getPower(lastUtilization);
 		setEnergyConsumption(newEnergyConsumption);
-	
-		/*if(getName().equals("d-0")){
-			System.out.println("------------------------");
-			System.out.println("Utilization = "+lastUtilization);
-			System.out.println("Power = "+getHost().getPowerModel().getPower(lastUtilization));
-			System.out.println(timeNow-lastUtilizationUpdateTime);
-		}*/
 		
 		double currentCost = getTotalCost();
 		double newcost = currentCost + (timeNow-lastUtilizationUpdateTime)*getRatePerMips()*lastUtilization*getHost().getTotalMips();
@@ -620,20 +813,12 @@ public class FogDevice extends PowerDatacenter {
 			updateCloudTraffic();
 		}
 		
-		/*if(getName().equals("d-0") && tuple.getTupleType().equals("_SENSOR")){
-			System.out.println(++numClients);
-		}*/
-		Logger.debug(getName(), "Received tuple "+tuple.getCloudletId()+"with tupleType = "+tuple.getTupleType()+"\t| Source : "+
-		CloudSim.getEntityName(ev.getSource())+"|Dest : "+CloudSim.getEntityName(ev.getDestination()));
-		send(ev.getSource(), CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ACK);
+		/*Logger.debug(getName(), "Received tuple "+tuple.getCloudletId()+"with tupleType = "+tuple.getTupleType()+"\t| Source : "+
+		CloudSim.getEntityName(ev.getSource())+"|Dest : "+CloudSim.getEntityName(ev.getDestination()));*/
 		
-		if(FogUtils.appIdToGeoCoverageMap.containsKey(tuple.getAppId())){
-		}
+		//send(ev.getSource(), CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ACK);
+				
 		
-		if(tuple.getDirection() == Tuple.ACTUATOR){
-			sendTupleToActuator(tuple);
-			return;
-		}
 		
 		if(getHost().getVmList().size() > 0){
 			final AppModule operator = (AppModule)getHost().getVmList().get(0);
@@ -662,9 +847,7 @@ public class FogDevice extends PowerDatacenter {
 								tuple.getModuleCopyMap().get(tuple.getDestModuleName())!=vmId )){
 					return;
 				}
-				tuple.setVmId(vmId);
-				//Logger.error(getName(), "Executing tuple for operator " + moduleName);
-				
+				tuple.setVmId(vmId);				
 				updateTimingsOnReceipt(tuple);
 				
 				executeTuple(ev, tuple.getDestModuleName());
@@ -674,16 +857,20 @@ public class FogDevice extends PowerDatacenter {
 				else if(tuple.getDirection() == Tuple.DOWN){
 					for(int childId : getChildrenIds())
 						sendDown(tuple, childId);
-				}
+				} else if (tuple.getDirection() == Tuple.ACTUATOR)
+					sendTupleToActuator(tuple);
 			}else{
 				sendUp(tuple);
 			}
 		}else{
-			if(tuple.getDirection() == Tuple.UP)
+			if(tuple.getDirection() == Tuple.UP) {
 				sendUp(tuple);
+			}
 			else if(tuple.getDirection() == Tuple.DOWN){
 				for(int childId : getChildrenIds())
 					sendDown(tuple, childId);
+			} else if (tuple.getDirection() == Tuple.ACTUATOR) {
+				sendTupleToActuator(tuple);
 			}
 		}
 	}
@@ -742,9 +929,7 @@ public class FogDevice extends PowerDatacenter {
 		updateAllocatedMips(moduleName);
 		processCloudletSubmit(ev, false);
 		updateAllocatedMips(moduleName);
-		/*for(Vm vm : getHost().getVmList()){
-			Logger.error(getName(), "MIPS allocated to "+((AppModule)vm).getName()+" = "+getHost().getTotalAllocatedMipsForVm(vm));
-		}*/
+
 	}
 	
 	protected void processModuleArrival(SimEvent ev){
@@ -777,7 +962,6 @@ public class FogDevice extends PowerDatacenter {
 	protected void processOperatorRelease(SimEvent ev){
 		this.processVmMigrate(ev, false);
 	}
-	
 	
 	protected void updateNorthTupleQueue(){
 		if(!getNorthTupleQueue().isEmpty()){
@@ -935,6 +1119,7 @@ public class FogDevice extends PowerDatacenter {
 	}
 
 	public void setAssociatedActuatorIds(List<Pair<Integer, Double>> associatedActuatorIds) {
+		System.out.println("Setting associated actuator ids : "+associatedActuatorIds);
 		this.associatedActuatorIds = associatedActuatorIds;
 	}
 	

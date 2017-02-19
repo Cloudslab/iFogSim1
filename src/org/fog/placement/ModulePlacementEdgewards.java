@@ -349,24 +349,6 @@ public class ModulePlacementEdgewards extends ModulePlacement{
 		List<String> modules = new ArrayList<String>();
 		modules.add(module);
 		return findModulesToShift(modules, deviceId);
-		/*List<String> upstreamModules = new ArrayList<String>();
-		upstreamModules.add(module);
-		boolean changed = true;
-		while(changed){ // Keep loop running as long as new information is added.
-			changed = false;
-			for(AppEdge edge : getApplication().getEdges()){
-				
-				 * If there is an application edge UP from the module to be shifted to another module in the same device
-				 
-				if(upstreamModules.contains(edge.getSource()) && edge.getDirection()==Tuple.UP && 
-						getCurrentModuleMap().get(deviceId).contains(edge.getDestination()) 
-						&& !upstreamModules.contains(edge.getDestination())){
-					upstreamModules.add(edge.getDestination());
-					changed = true;
-				}
-			}
-		}
-		return upstreamModules;	*/
 	}
 	/**
 	 * Get all modules that need to be shifted northwards along with <b>modules</b>.  

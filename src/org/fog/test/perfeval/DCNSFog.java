@@ -44,8 +44,8 @@ public class DCNSFog {
 	static List<FogDevice> fogDevices = new ArrayList<FogDevice>();
 	static List<Sensor> sensors = new ArrayList<Sensor>();
 	static List<Actuator> actuators = new ArrayList<Actuator>();
-	static int numOfAreas = 1;
-	static int numOfCamerasPerArea = 4;
+	static int numOfAreas = 4;
+	static int numOfCamerasPerArea = 40;
 	
 	private static boolean CLOUD = false;
 	
@@ -140,7 +140,7 @@ public class DCNSFog {
 	private static FogDevice addCamera(String id, int userId, String appId, int parentId){
 		FogDevice camera = createFogDevice("m-"+id, 500, 1000, 10000, 10000, 3, 0, 87.53, 82.44);
 		camera.setParentId(parentId);
-		Sensor sensor = new Sensor("s-"+id, "CAMERA", userId, appId, new DeterministicDistribution(5)); // inter-transmission time of camera (sensor) follows a deterministic distribution
+		Sensor sensor = new Sensor("s-"+id, "CAMERA", userId, appId, new DeterministicDistribution(20)); // inter-transmission time of camera (sensor) follows a deterministic distribution
 		sensors.add(sensor);
 		Actuator ptz = new Actuator("ptz-"+id, userId, appId, "PTZ_CONTROL");
 		actuators.add(ptz);
@@ -249,7 +249,7 @@ public class DCNSFog {
 		 */
 		application.addTupleMapping("motion_detector", "CAMERA", "MOTION_VIDEO_STREAM", new FractionalSelectivity(1.0)); // 1.0 tuples of type MOTION_VIDEO_STREAM are emitted by Motion Detector module per incoming tuple of type CAMERA
 		application.addTupleMapping("object_detector", "MOTION_VIDEO_STREAM", "OBJECT_LOCATION", new FractionalSelectivity(1.0)); // 1.0 tuples of type OBJECT_LOCATION are emitted by Object Detector module per incoming tuple of type MOTION_VIDEO_STREAM
-		application.addTupleMapping("object_detector", "MOTION_VIDEO_STREAM", "DETECTED_OBJECT", new FractionalSelectivity(0.05)); // 0.05 tuples of type MOTION_VIDEO_STREAM are emitted by Object Detector module per incoming tuple of type MOTION_VIDEO_STREAM
+		application.addTupleMapping("object_detector", "MOTION_VIDEO_STREAM", "DETECTED_OBJECT", new FractionalSelectivity(0.05)); // 0.05 tuples of type DETECTED_OBJECT are emitted by Object Detector module per incoming tuple of type MOTION_VIDEO_STREAM
 	
 		/*
 		 * Defining application loops (maybe incomplete loops) to monitor the latency of. 

@@ -20,6 +20,7 @@ public class ModulePlacementOnlyCloud extends ModulePlacement{
 	private int cloudId;
 	
 	public ModulePlacementOnlyCloud(List<FogDevice> fogDevices, List<Sensor> sensors, List<Actuator> actuators, Application application){
+		System.out.println("HHHHH");
 		this.setFogDevices(fogDevices);
 		this.setApplication(application);
 		this.setSensors(sensors);

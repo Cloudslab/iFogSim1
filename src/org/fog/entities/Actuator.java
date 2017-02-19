@@ -57,13 +57,13 @@ public class Actuator extends SimEntity{
 		String srcModule = tuple.getSrcModuleName();
 		String destModule = tuple.getDestModuleName();
 		Application app = getApp();
-		
 		for(AppLoop loop : app.getLoops()){
 			if(loop.hasEdge(srcModule, destModule) && loop.isEndModule(destModule)){
 				
 				Double startTime = TimeKeeper.getInstance().getEmitTimes().get(tuple.getActualTupleId());
-				if(startTime==null)
+				if(startTime==null) {
 					break;
+				}
 				if(!TimeKeeper.getInstance().getLoopIdToCurrentAverage().containsKey(loop.getLoopId())){
 					TimeKeeper.getInstance().getLoopIdToCurrentAverage().put(loop.getLoopId(), 0.0);
 					TimeKeeper.getInstance().getLoopIdToCurrentNum().put(loop.getLoopId(), 0);

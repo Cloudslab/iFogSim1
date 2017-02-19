@@ -21,10 +21,7 @@ import org.fog.utils.FogUtils;
 import org.fog.utils.NetworkUsageMonitor;
 import org.fog.utils.TimeKeeper;
 
-public class Controller extends SimEntity{
-	
-	public static boolean ONLY_CLOUD = false;
-		
+public class Controller extends SimEntity{		
 	private List<FogDevice> fogDevices;
 	private List<Sensor> sensors;
 	private List<Actuator> actuators;
@@ -76,7 +73,7 @@ public class Controller extends SimEntity{
 				send(getId(), getAppLaunchDelays().get(appId), FogEvents.APP_SUBMIT, applications.get(appId));
 		}
 
-		send(getId(), Config.RESOURCE_MANAGE_INTERVAL, FogEvents.CONTROLLER_RESOURCE_MANAGE);
+		//send(getId(), Config.RESOURCE_MANAGE_INTERVAL, FogEvents.CONTROLLER_RESOURCE_MANAGE);
 		
 		send(getId(), Config.MAX_SIMULATION_TIME, FogEvents.STOP_SIMULATION);
 		
@@ -94,15 +91,15 @@ public class Controller extends SimEntity{
 		case FogEvents.TUPLE_FINISHED:
 			processTupleFinished(ev);
 			break;
-		case FogEvents.CONTROLLER_RESOURCE_MANAGE:
+		/*case FogEvents.CONTROLLER_RESOURCE_MANAGE:
 			manageResources();
-			break;
+			break;*/
 		case FogEvents.STOP_SIMULATION:
 			CloudSim.stopSimulation();
 			printTimeDetails();
-			printPowerDetails();
-			printCostDetails();
-			printNetworkUsageDetails();
+			//printPowerDetails();
+			//printCostDetails();
+			//printNetworkUsageDetails();
 			System.exit(0);
 			break;
 			
@@ -159,6 +156,8 @@ public class Controller extends SimEntity{
 				count += 1;
 			}
 			System.out.println(getStringForLoopId(loopId) + " ---> "+(average/count));*/
+			System.out.println("LOOP : " + loopId);
+			System.out.println(TimeKeeper.getInstance().getLoopIdToCurrentAverage());
 			System.out.println(getStringForLoopId(loopId) + " ---> "+TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loopId));
 		}
 		System.out.println("=========================================");
@@ -172,9 +171,9 @@ public class Controller extends SimEntity{
 		System.out.println("=========================================");
 	}
 
-	protected void manageResources(){
+	/*protected void manageResources(){
 		send(getId(), Config.RESOURCE_MANAGE_INTERVAL, FogEvents.CONTROLLER_RESOURCE_MANAGE);
-	}
+	}*/
 	
 	private void processTupleFinished(SimEvent ev) {
 	}

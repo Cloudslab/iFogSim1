@@ -301,24 +301,35 @@ public class FogDevice extends PowerDatacenter {
 		sendNow(dstDeviceId, FogEvents.TUPLE_ARRIVAL, tuple);
 	}
 	
+	protected void sendTuple(Tuple tuple, int actuatorId) {
+		sendNow(actuatorId, FogEvents.TUPLE_ARRIVAL, tuple);
+	}
+	
+	protected void routeTuple(Tuple resTuple, AppModule module) {
+		if (resTuple.getDirection() != Tuple.ACTUATOR) {
+			for (AppModuleAddress addr : module.getDestModules().get(resTuple.getTupleType())) {
+				sendTuple(resTuple, addr.getFogDeviceId(), addr.getVmId());				
+			}
+		} else {
+			for (Integer actuatorId : module.getActuatorSubscriptions().get(resTuple.getTupleType())) {
+				sendTuple(resTuple, actuatorId);
+			}
+		}
+		updateTimingsOnSending(resTuple);
+	}
+	
 	protected void processTupleFinished(SimEvent ev) {
 		Tuple tuple = (Tuple) ev.getData();
 		TimeKeeper.getInstance().tupleEndedExecution(tuple);
 		Application application = getApplicationMap().get(tuple.getAppId());
 		Logger.debug(getName(), "Completed execution of tuple "+tuple.getCloudletId()+"on "+tuple.getDestModuleName());
-		System.out.println("Finished executing module "+tuple.getDestModuleName());
-		//AppModule module = (AppModule) getHost().getVm(tuple.getVmId(), tuple.getUserId());
+		System.out.println(getName()+" Finished executing module "+tuple.getDestModuleName());
 		AppModule module = moduleMap.get(tuple.getVmId());
 		
 		List<Tuple> resultantTuples = application.getResultantTuples(tuple.getDestModuleName(), tuple, getId(), module.getId());
-		System.out.println("No of resultant tuple = "+resultantTuples.size());
 		for(Tuple resTuple : resultantTuples){
-			
-			for (AppModuleAddress addr : module.getDestModules().get(resTuple.getTupleType())) {
-				sendTuple(resTuple, addr.getFogDeviceId(), addr.getVmId());				
-			}
-			
-			updateTimingsOnSending(resTuple);
+			routeTuple(resTuple, module);
+
 		}
 		sendNow(tuple.getUserId(), CloudSimTags.CLOUDLET_RETURN, tuple);	
 	}
@@ -361,24 +372,15 @@ public class FogDevice extends PowerDatacenter {
 	 * @param ev SimEvent instance containing the edge to send tuple on
 	 */
 	private void sendPeriodicTuple(SimEvent ev) {
-		AppEdge edge = (AppEdge)ev.getData();
-		String srcModule = edge.getSource();
-		AppModule module = getModuleByName(srcModule);
+Pair<Integer, String> tupleInfo = (Pair<Integer, String>) ev.getData();
+		AppModule module = moduleMap.get(tupleInfo.getFirst());
+		String tupleType = tupleInfo.getSecond();
+		AppEdge edge = getApplicationMap().get(module.getAppId()).getEdgeMap().get(tupleType);
+		Tuple tuple = applicationMap.get(module.getAppId()).createTuple(edge, getId(), module.getId());
 		
-		if(module == null)
-			return;
+		routeTuple(tuple, module);
 		
-		int instanceCount = module.getNumInstances();
-		/*
-		 * Since tuples sent through a DOWN application edge are anyways broadcasted, only UP tuples are replicated
-		 */
-		for(int i = 0;i<((edge.getDirection()==Tuple.UP)?instanceCount:1);i++){
-			//System.out.println(CloudSim.clock()+" : Sending periodic tuple "+edge.getTupleType());
-			Tuple tuple = applicationMap.get(module.getAppId()).createTuple(edge, getId(), module.getId());
-			updateTimingsOnSending(tuple);
-			sendToSelf(tuple);			
-		}
-		send(getId(), edge.getPeriodicity(), FogEvents.SEND_PERIODIC_TUPLE, edge);
+		send(getId(), edge.getPeriodicity(), FogEvents.SEND_PERIODIC_TUPLE, new Pair<Integer, String>(module.getId(), edge.getTupleType()));
 	}
 
 	protected void processActuatorJoined(SimEvent ev) {
@@ -393,7 +395,6 @@ public class FogDevice extends PowerDatacenter {
 		getActiveApplications().add(app.getAppId());
 	}
 
-	
 	public String getOperatorName(int vmId){
 		for(Vm vm : this.getHost().getVmList()){
 			if(vm.getId() == vmId)
@@ -502,19 +503,6 @@ public class FogDevice extends PowerDatacenter {
 						cloudletCompleted = true;
 						Tuple tuple = (Tuple)cl;
 						sendNow(getId(), FogEvents.TUPLE_FINISHED, tuple);
-						/*
-						TimeKeeper.getInstance().tupleEndedExecution(tuple);
-						Application application = getApplicationMap().get(tuple.getAppId());
-						Logger.debug(getName(), "Completed execution of tuple "+tuple.getCloudletId()+"on "+tuple.getDestModuleName());
-						List<Tuple> resultantTuples = application.getResultantTuples(tuple.getDestModuleName(), tuple, getId(), vm.getId());
-						for(Tuple resTuple : resultantTuples){
-							resTuple.setModuleCopyMap(new HashMap<String, Integer>(tuple.getModuleCopyMap()));
-							resTuple.getModuleCopyMap().put(((AppModule)vm).getName(), vm.getId());
-							updateTimingsOnSending(resTuple);
-							sendToSelf(resTuple);
-						}
-						sendNow(cl.getUserId(), CloudSimTags.CLOUDLET_RETURN, cl);
-						*/
 					}
 				}
 			}
@@ -574,9 +562,7 @@ public class FogDevice extends PowerDatacenter {
 				{add(0.0);}});
 			}
 		}
-		
-		updateEnergyConsumption();
-		
+		updateEnergyConsumption();	
 	}
 	
 	private void updateEnergyConsumption() {
@@ -627,32 +613,6 @@ public class FogDevice extends PowerDatacenter {
 		if(!cloudTrafficMap.containsKey(time))
 			cloudTrafficMap.put(time, 0);
 		cloudTrafficMap.put(time, cloudTrafficMap.get(time)+1);
-	}
-	
-	protected void sendTupleToActuator(Tuple tuple){
-		/*for(Pair<Integer, Double> actuatorAssociation : getAssociatedActuatorIds()){
-			int actuatorId = actuatorAssociation.getFirst();
-			double delay = actuatorAssociation.getSecond();
-			if(actuatorId == tuple.getActuatorId()){
-				send(actuatorId, delay, FogEvents.TUPLE_ARRIVAL, tuple);
-				return;
-			}
-		}
-		int childId = getChildIdForTuple(tuple);
-		if(childId != -1)
-			sendDown(tuple, childId);*/
-		for(Pair<Integer, Double> actuatorAssociation : getAssociatedActuatorIds()){
-			int actuatorId = actuatorAssociation.getFirst();
-			double delay = actuatorAssociation.getSecond();
-			String actuatorType = ((Actuator)CloudSim.getEntity(actuatorId)).getActuatorType();
-			if(tuple.getDestModuleName().equals(actuatorType)){
-				send(actuatorId, delay, FogEvents.TUPLE_ARRIVAL, tuple);
-				return;
-			}
-		}
-		for(int childId : getChildrenIds()){
-			sendDown(tuple, childId);
-		}
 	}
 	
 	int numClients=0;
@@ -763,7 +723,7 @@ public class FogDevice extends PowerDatacenter {
 		AppModule module = (AppModule)ev.getData();
 		
 		System.out.println(getName() + " : " + module.getName() + " arrived --> " + module.getDestModules());
-		
+		System.out.println(module.getActuatorSubscriptions());
 		moduleMap.put(module.getId(), module);
 		System.out.println(getName()+" Putting module id "+module.getId());
 		// TODO Remove the mapping when module is moved out of fog device
@@ -790,14 +750,13 @@ public class FogDevice extends PowerDatacenter {
 		Application app = getApplicationMap().get(appId);
 		List<AppEdge> periodicEdges = app.getPeriodicEdges(module.getName());
 		for(AppEdge edge : periodicEdges){
-			send(getId(), edge.getPeriodicity(), FogEvents.SEND_PERIODIC_TUPLE, edge);
+			send(getId(), edge.getPeriodicity(), FogEvents.SEND_PERIODIC_TUPLE, new Pair<Integer, String>(module.getId(), edge.getTupleType()));
 		}
 	}
 
 	protected void processOperatorRelease(SimEvent ev){
 		this.processVmMigrate(ev, false);
 	}
-	
 	
 	protected void updateNorthTupleQueue(){
 		if(!getNorthTupleQueue().isEmpty()){

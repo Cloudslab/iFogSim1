@@ -95,12 +95,13 @@ public class AppModule extends PowerVm{
 		setSelectivityMap(operator.getSelectivityMap());
 		setDownInstanceIdsMaps(new HashMap<String, List<Integer>>());
 		setDestModules(new HashMap<String, List<AppModuleAddress>>());
+		setActuatorSubscriptions(new HashMap<String, List<Integer>>());
 	}
 	
-	public void subscribeActuator(int id, String tuplyType){
-		if(!getActuatorSubscriptions().containsKey(tuplyType))
-			getActuatorSubscriptions().put(tuplyType, new ArrayList<Integer>());
-		getActuatorSubscriptions().get(tuplyType).add(id);
+	public void subscribeActuator(int id, String tupleType){
+		if(!getActuatorSubscriptions().containsKey(tupleType))
+			getActuatorSubscriptions().put(tupleType, new ArrayList<Integer>());
+		getActuatorSubscriptions().get(tupleType).add(id);
 	}
 	
 	public String getName() {

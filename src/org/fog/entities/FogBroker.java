@@ -191,31 +191,27 @@ public class FogBroker extends PowerDatacenterBroker{
 			for (AppEdge e : application.getEdges()) {
 				String srcModule = e.getSource();
 				String dstModule = e.getDestination();
-				
-				int dstVmId = linkedModules.get(dstModule).getId();
-				int dstDeviceId = placement.getMappedDeviceId(dstModule);
 
-				if (e.getEdgeType() != AppEdge.MODULE) continue;
-				
-				System.out.println(linkedModules.get(srcModule));
-				linkedModules.get(srcModule).addDestModule(e.getTupleType(), new AppModuleAddress(dstVmId, dstDeviceId));
-			}
-			
-			for (String sensorType : placement.getSensorIds().keySet()) {
-				AppEdge edge = application.getEdgeMap().get(sensorType);
-				String dstModule = edge.getDestination();
-				AppModuleAddress addr = new AppModuleAddress(linkedModules.get(dstModule).getId(), placement.getMappedDeviceId(dstModule));
-				for (Integer sensorId : placement.getSensorIds().get(sensorType)) {
-					moduleLinks.getEndpointConnection().put(sensorId, addr);
-				}
-			}
-			
-			for (String actuatorType : placement.getActuatorIds().keySet()) {
-				AppEdge edge = application.getEdgeMap().get(actuatorType);
-				String srcModule = edge.getSource();
-				AppModuleAddress addr = new AppModuleAddress(linkedModules.get(srcModule).getId(), placement.getMappedDeviceId(srcModule));
-				for (Integer actuatorId : placement.getActuatorIds().get(actuatorType)) {
-					moduleLinks.getEndpointConnection().put(actuatorId, addr);
+				if (e.getEdgeType() == AppEdge.MODULE) {
+
+					int dstVmId = linkedModules.get(dstModule).getId();
+					int dstDeviceId = placement.getMappedDeviceId(dstModule);
+					System.out.println(linkedModules.get(srcModule));
+					linkedModules.get(srcModule).addDestModule(e.getTupleType(), new AppModuleAddress(dstVmId, dstDeviceId));
+					
+				} else if (e.getEdgeType() == AppEdge.SENSOR) {
+					AppModuleAddress addr = new AppModuleAddress(linkedModules.get(dstModule).getId(), placement.getMappedDeviceId(dstModule));
+					for (Integer sensorId : placement.getSensorIds().get(srcModule)) {
+						moduleLinks.getEndpointConnection().put(sensorId, addr);
+					}	
+				} else if (e.getEdgeType() == AppEdge.ACTUATOR) {
+					String actuatorType = dstModule;
+					System.out.println(actuatorType);
+					AppModuleAddress addr = new AppModuleAddress(linkedModules.get(srcModule).getId(), placement.getMappedDeviceId(srcModule));
+					for (Integer actuatorId : placement.getActuatorIds().get(actuatorType)) {
+						linkedModules.get(srcModule).subscribeActuator(actuatorId, e.getTupleType());
+						moduleLinks.getEndpointConnection().put(actuatorId, addr);
+					}	
 				}
 			}
 			

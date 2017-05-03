@@ -8,7 +8,7 @@ import org.fog.application.AppModule;
 import org.fog.application.Application;
 import org.fog.entities.FogDevice;
 
-public class ModulePlacementMapping extends ModulePlacement{
+public class ModulePlacementMapping extends ModulePlacementPolicy {
 
 	private ModuleMapping moduleMapping;
 	

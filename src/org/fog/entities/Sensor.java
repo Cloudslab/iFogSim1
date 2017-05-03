@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.cloudbus.cloudsim.UtilizationModelFull;
 import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.fog.application.AppEdge;
@@ -28,11 +29,12 @@ public class Sensor extends SimEntity{
 	private String destModuleName;
 	private Distribution transmitDistribution;
 	private int controllerId;
-	private Application app;
 	private double latency;
+	private SensorCharacteristics characteristics;
+	private Application application;
 	
 	public Sensor(String name, int userId, String appId, int gatewayDeviceId, double latency, GeoLocation geoLocation, 
-			Distribution transmitDistribution, int cpuLength, int nwLength, String tupleType, String destModuleName) {
+			Distribution transmitDistribution, int cpuLength, int nwLength, String tupleType, String destModuleName, Application application) {
 		super(name);
 		this.setAppId(appId);
 		this.gatewayDeviceId = gatewayDeviceId;
@@ -44,10 +46,12 @@ public class Sensor extends SimEntity{
 		setTupleType(tupleType);
 		setSensorName(sensorName);
 		setLatency(latency);
+		setApplication(application);
+		setCharacteristics(new SensorCharacteristics(getId(), appId, tupleType, transmitDistribution, cpuLength, nwLength, geoLocation));
 	}
 	
 	public Sensor(String name, int userId, String appId, int gatewayDeviceId, double latency, GeoLocation geoLocation, 
-			Distribution transmitDistribution, String tupleType) {
+			Distribution transmitDistribution, String tupleType, Application application) {
 		super(name);
 		this.setAppId(appId);
 		this.gatewayDeviceId = gatewayDeviceId;
@@ -58,7 +62,39 @@ public class Sensor extends SimEntity{
 		setTupleType(tupleType);
 		setSensorName(sensorName);
 		setLatency(latency);
+		setApplication(application);
+		
+		AppEdge _edge = null;
+		for(AppEdge edge : getApplication().getEdges()){
+			if(edge.getSource().equals(getTupleType()))
+				_edge = edge;
+		}
+		int cpuLength = (int) _edge.getTupleCpuLength();
+		int nwLength = (int) _edge.getTupleNwLength();
+		
+		setCharacteristics(new SensorCharacteristics(getId(), appId, tupleType, transmitDistribution, cpuLength, nwLength, geoLocation));
 	}
+	
+	public Sensor(String name, String tupleType, int userId, String appId, Distribution transmitDistribution, Application application) {
+		super(name);
+		this.setAppId(appId);
+		this.setTransmitDistribution(transmitDistribution);
+		setTupleType(tupleType);
+		setSensorName(tupleType);
+		setUserId(userId);
+		setApplication(application);
+		
+		AppEdge _edge = null;
+		for(AppEdge edge : getApplication().getEdges()){
+			if(edge.getSource().equals(getTupleType()))
+				_edge = edge;
+		}
+		int cpuLength = (int) _edge.getTupleCpuLength();
+		int nwLength = (int) _edge.getTupleNwLength();
+		
+		setCharacteristics(new SensorCharacteristics(getId(), appId, tupleType, transmitDistribution, cpuLength, nwLength, null));
+	}
+	
 	
 	/**
 	 * This constructor is called from the code that generates PhysicalTopology from JSON
@@ -80,7 +116,7 @@ public class Sensor extends SimEntity{
 	
 	public void transmit(){
 		AppEdge _edge = null;
-		for(AppEdge edge : getApp().getEdges()){
+		for(AppEdge edge : getApplication().getEdges()){
 			if(edge.getSource().equals(getTupleType()))
 				_edge = edge;
 		}
@@ -103,7 +139,7 @@ public class Sensor extends SimEntity{
 	}
 	
 	private int updateTimings(String src, String dest){
-		Application application = getApp();
+		Application application = getApplication();
 		for(AppLoop loop : application.getLoops()){
 			if(loop.hasEdge(src, dest)){
 				
@@ -127,6 +163,10 @@ public class Sensor extends SimEntity{
 	@Override
 	public void processEvent(SimEvent ev) {
 		switch(ev.getTag()){
+		case CloudSimTags.RESOURCE_CHARACTERISTICS:
+			int srcId = ((Integer) ev.getData()).intValue();
+			sendNow(srcId, ev.getTag(), getCharacteristics());
+			break;
 		case FogEvents.TUPLE_ACK:
 			//transmit(transmitDistribution.getNextValue());
 			break;
@@ -215,20 +255,28 @@ public class Sensor extends SimEntity{
 		this.controllerId = controllerId;
 	}
 
-	public Application getApp() {
-		return app;
-	}
-
-	public void setApp(Application app) {
-		this.app = app;
-	}
-
 	public Double getLatency() {
 		return latency;
 	}
 
 	public void setLatency(Double latency) {
 		this.latency = latency;
+	}
+
+	public SensorCharacteristics getCharacteristics() {
+		return characteristics;
+	}
+
+	public void setCharacteristics(SensorCharacteristics characteristics) {
+		this.characteristics = characteristics;
+	}
+
+	public Application getApplication() {
+		return application;
+	}
+
+	public void setApplication(Application application) {
+		this.application = application;
 	}
 
 }

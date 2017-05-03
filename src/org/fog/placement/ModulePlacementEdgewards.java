@@ -17,7 +17,7 @@ import org.fog.entities.Sensor;
 import org.fog.entities.Tuple;
 import org.fog.utils.Logger;
 
-public class ModulePlacementEdgewards extends ModulePlacement{
+public class ModulePlacementEdgewards extends ModulePlacementPolicy {
 	
 	protected ModuleMapping moduleMapping;
 	protected List<Sensor> sensors;

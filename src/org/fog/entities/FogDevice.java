@@ -281,9 +281,47 @@ public class FogDevice extends PowerDatacenter {
 			break;
 		case FogEvents.RESOURCE_MGMT:
 			manageResources(ev);
+			break;
+		case FogEvents.TUPLE_FINISHED:
+			System.out.println(getName()+" Received tuple finished ("+FogEvents.TUPLE_FINISHED+") from "+CloudSim.getEntityName(ev.getSource()));
+			processTupleFinished(ev);
+			break;
 		default:
 			break;
 		}
+	}
+	
+	
+	
+	protected void processTupleFinished(SimEvent ev) {
+		Tuple tuple = (Tuple) ev.getData();
+		TimeKeeper.getInstance().tupleEndedExecution(tuple);
+		Application application = getApplicationMap().get(tuple.getAppId());
+		Logger.debug(getName(), "Completed execution of tuple "+tuple.getCloudletId()+"on "+tuple.getDestModuleName());
+		
+		System.out.println("------------"+getName()+"---------------");
+		// TODO Routing is not happening correctly
+		System.out.println("Actual ID " + tuple.getActualTupleId());
+		System.out.println("Tuple type " + tuple.getTupleType());
+		System.out.println("Tuple dst module "+ tuple.getDestModuleName());
+		System.out.println("Requested VM ID : "+tuple.getVmId());
+		System.out.println("Requested User ID : "+tuple.getUserId());
+		for(Vm vm : getVmList()) {
+			System.out.println("VM "+vm.getId() + " & User Id : "+vm.getUserId());
+		}
+		
+		AppModule module = (AppModule) getHost().getVm(tuple.getVmId(), tuple.getUserId());
+		
+		List<Tuple> resultantTuples = application.getResultantTuples(tuple.getDestModuleName(), tuple, getId(), module.getId());
+		
+		for(Tuple resTuple : resultantTuples){
+			resTuple.setModuleCopyMap(new HashMap<String, Integer>(tuple.getModuleCopyMap()));
+			resTuple.getModuleCopyMap().put(module.getName(), module.getId());
+			updateTimingsOnSending(resTuple);
+			sendToSelf(resTuple);
+		}
+		sendNow(tuple.getUserId(), CloudSimTags.CLOUDLET_RETURN, tuple);
+		
 	}
 	
 	/**
@@ -460,8 +498,13 @@ public class FogDevice extends PowerDatacenter {
 					Cloudlet cl = vm.getCloudletScheduler().getNextFinishedCloudlet();
 					if (cl != null) {
 						
+						
+						
 						cloudletCompleted = true;
 						Tuple tuple = (Tuple)cl;
+						System.out.println("Sending event finished "+tuple);
+						sendNow(getId(), FogEvents.TUPLE_FINISHED, tuple);
+						/*
 						TimeKeeper.getInstance().tupleEndedExecution(tuple);
 						Application application = getApplicationMap().get(tuple.getAppId());
 						Logger.debug(getName(), "Completed execution of tuple "+tuple.getCloudletId()+"on "+tuple.getDestModuleName());
@@ -473,6 +516,7 @@ public class FogDevice extends PowerDatacenter {
 							sendToSelf(resTuple);
 						}
 						sendNow(cl.getUserId(), CloudSimTags.CLOUDLET_RETURN, cl);
+						*/
 					}
 				}
 			}
@@ -723,6 +767,8 @@ public class FogDevice extends PowerDatacenter {
 		Tuple tuple = (Tuple)ev.getData();
 		
 		AppModule module = getModuleByName(moduleName);
+		
+		tuple.setVmId(module.getId());
 		
 		if(tuple.getDirection() == Tuple.UP){
 			String srcModule = tuple.getSrcModuleName();

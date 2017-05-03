@@ -19,6 +19,33 @@ import org.fog.utils.FogUtils;
  */
 public class AppModule extends PowerVm{
 
+	private class AppModuleAddress {
+		private int fogDeviceId;
+		private int vmId;
+		
+		public AppModuleAddress(int vmId, int fogDeviceId) {
+			setVmId(vmId);
+			setFogDeviceId(fogDeviceId);
+		}
+		
+		public Pair<Integer, Integer> getAddress() {
+			return new Pair<Integer, Integer>(getVmId(), getFogDeviceId());
+		}
+		
+		public int getFogDeviceId() {
+			return fogDeviceId;
+		}
+		public void setFogDeviceId(int fogDeviceId) {
+			this.fogDeviceId = fogDeviceId;
+		}
+		public int getVmId() {
+			return vmId;
+		}
+		public void setVmId(int vmId) {
+			this.vmId = vmId;
+		}
+	}
+	
 	private String name;
 	private String appId;
 	private Map<Pair<String, String>, SelectivityModel> selectivityMap;
@@ -28,6 +55,9 @@ public class AppModule extends PowerVm{
 	 * If a new instance ID is detected, the number of instances is incremented.  
 	 */
 	private Map<String, List<Integer>> downInstanceIdsMaps;
+	
+	
+	private Map<String, List<AppModuleAddress>> destModules;
 	
 	/**
 	 * Number of instances of this module
@@ -74,7 +104,9 @@ public class AppModule extends PowerVm{
 		setActuatorSubscriptions(new HashMap<String, List<Integer>>());
 		setNumInstances(0);
 		setDownInstanceIdsMaps(new HashMap<String, List<Integer>>());
+		setDestModules(new HashMap<String, List<AppModuleAddress>>());
 	}
+	
 	public AppModule(AppModule operator) {
 		super(FogUtils.generateEntityId(), operator.getUserId(), operator.getMips(), 1, operator.getRam(), operator.getBw(), operator.getSize(), 1, operator.getVmm(), new TupleScheduler(operator.getMips(), 1), operator.getSchedulingInterval());
 		setName(operator.getName());
@@ -87,6 +119,7 @@ public class AppModule extends PowerVm{
 		setCurrentAllocatedSize(0);
 		setSelectivityMap(operator.getSelectivityMap());
 		setDownInstanceIdsMaps(new HashMap<String, List<Integer>>());
+		setDestModules(new HashMap<String, List<AppModuleAddress>>());
 	}
 	
 	public void subscribeActuator(int id, String tuplyType){
@@ -130,5 +163,11 @@ public class AppModule extends PowerVm{
 	}
 	public void setNumInstances(int numInstances) {
 		this.numInstances = numInstances;
+	}
+	public Map<String, List<AppModuleAddress>> getDestModules() {
+		return destModules;
+	}
+	public void setDestModules(Map<String, List<AppModuleAddress>> destModules) {
+		this.destModules = destModules;
 	}
 }

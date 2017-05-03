@@ -13,7 +13,7 @@ import org.fog.entities.FogDevice;
 import org.fog.entities.Sensor;
 import org.fog.entities.Tuple;
 
-public class ModulePlacementOnlyCloud extends ModulePlacement{
+public class ModulePlacementOnlyCloud extends ModulePlacementPolicy {
 	
 	private List<Sensor> sensors;
 	private List<Actuator> actuators;

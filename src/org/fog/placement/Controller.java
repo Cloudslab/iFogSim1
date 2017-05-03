@@ -8,7 +8,6 @@ import java.util.Map;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEvent;
-import org.fog.application.AppEdge;
 import org.fog.application.AppLoop;
 import org.fog.application.AppModule;
 import org.fog.application.Application;
@@ -32,13 +31,13 @@ public class Controller extends SimEntity{
 	private Map<String, Application> applications;
 	private Map<String, Integer> appLaunchDelays;
 
-	private Map<String, ModulePlacement> appModulePlacementPolicy;
+	private Map<String, ModulePlacementPolicy> appModulePlacementPolicy;
 	
 	public Controller(String name, List<FogDevice> fogDevices, List<Sensor> sensors, List<Actuator> actuators) {
 		super(name);
 		this.applications = new HashMap<String, Application>();
 		setAppLaunchDelays(new HashMap<String, Integer>());
-		setAppModulePlacementPolicy(new HashMap<String, ModulePlacement>());
+		setAppModulePlacementPolicy(new HashMap<String, ModulePlacementPolicy>());
 		for(FogDevice fogDevice : fogDevices){
 			fogDevice.setControllerId(getId());
 		}
@@ -183,7 +182,7 @@ public class Controller extends SimEntity{
 	public void shutdownEntity() {	
 	}
 	
-	public void submitApplication(Application application, int delay, ModulePlacement modulePlacement){
+	/*public void submitApplication(Application application, int delay, ModulePlacement modulePlacement){
 		FogUtils.appIdToGeoCoverageMap.put(application.getAppId(), application.getGeoCoverage());
 		getApplications().put(application.getAppId(), application);
 		getAppLaunchDelays().put(application.getAppId(), delay);
@@ -206,11 +205,11 @@ public class Controller extends SimEntity{
 			}
 		}	
 	}
-	
-	public void submitApplication(Application application, ModulePlacement modulePlacement){
+	*/
+	/*public void submitApplication(Application application, ModulePlacement modulePlacement){
 		submitApplication(application, 0, modulePlacement);
 	}
-	
+	*/
 	
 	private void processAppSubmit(SimEvent ev){
 		Application app = (Application) ev.getData();
@@ -222,7 +221,7 @@ public class Controller extends SimEntity{
 		FogUtils.appIdToGeoCoverageMap.put(application.getAppId(), application.getGeoCoverage());
 		getApplications().put(application.getAppId(), application);
 		
-		ModulePlacement modulePlacement = getAppModulePlacementPolicy().get(application.getAppId());
+		ModulePlacementPolicy modulePlacement = getAppModulePlacementPolicy().get(application.getAppId());
 		for(FogDevice fogDevice : fogDevices){
 			sendNow(fogDevice.getId(), FogEvents.ACTIVE_APP_UPDATE, application);
 		}
@@ -278,11 +277,11 @@ public class Controller extends SimEntity{
 		this.actuators = actuators;
 	}
 
-	public Map<String, ModulePlacement> getAppModulePlacementPolicy() {
+	public Map<String, ModulePlacementPolicy> getAppModulePlacementPolicy() {
 		return appModulePlacementPolicy;
 	}
 
-	public void setAppModulePlacementPolicy(Map<String, ModulePlacement> appModulePlacementPolicy) {
+	public void setAppModulePlacementPolicy(Map<String, ModulePlacementPolicy> appModulePlacementPolicy) {
 		this.appModulePlacementPolicy = appModulePlacementPolicy;
 	}
 }

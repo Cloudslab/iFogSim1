@@ -1,22 +1,45 @@
 package org.fog.entities;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.cloudbus.cloudsim.power.PowerDatacenterBroker;
+import org.fog.application.AppEdge;
 import org.fog.application.AppModule;
 import org.fog.application.Application;
+import org.fog.placement.ModulePlacement;
 import org.fog.placement.ModulePlacementPolicy;
+import org.fog.utils.AppModuleAddress;
 import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
 
 public class FogBroker extends PowerDatacenterBroker{
 
+	class ModuleLinks {
+		Map<AppModule, Integer> modulesToDispatch;
+		Map<Integer, AppModuleAddress> endpointConnection;
+		public Map<AppModule, Integer> getModulesToDispatch() {
+			return modulesToDispatch;
+		}
+		public void setModulesToDispatch(Map<AppModule, Integer> modulesToDispatch) {
+			this.modulesToDispatch = modulesToDispatch;
+		}
+		public Map<Integer, AppModuleAddress> getEndpointConnection() {
+			return endpointConnection;
+		}
+		public void setEndpointConnection(
+				Map<Integer, AppModuleAddress> endpointConnection) {
+			this.endpointConnection = endpointConnection;
+		}
+	}
+	
 	List<Integer> fogDeviceIds;
 	List<Integer> sensorIds;
 	List<Integer> actuatorIds;
@@ -44,13 +67,6 @@ public class FogBroker extends PowerDatacenterBroker{
 	@Override
 	public void startEntity() {
 		schedule(getId(), 0, CloudSimTags.RESOURCE_CHARACTERISTICS_REQUEST);
-		for(String appId : getApplications().keySet()){
-			if(getAppLaunchDelays().get(appId)==0)
-				deployApplication(appId);
-			else
-				send(getId(), getAppLaunchDelays().get(appId), FogEvents.APP_SUBMIT, appId);
-		}
-
 	};
 	
 	/**
@@ -87,10 +103,18 @@ public class FogBroker extends PowerDatacenterBroker{
 			processFogDeviceResourceCharacteristics(ev);
 		} else if (getSensorIds().contains(srcId)) {
 			processSensorResourceCharacteristics(ev);
-		} else if (getActuatorIds().contains(actuatorIds)) {
+		} else if (getActuatorIds().contains(srcId)) {
 			processActuatorResourceCharacteristics(ev);
 		} else {
 			// New entity joining maybe
+		}
+		
+		if (getFogDeviceCharacteristics().size() + getSensorCharacteristics().size() + getActuatorCharacteristics().size()
+				== getFogDeviceIds().size() + getSensorIds().size() + getActuatorIds().size()) {
+			// All devices responded
+			for (String appId : getApplications().keySet()) {
+				deployApplication(appId);
+			}
 		}
 	}
 	
@@ -104,6 +128,7 @@ public class FogBroker extends PowerDatacenterBroker{
 	
 	protected void processActuatorResourceCharacteristics(SimEvent ev) {
 		actuatorCharacteristics.put(ev.getSource(), (ActuatorCharacteristics)ev.getData());
+		System.out.println("Actuator char : "+ev.getData());
 	}
 	
 	public void submitApplication(Application application, double delay, ModulePlacementPolicy modulePlacement){
@@ -112,16 +137,6 @@ public class FogBroker extends PowerDatacenterBroker{
 		getAppModulePlacementPolicy().put(application.getAppId(), modulePlacement);
 		getAppLaunchDelays().put(application.getAppId(), delay);
 		// TODO Assign actuators to VMs 
-		
-		/*for(AppEdge edge : application.getEdges()){
-			if(edge.getEdgeType() == AppEdge.ACTUATOR){
-				String moduleName = edge.getSource();
-				for(Actuator actuator : getActuators()){
-					if(actuator.getActuatorType().equalsIgnoreCase(edge.getDestination()))
-						application.getModuleByName(moduleName).subscribeActuator(actuator.getId(), edge.getTupleType());
-				}
-			}
-		}*/
 		
 		send(getId(), delay, FogEvents.APP_SUBMIT, application.getAppId());
 	}
@@ -134,15 +149,85 @@ public class FogBroker extends PowerDatacenterBroker{
 			sendNow(fogDeviceId, FogEvents.ACTIVE_APP_UPDATE, application);
 		}
 		
-		Map<Integer, List<AppModule>> deviceToModuleMap = modulePlacementPolicy.getDeviceToModuleMap();
-		for(Integer deviceId : deviceToModuleMap.keySet()){
-			for(AppModule module : deviceToModuleMap.get(deviceId)){
-				sendNow(deviceId, FogEvents.APP_SUBMIT, application);
-				sendNow(deviceId, FogEvents.LAUNCH_MODULE, module);
-			}
+		List<FogDeviceCharacteristics> fogDeviceCharacteristics = new ArrayList<FogDeviceCharacteristics>();
+		for (Integer f : getFogDeviceCharacteristics().keySet())
+			fogDeviceCharacteristics.add(getFogDeviceCharacteristics().get(f));
+		List<SensorCharacteristics> sensorCharacteristics = new ArrayList<SensorCharacteristics>();
+		for (Integer s : getSensorCharacteristics().keySet())
+			sensorCharacteristics.add(getSensorCharacteristics().get(s));
+		List<ActuatorCharacteristics> actuatorCharacteristics = new ArrayList<ActuatorCharacteristics>();
+		for (Integer a : getActuatorCharacteristics().keySet())
+			actuatorCharacteristics.add(getActuatorCharacteristics().get(a));
+		
+		List<ModulePlacement> placements = modulePlacementPolicy.computeModulePlacements(fogDeviceCharacteristics, sensorCharacteristics, actuatorCharacteristics);
+		
+		 ModuleLinks moduleLinks = linkModules(placements, application);
+		 
+		 Map<AppModule, Integer> modulesToDispatch = moduleLinks.getModulesToDispatch();
+		 
+		for (Entry<AppModule, Integer> dispatch : modulesToDispatch.entrySet()) {
+			sendNow(dispatch.getValue(), FogEvents.APP_SUBMIT, application);
+			sendNow(dispatch.getValue(), FogEvents.LAUNCH_MODULE, dispatch.getKey());
+		}
+
+		for (Integer endpointId : moduleLinks.getEndpointConnection().keySet()) {
+			sendNow(endpointId, FogEvents.ENDPOINT_CONNECTION, moduleLinks.getEndpointConnection().get(endpointId));
 		}
 	}
 	
+	private ModuleLinks linkModules(List<ModulePlacement> placements,
+			Application application) {
+		// TODO This function needs thorough testing
+		Map<AppModule, Integer> dispatchMapping = new HashMap<AppModule, Integer>();
+		ModuleLinks moduleLinks = new ModuleLinks();
+		moduleLinks.setEndpointConnection(new HashMap<Integer, AppModuleAddress>());
+		for (ModulePlacement placement : placements) {
+			Map<String, AppModule> linkedModules = new HashMap<String, AppModule>();
+			for (Entry<String, Integer> mapping : placement.getPlacementMap().entrySet()) {
+				AppModule moduleToDispatch = new AppModule(application.getModuleByName(mapping.getKey()));
+				linkedModules.put(mapping.getKey(), moduleToDispatch);
+			}
+			
+			for (AppEdge e : application.getEdges()) {
+				String srcModule = e.getSource();
+				String dstModule = e.getDestination();
+				
+				int dstVmId = linkedModules.get(dstModule).getId();
+				int dstDeviceId = placement.getMappedDeviceId(dstModule);
+
+				if (e.getEdgeType() != AppEdge.MODULE) continue;
+				
+				System.out.println(linkedModules.get(srcModule));
+				linkedModules.get(srcModule).addDestModule(e.getTupleType(), new AppModuleAddress(dstVmId, dstDeviceId));
+			}
+			
+			for (String sensorType : placement.getSensorIds().keySet()) {
+				AppEdge edge = application.getEdgeMap().get(sensorType);
+				String dstModule = edge.getDestination();
+				AppModuleAddress addr = new AppModuleAddress(linkedModules.get(dstModule).getId(), placement.getMappedDeviceId(dstModule));
+				for (Integer sensorId : placement.getSensorIds().get(sensorType)) {
+					moduleLinks.getEndpointConnection().put(sensorId, addr);
+				}
+			}
+			
+			for (String actuatorType : placement.getActuatorIds().keySet()) {
+				AppEdge edge = application.getEdgeMap().get(actuatorType);
+				String srcModule = edge.getSource();
+				AppModuleAddress addr = new AppModuleAddress(linkedModules.get(srcModule).getId(), placement.getMappedDeviceId(srcModule));
+				for (Integer actuatorId : placement.getActuatorIds().get(actuatorType)) {
+					moduleLinks.getEndpointConnection().put(actuatorId, addr);
+				}
+			}
+			
+			for (String moduleName : linkedModules.keySet()) {
+				dispatchMapping.put(linkedModules.get(moduleName), placement.getMappedDeviceId(moduleName));
+			}
+		}
+		
+		moduleLinks.setModulesToDispatch(dispatchMapping);
+		return moduleLinks;
+	}
+
 	@Override
 	public void processEvent(SimEvent ev) {
 		switch(ev.getTag()) {

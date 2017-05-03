@@ -29,6 +29,7 @@ import org.fog.placement.Controller;
 import org.fog.placement.ModuleMapping;
 import org.fog.placement.ModulePlacementEdgewards;
 import org.fog.placement.ModulePlacementMapping;
+import org.fog.placement.ModulePlacementOnlyCloudNew;
 import org.fog.policy.AppModuleAllocationPolicy;
 import org.fog.scheduler.StreamOperatorScheduler;
 import org.fog.utils.FogLinearPowerModel;
@@ -108,8 +109,7 @@ public class OnlyUpVRGameFog {
 			broker.setActuatorIds(getIds(actuators));
 			
 			broker.submitApplication(application, 0, 
-					(CLOUD)?(new ModulePlacementMapping(fogDevices, application, moduleMapping))
-							:(new ModulePlacementEdgewards(fogDevices, sensors, actuators, application, moduleMapping)));
+					new ModulePlacementOnlyCloudNew(fogDevices, sensors, actuators, application));
 			
 			TimeKeeper.getInstance().setSimulationStartTime(Calendar.getInstance().getTimeInMillis());
 
@@ -138,9 +138,9 @@ public class OnlyUpVRGameFog {
 	 * @param appId
 	 */
 	private static void createFogDevices(int userId, String appId, Application application) {
-		FogDevice cloud = createFogDevice("cloud", 44800, 40000, 100, 10000, 0, 0.01, 16*103, 16*83.25); // creates the fog device Cloud at the apex of the hierarchy with level=0
+		FogDevice cloud = createFogDevice("cloud", true, 44800, 40000, 100, 10000, 0, 0.01, 16*103, 16*83.25); // creates the fog device Cloud at the apex of the hierarchy with level=0
 		cloud.setParentId(-1);
-		FogDevice proxy = createFogDevice("proxy-server", 2800, 4000, 10000, 10000, 1, 0.0, 107.339, 83.4333); // creates the fog device Proxy Server (level=1)
+		FogDevice proxy = createFogDevice("proxy-server", false, 2800, 4000, 10000, 10000, 1, 0.0, 107.339, 83.4333); // creates the fog device Proxy Server (level=1)
 		proxy.setParentId(cloud.getId()); // setting Cloud as parent of the Proxy Server
 		proxy.setUplinkLatency(100); // latency of connection from Proxy Server to the Cloud is 100 ms
 		
@@ -154,7 +154,7 @@ public class OnlyUpVRGameFog {
 	}
 
 	private static FogDevice addGw(String id, int userId, String appId, int parentId, Application application){
-		FogDevice dept = createFogDevice("d-"+id, 2800, 4000, 10000, 10000, 1, 0.0, 107.339, 83.4333);
+		FogDevice dept = createFogDevice("d-"+id, false, 2800, 4000, 10000, 10000, 1, 0.0, 107.339, 83.4333);
 		fogDevices.add(dept);
 		dept.setParentId(parentId);
 		dept.setUplinkLatency(4); // latency of connection between gateways and proxy server is 4 ms
@@ -168,7 +168,7 @@ public class OnlyUpVRGameFog {
 	}
 	
 	private static FogDevice addMobile(String id, int userId, String appId, int parentId, Application application){
-		FogDevice mobile = createFogDevice("m-"+id, 1000, 1000, 10000, 270, 3, 0, 87.53, 82.44);
+		FogDevice mobile = createFogDevice("m-"+id, false, 1000, 1000, 10000, 270, 3, 0, 87.53, 82.44);
 		mobile.setParentId(parentId);
 		Sensor eegSensor = new Sensor("s-"+id, "EEG", userId, appId, new DeterministicDistribution(EEG_TRANSMISSION_TIME), application); // inter-transmission time of EEG sensor follows a deterministic distribution
 		sensors.add(eegSensor);
@@ -194,7 +194,7 @@ public class OnlyUpVRGameFog {
 	 * @param idlePower
 	 * @return
 	 */
-	private static FogDevice createFogDevice(String nodeName, long mips,
+	private static FogDevice createFogDevice(String nodeName, boolean isCloud, long mips,
 			int ram, long upBw, long downBw, int level, double ratePerMips, double busyPower, double idlePower) {
 		
 		List<Pe> peList = new ArrayList<Pe>();
@@ -231,7 +231,7 @@ public class OnlyUpVRGameFog {
 		LinkedList<Storage> storageList = new LinkedList<Storage>(); // we are not adding SAN
 													// devices by now
 
-		FogDeviceCharacteristics characteristics = new FogDeviceCharacteristics(
+		FogDeviceCharacteristics characteristics = new FogDeviceCharacteristics(isCloud, 
 				arch, os, vmm, host, time_zone, cost, costPerMem,
 				costPerStorage, costPerBw);
 
@@ -279,7 +279,7 @@ public class OnlyUpVRGameFog {
 		 * Defining the input-output relationships (represented by selectivity) of the application modules. 
 		 */
 		application.addTupleMapping("client", "EEG", "_SENSOR", new FractionalSelectivity(0.9)); // 0.9 tuples of type _SENSOR are emitted by Client module per incoming tuple of type EEG 
-		
+		application.addTupleMapping("concentration_calculator", "_SENSOR", "PLAYER_GAME_STATE", new FractionalSelectivity(0.9));
 		/*
 		 * Defining application loops to monitor the latency of. 
 		 * Here, we add only one loop for monitoring : EEG(sensor) -> Client -> Concentration Calculator -> Client -> DISPLAY (actuator)

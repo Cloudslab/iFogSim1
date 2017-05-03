@@ -40,6 +40,7 @@ public class Actuator extends SimEntity{
 		setUserId(userId);
 		setActuatorType(actuatorType);
 		setApplication(application);
+		setCharacteristics(new ActuatorCharacteristics(getId(), null, actuatorType));
 	}
 
 	public Actuator(String name, int userId, String appId, String actuatorType) {
@@ -47,6 +48,7 @@ public class Actuator extends SimEntity{
 		this.setAppId(appId);
 		setUserId(userId);
 		setActuatorType(actuatorType);
+		setCharacteristics(new ActuatorCharacteristics(getId(), null, actuatorType));
 	}
 
 	

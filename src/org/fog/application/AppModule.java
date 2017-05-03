@@ -10,6 +10,7 @@ import org.cloudbus.cloudsim.CloudletScheduler;
 import org.cloudbus.cloudsim.power.PowerVm;
 import org.fog.application.selectivity.SelectivityModel;
 import org.fog.scheduler.TupleScheduler;
+import org.fog.utils.AppModuleAddress;
 import org.fog.utils.FogUtils;
 
 /**
@@ -18,34 +19,6 @@ import org.fog.utils.FogUtils;
  *
  */
 public class AppModule extends PowerVm{
-
-	private class AppModuleAddress {
-		private int fogDeviceId;
-		private int vmId;
-		
-		public AppModuleAddress(int vmId, int fogDeviceId) {
-			setVmId(vmId);
-			setFogDeviceId(fogDeviceId);
-		}
-		
-		public Pair<Integer, Integer> getAddress() {
-			return new Pair<Integer, Integer>(getVmId(), getFogDeviceId());
-		}
-		
-		public int getFogDeviceId() {
-			return fogDeviceId;
-		}
-		public void setFogDeviceId(int fogDeviceId) {
-			this.fogDeviceId = fogDeviceId;
-		}
-		public int getVmId() {
-			return vmId;
-		}
-		public void setVmId(int vmId) {
-			this.vmId = vmId;
-		}
-	}
-	
 	private String name;
 	private String appId;
 	private Map<Pair<String, String>, SelectivityModel> selectivityMap;
@@ -56,7 +29,9 @@ public class AppModule extends PowerVm{
 	 */
 	private Map<String, List<Integer>> downInstanceIdsMaps;
 	
-	
+	/**
+	 * Map from tuple type to addresses of modules that will receive those messages
+	 */
 	private Map<String, List<AppModuleAddress>> destModules;
 	
 	/**
@@ -169,5 +144,10 @@ public class AppModule extends PowerVm{
 	}
 	public void setDestModules(Map<String, List<AppModuleAddress>> destModules) {
 		this.destModules = destModules;
+	}
+	public void addDestModule(String edge, AppModuleAddress destModule) {
+		if (! getDestModules().containsKey(edge))
+			getDestModules().put(edge, new ArrayList<AppModuleAddress>());
+		getDestModules().get(edge).add(destModule);
 	}
 }

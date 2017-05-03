@@ -10,6 +10,7 @@ import org.cloudbus.cloudsim.core.SimEvent;
 import org.fog.application.AppEdge;
 import org.fog.application.AppLoop;
 import org.fog.application.Application;
+import org.fog.utils.AppModuleAddress;
 import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
 import org.fog.utils.GeoLocation;
@@ -32,6 +33,7 @@ public class Sensor extends SimEntity{
 	private double latency;
 	private SensorCharacteristics characteristics;
 	private Application application;
+	private AppModuleAddress destModuleAddr;
 	
 	public Sensor(String name, int userId, String appId, int gatewayDeviceId, double latency, GeoLocation geoLocation, 
 			Distribution transmitDistribution, int cpuLength, int nwLength, String tupleType, String destModuleName, Application application) {
@@ -48,6 +50,7 @@ public class Sensor extends SimEntity{
 		setLatency(latency);
 		setApplication(application);
 		setCharacteristics(new SensorCharacteristics(getId(), appId, tupleType, transmitDistribution, cpuLength, nwLength, geoLocation));
+		setDestModuleAddr(null);
 	}
 	
 	public Sensor(String name, int userId, String appId, int gatewayDeviceId, double latency, GeoLocation geoLocation, 
@@ -73,6 +76,7 @@ public class Sensor extends SimEntity{
 		int nwLength = (int) _edge.getTupleNwLength();
 		
 		setCharacteristics(new SensorCharacteristics(getId(), appId, tupleType, transmitDistribution, cpuLength, nwLength, geoLocation));
+		setDestModuleAddr(null);
 	}
 	
 	public Sensor(String name, String tupleType, int userId, String appId, Distribution transmitDistribution, Application application) {
@@ -93,6 +97,7 @@ public class Sensor extends SimEntity{
 		int nwLength = (int) _edge.getTupleNwLength();
 		
 		setCharacteristics(new SensorCharacteristics(getId(), appId, tupleType, transmitDistribution, cpuLength, nwLength, null));
+		setDestModuleAddr(null);
 	}
 	
 	
@@ -112,9 +117,12 @@ public class Sensor extends SimEntity{
 		setTupleType(tupleType);
 		setSensorName(tupleType);
 		setUserId(userId);
+		setDestModuleAddr(null);
 	}
 	
 	public void transmit(){
+		if (getDestModuleAddr() == null) return;
+		
 		AppEdge _edge = null;
 		for(AppEdge edge : getApplication().getEdges()){
 			if(edge.getSource().equals(getTupleType()))
@@ -135,7 +143,9 @@ public class Sensor extends SimEntity{
 		int actualTupleId = updateTimings(getSensorName(), tuple.getDestModuleName());
 		tuple.setActualTupleId(actualTupleId);
 		
-		send(gatewayDeviceId, getLatency(), FogEvents.TUPLE_ARRIVAL,tuple);
+		tuple.setVmId(getDestModuleAddr().getVmId());
+		
+		send(getDestModuleAddr().getFogDeviceId(), getLatency(), FogEvents.TUPLE_ARRIVAL,tuple);
 	}
 	
 	private int updateTimings(String src, String dest){
@@ -174,8 +184,16 @@ public class Sensor extends SimEntity{
 			transmit();
 			send(getId(), getTransmitDistribution().getNextValue(), FogEvents.EMIT_TUPLE);
 			break;
+		case FogEvents.ENDPOINT_CONNECTION:
+			AppModuleAddress addr = (AppModuleAddress) ev.getData();
+			processSensorConnection(addr);
+			break;
 		}
 			
+	}
+
+	private void processSensorConnection(AppModuleAddress addr) {
+		setDestModuleAddr(addr);
 	}
 
 	@Override
@@ -277,6 +295,14 @@ public class Sensor extends SimEntity{
 
 	public void setApplication(Application application) {
 		this.application = application;
+	}
+
+	public AppModuleAddress getDestModuleAddr() {
+		return destModuleAddr;
+	}
+
+	public void setDestModuleAddr(AppModuleAddress destModuleAddr) {
+		this.destModuleAddr = destModuleAddr;
 	}
 
 }

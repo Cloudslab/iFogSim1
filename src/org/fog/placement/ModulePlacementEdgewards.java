@@ -12,8 +12,11 @@ import org.fog.application.AppModule;
 import org.fog.application.Application;
 import org.fog.application.selectivity.SelectivityModel;
 import org.fog.entities.Actuator;
+import org.fog.entities.ActuatorCharacteristics;
 import org.fog.entities.FogDevice;
+import org.fog.entities.FogDeviceCharacteristics;
 import org.fog.entities.Sensor;
+import org.fog.entities.SensorCharacteristics;
 import org.fog.entities.Tuple;
 import org.fog.utils.Logger;
 
@@ -33,6 +36,7 @@ public class ModulePlacementEdgewards extends ModulePlacementPolicy {
 	
 	public ModulePlacementEdgewards(List<FogDevice> fogDevices, List<Sensor> sensors, List<Actuator> actuators, 
 			Application application, ModuleMapping moduleMapping){
+		super();
 		this.setFogDevices(fogDevices);
 		this.setApplication(application);
 		this.setModuleMapping(moduleMapping);
@@ -521,5 +525,14 @@ public class ModulePlacementEdgewards extends ModulePlacementPolicy {
 	public void setCurrentModuleInstanceNum(
 			Map<Integer, Map<String, Integer>> currentModuleInstanceNum) {
 		this.currentModuleInstanceNum = currentModuleInstanceNum;
+	}
+
+	@Override
+	public List<ModulePlacement> computeModulePlacements(
+			List<FogDeviceCharacteristics> fogDeviceCharacteristics,
+			List<SensorCharacteristics> sensorCharacteristics,
+			List<ActuatorCharacteristics> actuatorCharacteristics) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

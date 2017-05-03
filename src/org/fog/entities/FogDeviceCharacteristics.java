@@ -20,6 +20,9 @@ import org.fog.utils.GeoCoverage;
 
 public class FogDeviceCharacteristics extends DatacenterCharacteristics{
 
+	/** Denotes if device is a cloud datacenter **/
+	private boolean isCloudDatacenter;
+	
 	/** The geographical coverage of the fog device */
 	private GeoCoverage geoCoverage;
 	
@@ -98,6 +101,7 @@ public class FogDeviceCharacteristics extends DatacenterCharacteristics{
 	 */
 	@SuppressWarnings("serial")
 	public FogDeviceCharacteristics(
+			boolean isCloudDatacenter,
 			String architecture,
 			String os,
 			String vmm,
@@ -108,6 +112,7 @@ public class FogDeviceCharacteristics extends DatacenterCharacteristics{
 			double costPerStorage,
 			double costPerBw) {
 		super(architecture, os, vmm, new ArrayList<Host>(){{add(host);}} , timeZone, costPerSec, costPerMem, costPerStorage, costPerBw);
+		setCloudDatacenter(isCloudDatacenter);
 		setHostList(new ArrayList<Host>(){{add(host);}});
 		setId(-1);
 		setArchitecture(architecture);
@@ -571,5 +576,13 @@ public class FogDeviceCharacteristics extends DatacenterCharacteristics{
 
 	public void setGeoCoverage(GeoCoverage geoCoverage) {
 		this.geoCoverage = geoCoverage;
+	}
+
+	public boolean isCloudDatacenter() {
+		return isCloudDatacenter;
+	}
+
+	public void setCloudDatacenter(boolean isCloudDatacenter) {
+		this.isCloudDatacenter = isCloudDatacenter;
 	}
 }

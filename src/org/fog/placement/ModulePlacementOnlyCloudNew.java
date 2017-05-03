@@ -1,5 +1,6 @@
 package org.fog.placement;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,13 +17,13 @@ import org.fog.entities.Sensor;
 import org.fog.entities.SensorCharacteristics;
 import org.fog.entities.Tuple;
 
-public class ModulePlacementOnlyCloud extends ModulePlacementPolicy {
+public class ModulePlacementOnlyCloudNew extends ModulePlacementPolicy {
 	
 	private List<Sensor> sensors;
 	private List<Actuator> actuators;
 	private int cloudId;
 	
-	public ModulePlacementOnlyCloud(List<FogDevice> fogDevices, List<Sensor> sensors, List<Actuator> actuators, Application application){
+	public ModulePlacementOnlyCloudNew(List<FogDevice> fogDevices, List<Sensor> sensors, List<Actuator> actuators, Application application){
 		super();
 		this.setFogDevices(fogDevices);
 		this.setApplication(application);
@@ -32,8 +33,8 @@ public class ModulePlacementOnlyCloud extends ModulePlacementPolicy {
 		this.setDeviceToModuleMap(new HashMap<Integer, List<AppModule>>());
 		this.setModuleInstanceCountMap(new HashMap<Integer, Map<String, Integer>>());
 		this.cloudId = CloudSim.getEntityId("cloud");
-		mapModules();
-		computeModuleInstanceCounts();
+		//mapModules();
+		//computeModuleInstanceCounts();
 	}
 	
 	private void computeModuleInstanceCounts(){
@@ -108,7 +109,38 @@ public class ModulePlacementOnlyCloud extends ModulePlacementPolicy {
 			List<FogDeviceCharacteristics> fogDeviceCharacteristics,
 			List<SensorCharacteristics> sensorCharacteristics,
 			List<ActuatorCharacteristics> actuatorCharacteristics) {
-		// TODO Auto-generated method stub
-		return null;
+			
+		for (FogDeviceCharacteristics fc : fogDeviceCharacteristics) {
+			getFogDeviceCharacteristics().put(fc.getId(), fc);
+		}
+		for (SensorCharacteristics sc : sensorCharacteristics) {
+			getSensorCharacteristics().put(sc.getId(), sc);
+		}
+		for (ActuatorCharacteristics ac : actuatorCharacteristics) {
+			getActuatorCharacteristics().put(ac.getId(), ac);
+		}
+		
+		FogDeviceCharacteristics cloud = null;
+		for (Integer fc : getFogDeviceCharacteristics().keySet()) {
+			if (getFogDeviceCharacteristics().get(fc).isCloudDatacenter())
+				cloud = getFogDeviceCharacteristics().get(fc);
+		}
+		
+		if (cloud == null)
+			return null;
+		
+		List<ModulePlacement> placements = new ArrayList<ModulePlacement>();
+		
+		for (int sensorId : getSensorCharacteristics().keySet()) {
+			ModulePlacement placement = new ModulePlacement();
+			placement.addSensorId(getSensorCharacteristics().get(sensorId).getTupleType(), sensorId);
+			for (AppModule module : getApplication().getModules()) {
+				placement.addMapping(module.getName(), cloud.getId());
+				System.out.println("Cloud ID = "+cloud.getId());
+			}
+			placements.add(placement);
+		}
+		
+		return placements;
 	}
 }

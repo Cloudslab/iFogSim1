@@ -6,7 +6,10 @@ import java.util.Map;
 
 import org.fog.application.AppModule;
 import org.fog.application.Application;
+import org.fog.entities.ActuatorCharacteristics;
 import org.fog.entities.FogDevice;
+import org.fog.entities.FogDeviceCharacteristics;
+import org.fog.entities.SensorCharacteristics;
 
 public class ModulePlacementMapping extends ModulePlacementPolicy {
 
@@ -30,6 +33,7 @@ public class ModulePlacementMapping extends ModulePlacementPolicy {
 
 	public ModulePlacementMapping(List<FogDevice> fogDevices, Application application, 
 			ModuleMapping moduleMapping){
+		super();
 		this.setFogDevices(fogDevices);
 		this.setApplication(application);
 		this.setModuleMapping(moduleMapping);
@@ -41,7 +45,6 @@ public class ModulePlacementMapping extends ModulePlacementPolicy {
 		mapModules();
 	}
 	
-	
 	public ModuleMapping getModuleMapping() {
 		return moduleMapping;
 	}
@@ -49,5 +52,12 @@ public class ModulePlacementMapping extends ModulePlacementPolicy {
 		this.moduleMapping = moduleMapping;
 	}
 
-	
+	@Override
+	public List<ModulePlacement> computeModulePlacements(
+			List<FogDeviceCharacteristics> fogDeviceCharacteristics,
+			List<SensorCharacteristics> sensorCharacteristics,
+			List<ActuatorCharacteristics> actuatorCharacteristics) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

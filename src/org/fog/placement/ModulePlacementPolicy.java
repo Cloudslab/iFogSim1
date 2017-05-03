@@ -1,6 +1,7 @@
 package org.fog.placement;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,8 +9,11 @@ import org.cloudbus.cloudsim.core.CloudSim;
 import org.fog.application.AppModule;
 import org.fog.application.Application;
 import org.fog.entities.Actuator;
+import org.fog.entities.ActuatorCharacteristics;
 import org.fog.entities.FogDevice;
+import org.fog.entities.FogDeviceCharacteristics;
 import org.fog.entities.Sensor;
+import org.fog.entities.SensorCharacteristics;
 
 public abstract class ModulePlacementPolicy {
 	
@@ -23,11 +27,20 @@ public abstract class ModulePlacementPolicy {
 	private Map<Integer, List<AppModule>> deviceToModuleMap;
 	private Map<Integer, Map<String, Integer>> moduleInstanceCountMap;
 	
+	private Map<Integer, FogDeviceCharacteristics> fogDeviceCharacteristics;
+	private Map<Integer, SensorCharacteristics> sensorCharacteristics;
+	private Map<Integer, ActuatorCharacteristics> actuatorCharacteristics;
+	
 	protected abstract void mapModules();
 	
-	/*protected ModulePlacementPolicy(List<FogDevice> fogDevices, List<Sensor> sensors, List<Actuator> actuators) {
-		
-	}*/
+	protected ModulePlacementPolicy() {
+		setFogDeviceCharacteristics(new HashMap<Integer, FogDeviceCharacteristics>());
+		setSensorCharacteristics(new HashMap<Integer, SensorCharacteristics>());
+		setActuatorCharacteristics(new HashMap<Integer, ActuatorCharacteristics>());
+	}
+
+	public abstract List<ModulePlacement> computeModulePlacements(List<FogDeviceCharacteristics> fogDeviceCharacteristics, 
+			List<SensorCharacteristics> sensorCharacteristics, List<ActuatorCharacteristics> actuatorCharacteristics);
 	
 	protected boolean canBeCreated(FogDevice fogDevice, AppModule module){
 		return fogDevice.getVmAllocationPolicy().allocateHostForVm(module);
@@ -124,6 +137,30 @@ public abstract class ModulePlacementPolicy {
 
 	public void setModuleInstanceCountMap(Map<Integer, Map<String, Integer>> moduleInstanceCountMap) {
 		this.moduleInstanceCountMap = moduleInstanceCountMap;
+	}
+
+	public Map<Integer, FogDeviceCharacteristics> getFogDeviceCharacteristics() {
+		return fogDeviceCharacteristics;
+	}
+
+	public void setFogDeviceCharacteristics(Map<Integer, FogDeviceCharacteristics> fogDeviceCharacteristics) {
+		this.fogDeviceCharacteristics = fogDeviceCharacteristics;
+	}
+
+	public Map<Integer, SensorCharacteristics> getSensorCharacteristics() {
+		return sensorCharacteristics;
+	}
+
+	public void setSensorCharacteristics(Map<Integer, SensorCharacteristics> sensorCharacteristics) {
+		this.sensorCharacteristics = sensorCharacteristics;
+	}
+
+	public Map<Integer, ActuatorCharacteristics> getActuatorCharacteristics() {
+		return actuatorCharacteristics;
+	}
+
+	public void setActuatorCharacteristics(Map<Integer, ActuatorCharacteristics> actuatorCharacteristics) {
+		this.actuatorCharacteristics = actuatorCharacteristics;
 	}
 
 }

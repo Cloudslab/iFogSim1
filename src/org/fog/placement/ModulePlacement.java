@@ -13,8 +13,8 @@ import java.util.Map;
  * @since iFogSim Toolkit 2.0
  */
 public class ModulePlacement {
-	private List<Integer> sensorIds;
-	private List<Integer> actuatorIds;
+	private Map<String, List<Integer>> sensorIds;
+	private Map<String, List<Integer>> actuatorIds;
 	
 	/**
 	 * Map between module name and ID of fog device it is placed on
@@ -22,17 +22,25 @@ public class ModulePlacement {
 	private Map<String, Integer> placementMap;
 	
 	public ModulePlacement() {
-		setSensorIds(new ArrayList<Integer>());
-		setActuatorIds(new ArrayList<Integer>());
+		setSensorIds(new HashMap<String, List<Integer>>());
+		setActuatorIds(new HashMap<String, List<Integer>>());
 		setPlacementMap(new HashMap<String, Integer>());
 	}
 	
-	public void addSensorId(Integer sensorId) {
-		getSensorIds().add(sensorId);
+	public void addSensorId(String sensorType, Integer sensorId) {
+		if (!getSensorIds().containsKey(sensorType))
+			getSensorIds().put(sensorType, new ArrayList<Integer>());
+		getSensorIds().get(sensorType).add(sensorId);
 	}
 	
-	public void addActuatorId(Integer actuatorId) {
-		getActuatorIds().add(actuatorId);
+	public void addActuatorId(String actuatorType, Integer actuatorId) {
+		if (!getActuatorIds().containsKey(actuatorType))
+			getActuatorIds().put(actuatorType, new ArrayList<Integer>());
+		getActuatorIds().get(actuatorType).add(actuatorId);
+	}
+	
+	public void addMapping(String moduleName, Integer deviceId) {
+		placementMap.put(moduleName, deviceId);
 	}
 	
 	public Integer getMappedDeviceId(String moduleName) {
@@ -42,16 +50,16 @@ public class ModulePlacement {
 			return -1;
 	}
 	
-	public List<Integer> getSensorIds() {
+	public Map<String, List<Integer>> getSensorIds() {
 		return sensorIds;
 	}
-	public void setSensorIds(List<Integer> sensorIds) {
+	public void setSensorIds(Map<String, List<Integer>> sensorIds) {
 		this.sensorIds = sensorIds;
 	}
-	public List<Integer> getActuatorIds() {
+	public Map<String, List<Integer>>getActuatorIds() {
 		return actuatorIds;
 	}
-	public void setActuatorIds(List<Integer> actuatorIds) {
+	public void setActuatorIds(Map<String, List<Integer>> actuatorIds) {
 		this.actuatorIds = actuatorIds;
 	}
 	public Map<String, Integer> getPlacementMap() {

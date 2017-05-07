@@ -3,6 +3,7 @@ package org.fog.scheduler;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.CloudletSchedulerTimeShared;
 import org.cloudbus.cloudsim.Consts;
 import org.cloudbus.cloudsim.ResCloudlet;
@@ -34,7 +35,7 @@ public class TupleScheduler extends CloudletSchedulerTimeShared{
 		}
 	}
 	
-	@Override
+	/*@Override
 	public double updateVmProcessing(double currentTime, List<Double> mipsShare) {
 		setCurrentMipsShare(mipsShare);
 		double timeSpam = currentTime - getPreviousTime();
@@ -78,6 +79,29 @@ public class TupleScheduler extends CloudletSchedulerTimeShared{
 
 		setPreviousTime(currentTime);
 		return nextEvent;
+	}*/
+
+	
+	@Override
+	public double cloudletSubmit(Cloudlet cloudlet, double fileTransferTime) {
+		ResCloudlet rcl = new ResCloudlet(cloudlet);
+		rcl.setCloudletStatus(Cloudlet.INEXEC);
+		for (int i = 0; i < cloudlet.getNumberOfPes(); i++) {
+			rcl.setMachineAndPeId(0, i);
+		}
+
+		getCloudletExecList().add(rcl);
+
+		// use the current capacity to estimate the extra amount of
+		// time to file transferring. It must be added to the cloudlet length
+		List<Double> mipsShare = new ArrayList<Double>();
+		for(int i=0;i<getNumPes();i++) 
+			mipsShare.add(getMips());
+		setCurrentMipsShare(mipsShare);
+		double extraSize = getCapacity(getCurrentMipsShare()) * fileTransferTime;
+		long length = (long) (cloudlet.getCloudletLength() + extraSize);
+		cloudlet.setCloudletLength(length);
+		return cloudlet.getCloudletLength() / getCapacity(getCurrentMipsShare());
 	}
 
 	public double getMips() {

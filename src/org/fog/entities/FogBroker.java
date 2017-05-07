@@ -128,7 +128,6 @@ public class FogBroker extends PowerDatacenterBroker{
 	
 	protected void processActuatorResourceCharacteristics(SimEvent ev) {
 		actuatorCharacteristics.put(ev.getSource(), (ActuatorCharacteristics)ev.getData());
-		System.out.println("Actuator char : "+ev.getData());
 	}
 	
 	public void submitApplication(Application application, double delay, ModulePlacementPolicy modulePlacement){
@@ -196,7 +195,6 @@ public class FogBroker extends PowerDatacenterBroker{
 
 					int dstVmId = linkedModules.get(dstModule).getId();
 					int dstDeviceId = placement.getMappedDeviceId(dstModule);
-					System.out.println(linkedModules.get(srcModule));
 					linkedModules.get(srcModule).addDestModule(e.getTupleType(), new AppModuleAddress(dstVmId, dstDeviceId));
 					
 				} else if (e.getEdgeType() == AppEdge.SENSOR) {
@@ -206,7 +204,6 @@ public class FogBroker extends PowerDatacenterBroker{
 					}	
 				} else if (e.getEdgeType() == AppEdge.ACTUATOR) {
 					String actuatorType = dstModule;
-					System.out.println(actuatorType);
 					AppModuleAddress addr = new AppModuleAddress(linkedModules.get(srcModule).getId(), placement.getMappedDeviceId(srcModule));
 					for (Integer actuatorId : placement.getActuatorIds().get(actuatorType)) {
 						linkedModules.get(srcModule).subscribeActuator(actuatorId, e.getTupleType());
@@ -231,11 +228,9 @@ public class FogBroker extends PowerDatacenterBroker{
 			deployApplication(ev.getData().toString());
 			break;
 		case CloudSimTags.RESOURCE_CHARACTERISTICS_REQUEST:
-			System.out.println("Resource characteristics request received");
 			processResourceCharacteristicsRequest(ev);
 			break;
 		case CloudSimTags.RESOURCE_CHARACTERISTICS:
-			System.out.println("Resource characteristics received from ID "+ev.getSource()+" "+CloudSim.getEntityName(ev.getSource()));
 			processResourceCharacteristics(ev);
 			break;
 		}

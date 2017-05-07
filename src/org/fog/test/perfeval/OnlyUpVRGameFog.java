@@ -27,11 +27,9 @@ import org.fog.entities.Sensor;
 import org.fog.entities.Tuple;
 import org.fog.placement.Controller;
 import org.fog.placement.ModuleMapping;
-import org.fog.placement.ModulePlacementEdgewards;
-import org.fog.placement.ModulePlacementMapping;
 import org.fog.placement.ModulePlacementOnlyCloudNew;
 import org.fog.policy.AppModuleAllocationPolicy;
-import org.fog.scheduler.StreamOperatorScheduler;
+import org.fog.scheduler.AppModuleScheduler;
 import org.fog.utils.FogLinearPowerModel;
 import org.fog.utils.FogUtils;
 import org.fog.utils.TimeKeeper;
@@ -50,9 +48,8 @@ public class OnlyUpVRGameFog {
 	static boolean CLOUD = false;
 	
 	static int numOfDepts = 1;
-	static int numOfMobilesPerDept = 2;
-	static double EEG_TRANSMISSION_TIME = 5.1;
-	//static double EEG_TRANSMISSION_TIME = 10;
+	static int numOfMobilesPerDept = 1;
+	static double EEG_TRANSMISSION_TIME = 100;
 	
 	public static void main(String[] args) {
 
@@ -138,7 +135,7 @@ public class OnlyUpVRGameFog {
 	 * @param appId
 	 */
 	private static void createFogDevices(int userId, String appId, Application application) {
-		FogDevice cloud = createFogDevice("cloud", true, 44800, 40000, 100, 10000, 0, 0.01, 16*103, 16*83.25); // creates the fog device Cloud at the apex of the hierarchy with level=0
+		FogDevice cloud = createFogDevice("cloud", true, 4480000, 4000000, 100, 10000, 0, 0.01, 16*103, 16*83.25); // creates the fog device Cloud at the apex of the hierarchy with level=0
 		cloud.setParentId(-1);
 		FogDevice proxy = createFogDevice("proxy-server", false, 2800, 4000, 10000, 10000, 1, 0.0, 107.339, 83.4333); // creates the fog device Proxy Server (level=1)
 		proxy.setParentId(cloud.getId()); // setting Cloud as parent of the Proxy Server
@@ -203,8 +200,8 @@ public class OnlyUpVRGameFog {
 		peList.add(new Pe(0, new PeProvisionerOverbooking(mips))); // need to store Pe id and MIPS Rating
 
 		int hostId = FogUtils.generateEntityId();
-		long storage = 1000000; // host storage
-		int bw = 10000;
+		long storage = 10000000; // host storage
+		int bw = 1000000;
 
 		PowerHost host = new PowerHost(
 				hostId,
@@ -212,7 +209,7 @@ public class OnlyUpVRGameFog {
 				new BwProvisionerOverbooking(bw),
 				storage,
 				peList,
-				new StreamOperatorScheduler(peList),
+				new AppModuleScheduler(peList),
 				new FogLinearPowerModel(busyPower, idlePower)
 			);
 
@@ -261,9 +258,9 @@ public class OnlyUpVRGameFog {
 		/*
 		 * Adding modules (vertices) to the application model (directed graph)
 		 */
-		application.addAppModule("client", 10); // adding module Client to the application model
-		application.addAppModule("concentration_calculator", 10); // adding module Concentration Calculator to the application model
-		application.addAppModule("connector", 10); // adding module Connector to the application model
+		application.addAppModule("client", 1000, 100); // adding module Client to the application model
+		application.addAppModule("concentration_calculator", 1000, 100); // adding module Concentration Calculator to the application model
+		application.addAppModule("connector", 1000, 100); // adding module Connector to the application model
 		
 		/*
 		 * Connecting the application modules (vertices) in the application model (directed graph) with edges

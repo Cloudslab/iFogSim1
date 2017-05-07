@@ -56,10 +56,9 @@ public class Application {
 	 * @param moduleName
 	 * @param ram
 	 */
-	public void addAppModule(String moduleName, int ram){
-		int mips = 1000;
-		long size = 10000;
-		long bw = 1000;
+	public void addAppModule(String moduleName, long mips, int ram){
+		long size = 1;
+		long bw = 1;
 		String vmm = "Xen";
 		
 		AppModule module = new AppModule(FogUtils.generateEntityId(), moduleName, appId, userId, 

@@ -1,3 +1,8 @@
+/*
+ * Title:        iFogSim Toolkit
+ * Description:  iFogSim (Cloud Simulation) Toolkit for Modeling and Simulation of Clouds
+ *
+ */
 package org.fog.test.perfeval;
 
 
@@ -17,6 +22,7 @@ import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
 import org.cloudbus.cloudsim.sdn.overbooking.BwProvisionerOverbooking;
 import org.cloudbus.cloudsim.sdn.overbooking.PeProvisionerOverbooking;
 import org.fog.application.AppEdge;
+import org.fog.application.AppLoop;
 import org.fog.application.Application;
 import org.fog.application.selectivity.FractionalSelectivity;
 import org.fog.entities.Actuator;
@@ -47,8 +53,8 @@ public class OnlyUpVRGameFog {
 	
 	static boolean CLOUD = false;
 	
-	static int numOfDepts = 1;
-	static int numOfMobilesPerDept = 1;
+	static int numOfDepts = 10;
+	static int numOfMobilesPerDept = 10;
 	static double EEG_TRANSMISSION_TIME = 50;
 	
 	public static void main(String[] args) {
@@ -282,9 +288,9 @@ public class OnlyUpVRGameFog {
 		 * Defining application loops to monitor the latency of. 
 		 * Here, we add only one loop for monitoring : EEG(sensor) -> Client -> Concentration Calculator -> Client -> DISPLAY (actuator)
 		 */
-		//final AppLoop loop1 = new AppLoop(new ArrayList<String>(){{add("EEG");add("client");add("concentration_calculator");add("client");add("DISPLAY");}});
-		//List<AppLoop> loops = new ArrayList<AppLoop>(){{add(loop1);}};
-		//application.setLoops(loops);
+		final AppLoop loop1 = new AppLoop(new ArrayList<String>(){{add("EEG");add("client");add("concentration_calculator");add("client");add("DISPLAY");}});
+		List<AppLoop> loops = new ArrayList<AppLoop>(){{add(loop1);}};
+		application.setLoops(loops);
 		
 		return application;
 	}

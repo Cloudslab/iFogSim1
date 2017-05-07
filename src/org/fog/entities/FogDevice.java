@@ -1,8 +1,13 @@
+/*
+ * Title:        iFogSim Toolkit
+ * Description:  iFogSim (Cloud Simulation) Toolkit for Modeling and Simulation of Clouds
+ *
+ */
+
 package org.fog.entities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -11,32 +16,22 @@ import org.apache.commons.math3.util.Pair;
 import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Log;
-import org.cloudbus.cloudsim.Pe;
 import org.cloudbus.cloudsim.Storage;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.VmAllocationPolicy;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.core.SimEvent;
-import org.cloudbus.cloudsim.core.predicates.PredicateType;
 import org.cloudbus.cloudsim.power.PowerDatacenter;
 import org.cloudbus.cloudsim.power.PowerHost;
-import org.cloudbus.cloudsim.power.models.PowerModel;
-import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
-import org.cloudbus.cloudsim.sdn.overbooking.BwProvisionerOverbooking;
-import org.cloudbus.cloudsim.sdn.overbooking.PeProvisionerOverbooking;
 import org.fog.application.AppEdge;
 import org.fog.application.AppLoop;
 import org.fog.application.AppModule;
 import org.fog.application.Application;
-import org.fog.policy.AppModuleAllocationPolicy;
-import org.fog.scheduler.AppModuleScheduler;
 import org.fog.utils.AppModuleAddress;
 import org.fog.utils.Config;
 import org.fog.utils.FogEvents;
-import org.fog.utils.FogUtils;
 import org.fog.utils.Logger;
-import org.fog.utils.NetworkUsageMonitor;
 import org.fog.utils.TimeKeeper;
 
 public class FogDevice extends PowerDatacenter {
@@ -92,6 +87,8 @@ public class FogDevice extends PowerDatacenter {
 	protected double totalCost;
 
 	protected Map<Integer, AppModule> moduleMap;
+	
+	protected int linkId;
 
 	public FogDevice(
 			String name, 
@@ -101,15 +98,6 @@ public class FogDevice extends PowerDatacenter {
 			double schedulingInterval,
 			double uplinkBandwidth, double downlinkBandwidth, double uplinkLatency, double ratePerMips) throws Exception {
 		super(name, characteristics, vmAllocationPolicy, storageList, schedulingInterval);
-		setCharacteristics(characteristics);
-		setVmAllocationPolicy(vmAllocationPolicy);
-		setLastProcessTime(0.0);
-		setStorageList(storageList);
-		setVmList(new ArrayList<Vm>());
-		setSchedulingInterval(schedulingInterval);
-		setUplinkBandwidth(uplinkBandwidth);
-		setDownlinkBandwidth(downlinkBandwidth);
-		setUplinkLatency(uplinkLatency);
 		setRatePerMips(ratePerMips);
 		setAssociatedActuatorIds(new ArrayList<Pair<Integer, Double>>());
 		for (Host host : getCharacteristics().getHostList()) {
@@ -126,108 +114,13 @@ public class FogDevice extends PowerDatacenter {
 
 		applicationMap = new HashMap<String, Application>();
 		appToModulesMap = new HashMap<String, List<String>>();
-		northTupleQueue = new LinkedList<Tuple>();
-		southTupleQueue = new LinkedList<Pair<Tuple, Integer>>();
-		setNorthLinkBusy(false);
-		setSouthLinkBusy(false);
-
+		
 		setChildrenIds(new ArrayList<Integer>());
-
 		this.cloudTrafficMap = new HashMap<Integer, Integer>();
-
 		this.lockTime = 0;
-
 		this.energyConsumption = 0;
 		this.lastUtilization = 0;
 		setTotalCost(0);
-		//setModuleInstanceCount(new HashMap<String, Map<String, Integer>>());
-		setChildToLatencyMap(new HashMap<Integer, Double>());
-		moduleMap = new HashMap<Integer, AppModule>();
-	}
-
-	public FogDevice(
-			String name, boolean isCloudDatacenter, long mips, int ram, 
-			double uplinkBandwidth, double downlinkBandwidth, double ratePerMips, PowerModel powerModel) throws Exception {
-		super(name, null, null, new LinkedList<Storage>(), 0);
-
-		List<Pe> peList = new ArrayList<Pe>();
-
-		// 3. Create PEs and add these into a list.
-		peList.add(new Pe(0, new PeProvisionerOverbooking(mips))); // need to store Pe id and MIPS Rating
-
-		int hostId = FogUtils.generateEntityId();
-		long storage = 1000000; // host storage
-		int bw = 10000;
-
-		PowerHost host = new PowerHost(
-				hostId,
-				new RamProvisionerSimple(ram),
-				new BwProvisionerOverbooking(bw),
-				storage,
-				peList,
-				new AppModuleScheduler(peList),
-				powerModel
-				);
-
-		List<Host> hostList = new ArrayList<Host>();
-		hostList.add(host);
-
-		setVmAllocationPolicy(new AppModuleAllocationPolicy(hostList));
-
-		String arch = Config.FOG_DEVICE_ARCH; 
-		String os = Config.FOG_DEVICE_OS; 
-		String vmm = Config.FOG_DEVICE_VMM;
-		double time_zone = Config.FOG_DEVICE_TIMEZONE;
-		double cost = Config.FOG_DEVICE_COST; 
-		double costPerMem = Config.FOG_DEVICE_COST_PER_MEMORY;
-		double costPerStorage = Config.FOG_DEVICE_COST_PER_STORAGE;
-		double costPerBw = Config.FOG_DEVICE_COST_PER_BW;
-
-		FogDeviceCharacteristics characteristics = new FogDeviceCharacteristics(
-				isCloudDatacenter, arch, os, vmm, host, time_zone, cost, costPerMem,
-				costPerStorage, costPerBw);
-
-		characteristics.setId(getId());
-		setCharacteristics(characteristics);
-
-		setLastProcessTime(0.0);
-		setVmList(new ArrayList<Vm>());
-		setUplinkBandwidth(uplinkBandwidth);
-		setDownlinkBandwidth(downlinkBandwidth);
-		setUplinkLatency(uplinkLatency);
-		setAssociatedActuatorIds(new ArrayList<Pair<Integer, Double>>());
-		for (Host host1 : getCharacteristics().getHostList()) {
-			host1.setDatacenter(this);
-		}
-		setActiveApplications(new ArrayList<String>());
-		if (getCharacteristics().getNumberOfPes() == 0) {
-			throw new Exception(super.getName()
-					+ " : Error - this entity has no PEs. Therefore, can't process any Cloudlets.");
-		}
-
-
-		getCharacteristics().setId(super.getId());
-
-		applicationMap = new HashMap<String, Application>();
-		appToModulesMap = new HashMap<String, List<String>>();
-		northTupleQueue = new LinkedList<Tuple>();
-		southTupleQueue = new LinkedList<Pair<Tuple, Integer>>();
-		setNorthLinkBusy(false);
-		setSouthLinkBusy(false);
-
-
-		setChildrenIds(new ArrayList<Integer>());
-
-		this.cloudTrafficMap = new HashMap<Integer, Integer>();
-
-		this.lockTime = 0;
-
-		this.energyConsumption = 0;
-		this.lastUtilization = 0;
-		setTotalCost(0);
-		setChildToLatencyMap(new HashMap<Integer, Double>());
-		//setModuleInstanceCount(new HashMap<String, Map<String, Integer>>());
-
 		moduleMap = new HashMap<Integer, AppModule>();
 	}
 
@@ -263,21 +156,9 @@ public class FogDevice extends PowerDatacenter {
 		case FogEvents.APP_SUBMIT:
 			processAppSubmit(ev);
 			break;
-		case FogEvents.UPDATE_NORTH_TUPLE_QUEUE:
-			updateNorthTupleQueue();
-			break;
-		case FogEvents.UPDATE_SOUTH_TUPLE_QUEUE:
-			updateSouthTupleQueue();
-			break;
-		case FogEvents.ACTIVE_APP_UPDATE:
-			updateActiveApplications(ev);
-			break;
 		case FogEvents.ACTUATOR_JOINED:
 			processActuatorJoined(ev);
 			break;
-			/*case FogEvents.LAUNCH_MODULE_INSTANCE:
-			updateModuleInstanceCount(ev);
-			break;*/
 		case FogEvents.RESOURCE_MGMT:
 			manageResources(ev);
 			break;
@@ -291,6 +172,8 @@ public class FogDevice extends PowerDatacenter {
 
 	protected void sendTuple(Tuple tuple, int dstDeviceId, int dstVmId) {
 		tuple.setVmId(dstVmId);
+		tuple.setSourceDeviceId(getId());
+		tuple.setDestinationDeviceId(dstDeviceId);
 		send(dstDeviceId, CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ARRIVAL, tuple);
 	}
 
@@ -338,19 +221,6 @@ public class FogDevice extends PowerDatacenter {
 	}
 
 	/**
-	 * Updating the number of modules of an application module on this device
-	 * @param ev instance of SimEvent containing the module and no of instances 
-	 */
-	/*private void updateModuleInstanceCount(SimEvent ev) {
-		ModuleLaunchConfig config = (ModuleLaunchConfig)ev.getData();
-		String appId = config.getModule().getAppId();
-		if(!moduleInstanceCount.containsKey(appId))
-			moduleInstanceCount.put(appId, new HashMap<String, Integer>());
-		moduleInstanceCount.get(appId).put(config.getModule().getName(), config.getInstanceCount());
-		System.out.println(getName()+ " Creating "+config.getInstanceCount()+" instances of module "+config.getModule().getName());
-	}*/
-
-	/**
 	 * Sending periodic tuple for an application edge. Note that for multiple instances of a single source module, only one tuple is sent DOWN while instanceCount number of tuples are sent UP.
 	 * @param ev SimEvent instance containing the edge to send tuple on
 	 */
@@ -388,6 +258,7 @@ public class FogDevice extends PowerDatacenter {
 
 	/**
 	 * Update cloudet processing without scheduling future events.
+	 * Does not remove VMs that have finished.
 	 * 
 	 * @return the double
 	 */
@@ -452,18 +323,6 @@ public class FogDevice extends PowerDatacenter {
 
 		checkCloudletCompletion();
 
-		/** Remove completed VMs **/
-		/**
-		 * Change made by HARSHIT GUPTA
-		 */
-		/*for (PowerHost host : this.<PowerHost> getHostList()) {
-			for (Vm vm : host.getCompletedVms()) {
-				getVmAllocationPolicy().deallocateHostForVm(vm);
-				getVmList().remove(vm);
-				Log.printLine("VM #" + vm.getId() + " has been deallocated from host #" + host.getId());
-			}
-		}*/
-
 		Log.printLine();
 
 		setLastProcessTime(currentTime);
@@ -508,24 +367,6 @@ public class FogDevice extends PowerDatacenter {
 
 			}
 		}
-	}
-
-	protected int getChildIdWithRouteTo(int targetDeviceId){
-		for(Integer childId : getChildrenIds()){
-			if(targetDeviceId == childId)
-				return childId;
-			if(((FogDevice)CloudSim.getEntity(childId)).getChildIdWithRouteTo(targetDeviceId) != -1)
-				return childId;
-		}
-		return -1;
-	}
-
-	protected int getChildIdForTuple(Tuple tuple){
-		if(tuple.getDirection() == Tuple.ACTUATOR){
-			int gatewayId = ((Actuator)CloudSim.getEntity(tuple.getActuatorId())).getGatewayDeviceId();
-			return getChildIdWithRouteTo(gatewayId);
-		}
-		return -1;
 	}
 
 	private void updateEnergyConsumption() {
@@ -585,6 +426,9 @@ public class FogDevice extends PowerDatacenter {
 		executeTuple(ev, tuple.getVmId());
 	}
 
+	/**
+	 * Does not cancel future events.
+	 */
 	@Override
 	protected void updateCloudletProcessing() {		
 		double currentTime = CloudSim.clock();
@@ -634,19 +478,12 @@ public class FogDevice extends PowerDatacenter {
 				}
 			}
 
-/*			// schedules an event to the next time
-			if (minTime != Double.MAX_VALUE) {
-				CloudSim.cancelAll(getId(), new PredicateType(CloudSimTags.VM_DATACENTER_EVENT));
-				send(getId(), getSchedulingInterval(), CloudSimTags.VM_DATACENTER_EVENT);
-			}*/
-
 			setLastProcessTime(currentTime);
 		}
 	}
 
 	
 	protected void updateTimingsOnReceipt(Tuple tuple) {
-
 		Application app = getApplicationMap().get(tuple.getAppId());
 		String srcModule = tuple.getSrcModuleName();
 		String destModule = tuple.getDestModuleName();
@@ -682,13 +519,8 @@ public class FogDevice extends PowerDatacenter {
 		TimeKeeper.getInstance().tupleStartedExecution(tuple);
 		final Vm vm = getHost().getVm(vmId, tuple.getUserId());
 		getHost().getVmScheduler().allocatePesForVm(vm, new ArrayList<Double>() {{ add(vm.getMips()); }});
-		System.out.println(CloudSim.clock() + " : trying to allocate mips for vm "+((AppModule)vm).getName());
-		System.out.format(CloudSim.clock() + " : %s : MIPS allocated to %s = %s \n", getName(), ((AppModule)vm).getName(), getHost().getAllocatedMipsForVm(getHost().getVm(vmId, tuple.getUserId())).toString());
 		processCloudletSubmit(ev, false);
 		getHost().getVmScheduler().allocatePesForVm(vm, new ArrayList<Double>() {{ add(vm.getMips()); }});
-		System.out.format(CloudSim.clock() + " : %s : MIPS allocated to %s = %s \n", getName(), ((AppModule)vm).getName(), getHost().getAllocatedMipsForVm(getHost().getVm(vmId, tuple.getUserId())).toString());
-		//AppModuleScheduler scheduler = (AppModuleScheduler) getHost().getVmScheduler();
-		//scheduler.updateAllocatedMips(getVmList());
 	}
 
 	protected void processModuleArrival(SimEvent ev){
@@ -729,63 +561,6 @@ public class FogDevice extends PowerDatacenter {
 
 	protected void processOperatorRelease(SimEvent ev){
 		this.processVmMigrate(ev, false);
-	}
-
-	protected void updateNorthTupleQueue(){
-		if(!getNorthTupleQueue().isEmpty()){
-			Tuple tuple = getNorthTupleQueue().poll();
-			sendUpFreeLink(tuple);
-		}else{
-			setNorthLinkBusy(false);
-		}
-	}
-
-	protected void sendUpFreeLink(Tuple tuple){
-		double networkDelay = tuple.getCloudletFileSize()/getUplinkBandwidth();
-		setNorthLinkBusy(true);
-		send(getId(), networkDelay, FogEvents.UPDATE_NORTH_TUPLE_QUEUE);
-		send(parentId, networkDelay+getUplinkLatency(), FogEvents.TUPLE_ARRIVAL, tuple);
-		NetworkUsageMonitor.sendingTuple(getUplinkLatency(), tuple.getCloudletFileSize());
-	}
-
-	protected void sendUp(Tuple tuple){
-		if(parentId > 0){
-			if(!isNorthLinkBusy()){
-				sendUpFreeLink(tuple);
-			}else{
-				northTupleQueue.add(tuple);
-			}
-		}
-	}
-
-
-	protected void updateSouthTupleQueue(){
-		if(!getSouthTupleQueue().isEmpty()){
-			Pair<Tuple, Integer> pair = getSouthTupleQueue().poll(); 
-			sendDownFreeLink(pair.getFirst(), pair.getSecond());
-		}else{
-			setSouthLinkBusy(false);
-		}
-	}
-
-	protected void sendDownFreeLink(Tuple tuple, int childId){
-		double networkDelay = tuple.getCloudletFileSize()/getDownlinkBandwidth();
-		//Logger.debug(getName(), "Sending tuple with tupleType = "+tuple.getTupleType()+" DOWN");
-		setSouthLinkBusy(true);
-		double latency = getChildToLatencyMap().get(childId);
-		send(getId(), networkDelay, FogEvents.UPDATE_SOUTH_TUPLE_QUEUE);
-		send(childId, networkDelay+latency, FogEvents.TUPLE_ARRIVAL, tuple);
-		NetworkUsageMonitor.sendingTuple(latency, tuple.getCloudletFileSize());
-	}
-
-	protected void sendDown(Tuple tuple, int childId){
-		if(getChildrenIds().contains(childId)){
-			if(!isSouthLinkBusy()){
-				sendDownFreeLink(tuple, childId);
-			}else{
-				southTupleQueue.add(new Pair<Tuple, Integer>(tuple, childId));
-			}
-		}
 	}
 
 	public PowerHost getHost(){
@@ -917,13 +692,12 @@ public class FogDevice extends PowerDatacenter {
 	public void setTotalCost(double totalCost) {
 		this.totalCost = totalCost;
 	}
-	/*
-	public Map<String, Map<String, Integer>> getModuleInstanceCount() {
-		return moduleInstanceCount;
+
+	public int getLinkId() {
+		return linkId;
 	}
 
-	public void setModuleInstanceCount(
-			Map<String, Map<String, Integer>> moduleInstanceCount) {
-		this.moduleInstanceCount = moduleInstanceCount;
-	}*/
+	public void setLinkId(int linkId) {
+		this.linkId = linkId;
+	}
 }

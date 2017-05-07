@@ -1,3 +1,9 @@
+/*
+ * Title:        iFogSim Toolkit
+ * Description:  iFogSim (Cloud Simulation) Toolkit for Modeling and Simulation of Clouds
+ *
+ */
+
 package org.fog.placement;
 
 import java.util.Calendar;
@@ -44,7 +50,7 @@ public class Controller extends SimEntity{
 		setFogDevices(fogDevices);
 		setActuators(actuators);
 		setSensors(sensors);
-		connectWithLatencies();
+		//connectWithLatencies();
 	}
 
 	private FogDevice getFogDeviceById(int id){

@@ -1,3 +1,9 @@
+/*
+ * Title:        iFogSim Toolkit
+ * Description:  iFogSim (Cloud Simulation) Toolkit for Modeling and Simulation of Clouds
+ *
+ */
+
 package org.fog.entities;
 
 import java.util.ArrayList;
@@ -143,9 +149,14 @@ public class Sensor extends SimEntity{
 		int actualTupleId = updateTimings(getSensorName(), tuple.getDestModuleName());
 		tuple.setActualTupleId(actualTupleId);
 		
-		tuple.setVmId(getDestModuleAddr().getVmId());
-		
-		send(getDestModuleAddr().getFogDeviceId(), getLatency(), FogEvents.TUPLE_ARRIVAL,tuple);
+		sendTuple(tuple, getDestModuleAddr().getFogDeviceId(), getDestModuleAddr().getVmId());
+	}
+	
+	protected void sendTuple(Tuple tuple, int dstDeviceId, int dstVmId) {
+		tuple.setVmId(dstVmId);
+		tuple.setSourceDeviceId(getId());
+		tuple.setDestinationDeviceId(dstDeviceId);
+		send(dstDeviceId, getLatency(), FogEvents.TUPLE_ARRIVAL, tuple);
 	}
 	
 	private int updateTimings(String src, String dest){

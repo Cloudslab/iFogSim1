@@ -1,3 +1,9 @@
+/*
+ * Title:        iFogSim Toolkit
+ * Description:  iFogSim (Cloud Simulation) Toolkit for Modeling and Simulation of Clouds
+ *
+ */
+
 package org.fog.entities;
 
 import java.util.HashMap;
@@ -22,6 +28,7 @@ public class Tuple extends Cloudlet{
 	private int actuatorId;
 	private int sourceDeviceId;
 	private int sourceModuleId;
+	private int destinationDeviceId;
 	/**
 	 * Map to keep track of which module instances has a tuple traversed.
 	 * 
@@ -121,6 +128,14 @@ public class Tuple extends Cloudlet{
 
 	public void setSourceModuleId(int sourceModuleId) {
 		this.sourceModuleId = sourceModuleId;
+	}
+
+	public void setDestinationDeviceId(int dstDeviceId) {
+		this.destinationDeviceId = dstDeviceId;
+	}
+	
+	public int getDestinationDeviceId() {
+		return destinationDeviceId;
 	}
 
 }

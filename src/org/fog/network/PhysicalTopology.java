@@ -123,9 +123,11 @@ public class PhysicalTopology {
 		// They are used as the destination ID when sending tuples from modules
 		// At end of routing, tuple would reach the EndDevice, which would then send it to Actuator
 		for (FogDevice dev : getFogDevices()) {
+			Logger.debug(LOG_TAG, "Device = "+dev.getName());
 			Link link = getLink(dev.getLinkId());
 			int swId = link.getOtherEndpoint(dev.getId());
 			Switch sw = getSwitch(swId);
+			Logger.debug(LOG_TAG, "Device = "+dev.getName()+" swid = "+swId+" swName = "+CloudSim.getEntityName(swId));
 			sw.getAdjacentEntities().add(dev.getId());
 		}
 		

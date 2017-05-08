@@ -57,7 +57,7 @@ import org.fog.utils.distribution.DeterministicDistribution;
  * @author Harshit Gupta
  *
  */
-public class PhyTopo {
+public class PhyTopoExample1 {
 	static List<FogDevice> fogDevices = new ArrayList<FogDevice>();
 	static List<Sensor> sensors = new ArrayList<Sensor>();
 	static List<Actuator> actuators = new ArrayList<Actuator>();

@@ -26,7 +26,7 @@ import org.fog.entities.Tuple;
 import org.fog.utils.Logger;
 
 public class ModulePlacementEdgewards extends ModulePlacementPolicy {
-	
+	private static String LOG_TAG = "MODULE_PLACEMENT_EDGEWARDS";
 	protected ModuleMapping moduleMapping;
 	protected List<Sensor> sensors;
 	protected List<Actuator> actuators;
@@ -212,7 +212,7 @@ public class ModulePlacementEdgewards extends ModulePlacementPolicy {
 							}
 						}
 						if(totalCpuLoad + getCurrentCpuLoad().get(deviceId) > device.getHost().getTotalMips()){
-							Logger.debug("ModulePlacementEdgeward", "Need to shift module "+moduleName+" upstream from device " + device.getName());
+							Logger.debug(LOG_TAG, "ModulePlacementEdgeward", "Need to shift module "+moduleName+" upstream from device " + device.getName());
 							List<String> _placedOperators = shiftModuleNorth(moduleName, totalCpuLoad, deviceId, modulesToPlace);
 							for(String placedOperator : _placedOperators){
 								if(!placedModules.contains(placedOperator))
@@ -222,7 +222,7 @@ public class ModulePlacementEdgewards extends ModulePlacementPolicy {
 							placedModules.add(moduleName);
 							getCurrentCpuLoad().put(deviceId, getCurrentCpuLoad().get(deviceId)+totalCpuLoad);
 							getCurrentModuleInstanceNum().get(deviceId).put(moduleName, getCurrentModuleInstanceNum().get(deviceId).get(moduleName)+1);
-							Logger.debug("ModulePlacementEdgeward", "AppModule "+moduleName+" can be created on device "+device.getName());
+							Logger.debug(LOG_TAG, "ModulePlacementEdgeward", "AppModule "+moduleName+" can be created on device "+device.getName());
 						}
 					}
 				}else{
@@ -235,10 +235,10 @@ public class ModulePlacementEdgewards extends ModulePlacementPolicy {
 					}
 						
 					if(totalCpuLoad + getCurrentCpuLoad().get(deviceId) > device.getHost().getTotalMips()){
-						Logger.debug("ModulePlacementEdgeward", "Placement of operator "+moduleName+ "NOT POSSIBLE on device "+device.getName());
+						Logger.debug(LOG_TAG, "ModulePlacementEdgeward", "Placement of operator "+moduleName+ "NOT POSSIBLE on device "+device.getName());
 					}
 					else{
-						Logger.debug("ModulePlacementEdgeward", "Placement of operator "+moduleName+ " on device "+device.getName() + " successful.");
+						Logger.debug(LOG_TAG, "ModulePlacementEdgeward", "Placement of operator "+moduleName+ " on device "+device.getName() + " successful.");
 						getCurrentCpuLoad().put(deviceId, totalCpuLoad + getCurrentCpuLoad().get(deviceId));
 						System.out.println("Placement of operator "+moduleName+ " on device "+device.getName() + " successful.");
 
@@ -298,7 +298,7 @@ public class ModulePlacementEdgewards extends ModulePlacementPolicy {
 		while(true){ // Loop iterates over all devices in path upstream from current device. Tries to place modules (to be shifted northwards) on each of them.
 			if(id==-1){
 				// Loop has reached the apex fog device in hierarchy, and still could not place modules. 
-				Logger.debug("ModulePlacementEdgeward", "Could not place modules "+modulesToShift+" northwards.");
+				Logger.debug(LOG_TAG, "ModulePlacementEdgeward", "Could not place modules "+modulesToShift+" northwards.");
 				break;
 			}
 			FogDevice fogDevice = getFogDeviceById(id);

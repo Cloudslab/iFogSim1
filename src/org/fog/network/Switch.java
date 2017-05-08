@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.fog.entities.Tuple;
@@ -12,6 +13,7 @@ import org.fog.utils.FogEvents;
 import org.fog.utils.Logger;
 
 public class Switch extends SimEntity {
+	private static String LOG_TAG = "SWITCH";
 	
 	protected List<Integer> neighbourSwitches;
 	
@@ -25,11 +27,17 @@ public class Switch extends SimEntity {
 	 */
 	protected List<Integer> adjacentEntities;
 	
+	/**
+	 * List of adjacent end devices
+	 */
+	protected List<Integer> adjacentEndDevices;
+	
 	public Switch(String name) {
 		super(name);
 		setSwitchingTable(new HashMap<Integer, Integer>());
 		setAdjacentEntities(new ArrayList<Integer>());
 		setNeighbourSwitches(new ArrayList<Integer>());
+		setAdjacentEndDevices(new ArrayList<Integer>());
 	}
 
 	public boolean isCoreSwitch() {
@@ -42,11 +50,14 @@ public class Switch extends SimEntity {
 	
 	private void processTupleArrival(SimEvent ev) {
 		Tuple tuple = (Tuple) ev.getData();
+		Logger.debug(LOG_TAG, getName(), "Received tuple with dst = "
+		+CloudSim.getEntityName(tuple.getDestinationDeviceId())+" & tupleType = "+tuple.getTupleType());
+		
 		int destId = tuple.getDestinationDeviceId();
 		if (getSwitchingTable().containsKey(destId)) {
 			sendNow(getSwitchingTable().get(destId), FogEvents.TUPLE_ARRIVAL, tuple);
 		} else {
-			Logger.error(getName(), "DESTINATION NOT IN SWITCHING TABLE");
+			Logger.error(LOG_TAG, getName(), "DESTINATION NOT IN SWITCHING TABLE");
 		}
 	}
 	
@@ -94,6 +105,14 @@ public class Switch extends SimEntity {
 
 	public void setAdjacentEntities(List<Integer> adjacentEntities) {
 		this.adjacentEntities = adjacentEntities;
+	}
+
+	public List<Integer> getAdjacentEndDevices() {
+		return adjacentEndDevices;
+	}
+
+	public void setAdjacentEndDevices(List<Integer> adjacentEndDevices) {
+		this.adjacentEndDevices = adjacentEndDevices;
 	}
 
 }

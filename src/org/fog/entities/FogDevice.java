@@ -35,6 +35,8 @@ import org.fog.utils.Logger;
 import org.fog.utils.TimeKeeper;
 
 public class FogDevice extends PowerDatacenter {
+	private static String LOG_TAG = "FOG_DEVICE";
+	
 	protected Queue<Tuple> northTupleQueue;
 	protected Queue<Pair<Tuple, Integer>> southTupleQueue;
 
@@ -90,6 +92,41 @@ public class FogDevice extends PowerDatacenter {
 	
 	protected int linkId;
 
+	
+	public FogDevice(
+			String name, 
+			FogDeviceCharacteristics characteristics,
+			VmAllocationPolicy vmAllocationPolicy,
+			List<Storage> storageList,
+			double schedulingInterval,
+			double ratePerMips) throws Exception {
+		super(name, characteristics, vmAllocationPolicy, storageList, schedulingInterval);
+		setRatePerMips(ratePerMips);
+		setAssociatedActuatorIds(new ArrayList<Pair<Integer, Double>>());
+		for (Host host : getCharacteristics().getHostList()) {
+			host.setDatacenter(this);
+		}
+		setActiveApplications(new ArrayList<String>());
+		// If this resource doesn't have any PEs then no useful at all
+		if (getCharacteristics().getNumberOfPes() == 0) {
+			throw new Exception(super.getName()
+					+ " : Error - this entity has no PEs. Therefore, can't process any Cloudlets.");
+		}
+		// stores id of this class
+		getCharacteristics().setId(super.getId());
+
+		applicationMap = new HashMap<String, Application>();
+		appToModulesMap = new HashMap<String, List<String>>();
+		
+		setChildrenIds(new ArrayList<Integer>());
+		this.cloudTrafficMap = new HashMap<Integer, Integer>();
+		this.lockTime = 0;
+		this.energyConsumption = 0;
+		this.lastUtilization = 0;
+		setTotalCost(0);
+		moduleMap = new HashMap<Integer, AppModule>();
+	}
+	
 	public FogDevice(
 			String name, 
 			FogDeviceCharacteristics characteristics,
@@ -174,11 +211,15 @@ public class FogDevice extends PowerDatacenter {
 		tuple.setVmId(dstVmId);
 		tuple.setSourceDeviceId(getId());
 		tuple.setDestinationDeviceId(dstDeviceId);
-		send(dstDeviceId, CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ARRIVAL, tuple);
+		//send(dstDeviceId, CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ARRIVAL, tuple);
+		send(getLinkId(), CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ARRIVAL, tuple);
 	}
 
 	protected void sendTuple(Tuple tuple, int actuatorId) {
-		send(actuatorId, CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ARRIVAL, tuple);
+		//send(actuatorId, CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ARRIVAL, tuple);
+		Logger.debug("actuator_send", getName(), "Sending to actuator "+CloudSim.getEntityName(actuatorId)+"via Link ID : "+getLinkId());
+		tuple.setDestinationDeviceId(actuatorId);
+		send(getLinkId(), CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ARRIVAL, tuple);
 	}
 
 	protected void routeTuple(Tuple resTuple, AppModule module) {
@@ -198,13 +239,12 @@ public class FogDevice extends PowerDatacenter {
 		Tuple tuple = (Tuple) ev.getData();
 		TimeKeeper.getInstance().tupleEndedExecution(tuple);
 		Application application = getApplicationMap().get(tuple.getAppId());
-		System.out.println(CloudSim.clock() + " : Completed execution of tuple "+tuple.getTupleType()+"on "+tuple.getDestModuleName());
-		Logger.debug(getName(), "Completed execution of tuple "+tuple.getCloudletId()+"on "+tuple.getDestModuleName());
+		Logger.debug(LOG_TAG, getName(), "Completed execution of tuple "+tuple.getCloudletId()+"on "+tuple.getDestModuleName());
 		AppModule module = moduleMap.get(tuple.getVmId());
 
 		List<Tuple> resultantTuples = application.getResultantTuples(tuple.getDestModuleName(), tuple, getId(), module.getId());
 		for(Tuple resTuple : resultantTuples){
-			System.out.format(CloudSim.clock() + " : Finished executing %s , generating %s\n", tuple.getTupleType(), resTuple.getTupleType());
+			Logger.debug(LOG_TAG, getName(), "Finished executing "+tuple.getTupleType()+" , generating " + resTuple.getTupleType());
 			routeTuple(resTuple, module);
 
 		}
@@ -406,14 +446,14 @@ public class FogDevice extends PowerDatacenter {
 	protected void processTupleArrival(SimEvent ev){
 		Tuple tuple = (Tuple)ev.getData();
 
-		System.out.println(CloudSim.clock() + " : Received tuple "+tuple.getCloudletId()+"with tupleType = "+tuple.getTupleType()+"\t| Source : "+
+		Logger.debug(LOG_TAG, getName(), "Received tuple "+tuple.getCloudletId()+"with tupleType = "+tuple.getTupleType()+"\t| Source : "+
 				CloudSim.getEntityName(ev.getSource())+"|Dest : "+CloudSim.getEntityName(ev.getDestination()));
 		
 		if(((FogDeviceCharacteristics)getCharacteristics()).isCloudDatacenter()){
 			updateCloudTraffic();
 		}
 
-		Logger.debug(getName(), "Received tuple "+tuple.getCloudletId()+"with tupleType = "+tuple.getTupleType()+"\t| Source : "+
+		Logger.debug(LOG_TAG, getName(), "Received tuple "+tuple.getCloudletId()+"with tupleType = "+tuple.getTupleType()+"\t| Source : "+
 				CloudSim.getEntityName(ev.getSource())+"|Dest : "+CloudSim.getEntityName(ev.getDestination()));
 		send(ev.getSource(), CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ACK);
 

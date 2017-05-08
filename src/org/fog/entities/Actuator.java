@@ -18,7 +18,8 @@ import org.fog.utils.Logger;
 import org.fog.utils.TimeKeeper;
 
 public class Actuator extends SimEntity{
-
+	private static String LOG_TAG = "ACTUATOR";
+	
 	private int gatewayDeviceId;
 	private double latency;
 	private GeoLocation geoLocation;
@@ -28,6 +29,7 @@ public class Actuator extends SimEntity{
 	private Application app; // TODO remove
 	private ActuatorCharacteristics characteristics;
 	private Application application;
+	private int endDeviceId;
 	
 	public Actuator(String name, int userId, String appId, int gatewayDeviceId, double latency, GeoLocation geoLocation, String actuatorType, String srcModuleName) {
 		super(name);
@@ -38,6 +40,7 @@ public class Actuator extends SimEntity{
 		setActuatorType(actuatorType);
 		setLatency(latency);
 		setCharacteristics(new ActuatorCharacteristics(getId(), geoLocation, actuatorType));
+		setEndDeviceId(-1);
 	}
 	
 	public Actuator(String name, int userId, String appId, String actuatorType, Application application) {
@@ -47,6 +50,7 @@ public class Actuator extends SimEntity{
 		setActuatorType(actuatorType);
 		setApplication(application);
 		setCharacteristics(new ActuatorCharacteristics(getId(), null, actuatorType));
+		setEndDeviceId(-1);
 	}
 
 	public Actuator(String name, int userId, String appId, String actuatorType) {
@@ -55,12 +59,13 @@ public class Actuator extends SimEntity{
 		setUserId(userId);
 		setActuatorType(actuatorType);
 		setCharacteristics(new ActuatorCharacteristics(getId(), null, actuatorType));
+		setEndDeviceId(-1);
 	}
 
 	
 	@Override
 	public void startEntity() {
-		sendNow(gatewayDeviceId, FogEvents.ACTUATOR_JOINED, getLatency());
+		//sendNow(gatewayDeviceId, FogEvents.ACTUATOR_JOINED, getLatency());
 	}
 
 	@Override
@@ -78,8 +83,7 @@ public class Actuator extends SimEntity{
 
 	private void processTupleArrival(SimEvent ev) {
 		Tuple tuple = (Tuple)ev.getData();
-		System.out.println(getName()+" : Tuple type "+tuple.getTupleType()+" arrived !");
-		Logger.debug(getName(), "Received tuple "+tuple.getCloudletId()+"on "+tuple.getDestModuleName());
+		Logger.debug(LOG_TAG, getName(), "Received tuple "+tuple.getCloudletId()+"on "+tuple.getDestModuleName());
 		String srcModule = tuple.getSrcModuleName();
 		String destModule = tuple.getDestModuleName();
 		Application app = getApplication();
@@ -181,6 +185,14 @@ public class Actuator extends SimEntity{
 
 	public void setApplication(Application application) {
 		this.application = application;
+	}
+
+	public int getEndDeviceId() {
+		return endDeviceId;
+	}
+
+	public void setEndDeviceId(int endDeviceId) {
+		this.endDeviceId = endDeviceId;
 	}
 
 }

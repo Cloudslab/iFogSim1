@@ -23,11 +23,14 @@ import org.fog.entities.Sensor;
 import org.fog.utils.Config;
 import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
+import org.fog.utils.Logger;
 import org.fog.utils.NetworkUsageMonitor;
 import org.fog.utils.TimeKeeper;
 
 public class Controller extends SimEntity{
 	
+	private static final String LOG_TAG = "CTRL";
+
 	public static boolean ONLY_CLOUD = false;
 		
 	private List<FogDevice> fogDevices;
@@ -74,7 +77,7 @@ public class Controller extends SimEntity{
 	
 	@Override
 	public void startEntity() {
-		for(String appId : applications.keySet()){
+/*		for(String appId : applications.keySet()){
 			if(getAppLaunchDelays().get(appId)==0)
 				processAppSubmit(applications.get(appId));
 			else
@@ -82,12 +85,12 @@ public class Controller extends SimEntity{
 		}
 
 		send(getId(), Config.RESOURCE_MANAGE_INTERVAL, FogEvents.CONTROLLER_RESOURCE_MANAGE);
-		
+		*/
 		send(getId(), Config.MAX_SIMULATION_TIME, FogEvents.STOP_SIMULATION);
 		
-		for(FogDevice dev : getFogDevices())
+		/*for(FogDevice dev : getFogDevices())
 			sendNow(dev.getId(), FogEvents.RESOURCE_MGMT);
-
+*/
 	}
 
 	@Override
@@ -103,12 +106,12 @@ public class Controller extends SimEntity{
 			manageResources();
 			break;
 		case FogEvents.STOP_SIMULATION:
-			CloudSim.stopSimulation();
-			printTimeDetails();
+			//CloudSim.stopSimulation();
+			/*printTimeDetails();
 			printPowerDetails();
 			printCostDetails();
-			printNetworkUsageDetails();
-			System.exit(0);
+			printNetworkUsageDetails();*/
+			//System.exit(0);
 			break;
 			
 		}
@@ -126,7 +129,7 @@ public class Controller extends SimEntity{
 	}
 	
 	private void printCostDetails(){
-		System.out.println("Cost of execution in cloud = "+getCloud().getTotalCost());
+		//System.out.println("Cost of execution in cloud = "+getCloud().getTotalCost());
 	}
 	
 	private void printPowerDetails() {
@@ -137,6 +140,7 @@ public class Controller extends SimEntity{
 
 	private String getStringForLoopId(int loopId){
 		for(String appId : getApplications().keySet()){
+			Logger.debug(LOG_TAG, "Application : "+appId);
 			Application app = getApplications().get(appId);
 			for(AppLoop loop : app.getLoops()){
 				if(loop.getLoopId() == loopId)

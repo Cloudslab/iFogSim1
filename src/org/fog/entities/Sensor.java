@@ -25,6 +25,7 @@ import org.fog.utils.TimeKeeper;
 import org.fog.utils.distribution.Distribution;
 
 public class Sensor extends SimEntity{
+	private static String LOG_TAG = "SENSOR";
 	
 	private int gatewayDeviceId;
 	private GeoLocation geoLocation;
@@ -40,6 +41,8 @@ public class Sensor extends SimEntity{
 	private SensorCharacteristics characteristics;
 	private Application application;
 	private AppModuleAddress destModuleAddr;
+	private EndDevice device;
+	private int endDeviceId;
 	
 	public Sensor(String name, int userId, String appId, int gatewayDeviceId, double latency, GeoLocation geoLocation, 
 			Distribution transmitDistribution, int cpuLength, int nwLength, String tupleType, String destModuleName, Application application) {
@@ -57,6 +60,7 @@ public class Sensor extends SimEntity{
 		setApplication(application);
 		setCharacteristics(new SensorCharacteristics(getId(), appId, tupleType, transmitDistribution, cpuLength, nwLength, geoLocation));
 		setDestModuleAddr(null);
+		setEndDeviceId(-1);
 	}
 	
 	public Sensor(String name, int userId, String appId, int gatewayDeviceId, double latency, GeoLocation geoLocation, 
@@ -83,6 +87,7 @@ public class Sensor extends SimEntity{
 		
 		setCharacteristics(new SensorCharacteristics(getId(), appId, tupleType, transmitDistribution, cpuLength, nwLength, geoLocation));
 		setDestModuleAddr(null);
+		setEndDeviceId(-1);
 	}
 	
 	public Sensor(String name, String tupleType, int userId, String appId, Distribution transmitDistribution, Application application) {
@@ -104,6 +109,7 @@ public class Sensor extends SimEntity{
 		
 		setCharacteristics(new SensorCharacteristics(getId(), appId, tupleType, transmitDistribution, cpuLength, nwLength, null));
 		setDestModuleAddr(null);
+		setEndDeviceId(-1);
 	}
 	
 	
@@ -124,6 +130,7 @@ public class Sensor extends SimEntity{
 		setSensorName(tupleType);
 		setUserId(userId);
 		setDestModuleAddr(null);
+		setEndDeviceId(-1);
 	}
 	
 	public void transmit(){
@@ -144,12 +151,14 @@ public class Sensor extends SimEntity{
 		
 		tuple.setDestModuleName(_edge.getDestination());
 		tuple.setSrcModuleName(getSensorName());
-		Logger.debug(getName(), "Sending tuple with tupleId = "+tuple.getCloudletId());
+		Logger.debug(LOG_TAG, getName(), "Sending tuple with tupleId = "+tuple.getCloudletId());
 
 		int actualTupleId = updateTimings(getSensorName(), tuple.getDestModuleName());
 		tuple.setActualTupleId(actualTupleId);
 		
-		sendTuple(tuple, getDestModuleAddr().getFogDeviceId(), getDestModuleAddr().getVmId());
+		//TODO Correct these
+		//sendTuple(tuple, getDestModuleAddr().getFogDeviceId(), getDestModuleAddr().getVmId());
+		getDevice().sendTuple(tuple, getDestModuleAddr().getFogDeviceId(), getDestModuleAddr().getVmId());
 	}
 	
 	protected void sendTuple(Tuple tuple, int dstDeviceId, int dstVmId) {
@@ -177,7 +186,8 @@ public class Sensor extends SimEntity{
 	
 	@Override
 	public void startEntity() {
-		send(gatewayDeviceId, CloudSim.getMinTimeBetweenEvents(), FogEvents.SENSOR_JOINED, geoLocation);
+		System.out.println("Starting sensor with ID "+getId());
+		//send(gatewayDeviceId, CloudSim.getMinTimeBetweenEvents(), FogEvents.SENSOR_JOINED, geoLocation);
 		send(getId(), getTransmitDistribution().getNextValue(), FogEvents.EMIT_TUPLE);
 	}
 
@@ -185,6 +195,7 @@ public class Sensor extends SimEntity{
 	public void processEvent(SimEvent ev) {
 		switch(ev.getTag()){
 		case CloudSimTags.RESOURCE_CHARACTERISTICS:
+			System.out.println(getName()+" received charac req");
 			int srcId = ((Integer) ev.getData()).intValue();
 			sendNow(srcId, ev.getTag(), getCharacteristics());
 			break;
@@ -314,6 +325,22 @@ public class Sensor extends SimEntity{
 
 	public void setDestModuleAddr(AppModuleAddress destModuleAddr) {
 		this.destModuleAddr = destModuleAddr;
+	}
+
+	public EndDevice getDevice() {
+		return device;
+	}
+
+	public void setDevice(EndDevice device) {
+		this.device = device;
+	}
+
+	public int getEndDeviceId() {
+		return endDeviceId;
+	}
+
+	public void setEndDeviceId(int endDeviceId) {
+		this.endDeviceId = endDeviceId;
 	}
 
 }

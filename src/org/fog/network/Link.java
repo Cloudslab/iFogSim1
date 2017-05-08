@@ -1,5 +1,6 @@
 package org.fog.network;
 
+import java.util.LinkedList;
 import java.util.Queue;
 
 import org.cloudbus.cloudsim.core.SimEntity;
@@ -35,10 +36,14 @@ public class Link extends SimEntity {
 		setBandwidth(bandwidth);
 		setEndpointNorth(endpointNorth);
 		setEndpointSouth(endpointSouth);
+		setNorthTupleQueue(new LinkedList<Tuple>());
+		setSouthTupleQueue(new LinkedList<Tuple>());
 	}
 	
 	public Link(String name) {
 		super(name);
+		setNorthTupleQueue(new LinkedList<Tuple>());
+		setSouthTupleQueue(new LinkedList<Tuple>());
 	}
 
 	@Override
@@ -127,6 +132,15 @@ public class Link extends SimEntity {
 				northTupleQueue.add(tuple);
 			}
 		}
+	}
+	
+	public int getOtherEndpoint(int endpoint) {
+		if (getEndpointNorth() == endpoint)
+			return getEndpointSouth();
+		else if (getEndpointSouth() == endpoint)
+			return getEndpointNorth();
+		else 
+			return -1;
 	}
 	
 	public double getLatency() {

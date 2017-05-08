@@ -13,17 +13,22 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.cloudbus.cloudsim.Log;
+import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.cloudbus.cloudsim.power.PowerDatacenterBroker;
 import org.fog.application.AppEdge;
+import org.fog.application.AppLoop;
 import org.fog.application.AppModule;
 import org.fog.application.Application;
 import org.fog.placement.ModulePlacement;
 import org.fog.placement.ModulePlacementPolicy;
 import org.fog.utils.AppModuleAddress;
+import org.fog.utils.Config;
 import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
+import org.fog.utils.Logger;
+import org.fog.utils.TimeKeeper;
 
 public class FogBroker extends PowerDatacenterBroker{
 
@@ -44,6 +49,8 @@ public class FogBroker extends PowerDatacenterBroker{
 			this.endpointConnection = endpointConnection;
 		}
 	}
+
+	private static final String LOG_TAG = "FOG_BROKER";
 	
 	List<Integer> fogDeviceIds;
 	List<Integer> sensorIds;
@@ -72,6 +79,7 @@ public class FogBroker extends PowerDatacenterBroker{
 	@Override
 	public void startEntity() {
 		schedule(getId(), 0, CloudSimTags.RESOURCE_CHARACTERISTICS_REQUEST);
+		schedule(0, Config.MAX_SIMULATION_TIME, FogEvents.STOP_SIMULATION);
 	};
 	
 	/**
@@ -85,13 +93,16 @@ public class FogBroker extends PowerDatacenterBroker{
 	protected void processResourceCharacteristicsRequest(SimEvent ev) {
 		// Send Resource Characteristics message to all Fog Devices
 		for (Integer fogDeviceId : getFogDeviceIds()) {
-			sendNow(fogDeviceId, CloudSimTags.RESOURCE_CHARACTERISTICS, getId());
+			System.out.println("Sending charac req to "+fogDeviceId);
+			send(fogDeviceId, CloudSim.getMinTimeBetweenEvents(), CloudSimTags.RESOURCE_CHARACTERISTICS, getId());
 		}
 		for (Integer sensorId : getSensorIds()) {
-			sendNow(sensorId, CloudSimTags.RESOURCE_CHARACTERISTICS, getId());
+			System.out.println("Sending charac req to "+sensorId);
+			send(sensorId, CloudSim.getMinTimeBetweenEvents(), CloudSimTags.RESOURCE_CHARACTERISTICS, getId());
 		}
 		for (Integer actuatorId : getActuatorIds()) {
-			sendNow(actuatorId, CloudSimTags.RESOURCE_CHARACTERISTICS, getId());
+			System.out.println("Sending charac req to "+actuatorId);
+			send(actuatorId, CloudSim.getMinTimeBetweenEvents(), CloudSimTags.RESOURCE_CHARACTERISTICS, getId());
 		}
 	}
 
@@ -104,6 +115,7 @@ public class FogBroker extends PowerDatacenterBroker{
 	 */
 	protected void processResourceCharacteristics(SimEvent ev) {
 		Integer srcId = ev.getSource();
+		System.out.println("Received characteristics from "+srcId);
 		if (getFogDeviceIds().contains(srcId)) {
 			processFogDeviceResourceCharacteristics(ev);
 		} else if (getSensorIds().contains(srcId)) {
@@ -241,10 +253,45 @@ public class FogBroker extends PowerDatacenterBroker{
 		}
 	}
 
+	private String getStringForLoopId(int loopId){
+		for(String appId : getApplications().keySet()){
+			Logger.debug(LOG_TAG, "FOG_BROKER", "Has application : "+appId);
+			Application app = getApplications().get(appId);
+			for(AppLoop loop : app.getLoops()){
+				if(loop.getLoopId() == loopId)
+					return loop.getModules().toString();
+			}
+		}
+		return null;
+	}
+	
+	private void printTimeDetails() {
+		System.out.println("=========================================");
+		System.out.println("APPLICATION LOOP DELAYS");
+		System.out.println("=========================================");
+		for(Integer loopId : TimeKeeper.getInstance().getLoopIdToTupleIds().keySet()){
+			for (String appId : getApplications().keySet()) {
+				Application app = getApplications().get(appId);
+				for (AppLoop loop : app.getLoops()) {
+					System.out.println(getStringForLoopId(loopId) + " ---> "+TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loopId));		
+				}
+			}
+			
+		}
+		System.out.println("=========================================");
+		System.out.println("TUPLE CPU EXECUTION DELAY");
+		System.out.println("=========================================");
+		
+		for(String tupleType : TimeKeeper.getInstance().getTupleTypeToAverageCpuTime().keySet()){
+			System.out.println(tupleType + " ---> "+TimeKeeper.getInstance().getTupleTypeToAverageCpuTime().get(tupleType));
+		}
+		
+		System.out.println("=========================================");
+	}
+	
 	@Override
 	public void shutdownEntity() {
-		// TODO Auto-generated method stub
-		
+		printTimeDetails();
 	}
 	
 	public void setFogDeviceIds(List<Integer> fogDeviceIds) {

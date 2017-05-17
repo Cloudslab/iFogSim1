@@ -78,8 +78,8 @@ public class Application {
 	 * Adds a non-periodic edge to the application model.
 	 * @param source
 	 * @param destination
-	 * @param tupleCpuLength
-	 * @param tupleNwLength
+	 * @param tupleCpuLength Number of Million Instructions 
+	 * @param tupleNwLength Transmission size of Tuple in Bytes
 	 * @param tupleType
 	 * @param direction
 	 * @param edgeType

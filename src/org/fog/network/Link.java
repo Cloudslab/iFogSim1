@@ -7,9 +7,12 @@ import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.fog.entities.Tuple;
 import org.fog.utils.FogEvents;
+import org.fog.utils.Logger;
 
 public class Link extends SimEntity {
 
+	private static String LOG_TAG = "LINK";
+	
 	protected Queue<Tuple> northTupleQueue;
 	protected Queue<Tuple> southTupleQueue;
 	boolean isNorthLinkBusy;
@@ -92,7 +95,11 @@ public class Link extends SimEntity {
 	}
 	
 	protected void sendSouthFreeLink(Tuple tuple){
-		double networkDelay = tuple.getCloudletFileSize()/getBandwidth();
+		double sizeInBits = tuple.getCloudletFileSize() * 8;
+		double bwInBitsPerSecond = getBandwidth() * 1024 * 1024;
+		double networkDelay = 1000*(sizeInBits/bwInBitsPerSecond);
+		Logger.debug(LOG_TAG, "SizeInBits = "+sizeInBits);
+		Logger.debug(LOG_TAG, "Transmission delay = "+networkDelay);
 		setSouthLinkBusy(true);
 		send(getId(), networkDelay, FogEvents.UPDATE_SOUTH_TUPLE_QUEUE);
 		send(endpointSouth, networkDelay + getLatency(), FogEvents.TUPLE_ARRIVAL, tuple);
@@ -118,7 +125,10 @@ public class Link extends SimEntity {
 	}
 	
 	protected void sendNorthFreeLink(Tuple tuple){
-		double networkDelay = tuple.getCloudletFileSize()/getBandwidth();
+		double sizeInBits = tuple.getCloudletFileSize() * 8;
+		double bwInBitsPerSecond = getBandwidth() * 1024 * 1024;
+		double networkDelay = 1000*(sizeInBits/bwInBitsPerSecond);
+		Logger.debug(LOG_TAG, "Transmission delay = "+networkDelay);
 		setNorthLinkBusy(true);
 		send(getId(), networkDelay, FogEvents.UPDATE_NORTH_TUPLE_QUEUE);
 		send(endpointNorth, networkDelay + getLatency(), FogEvents.TUPLE_ARRIVAL, tuple);

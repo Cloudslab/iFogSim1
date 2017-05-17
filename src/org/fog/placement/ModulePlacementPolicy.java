@@ -36,7 +36,7 @@ public abstract class ModulePlacementPolicy {
 	private Map<Integer, SensorCharacteristics> sensorCharacteristics;
 	private Map<Integer, ActuatorCharacteristics> actuatorCharacteristics;
 	
-	protected abstract void mapModules();
+	//protected abstract void mapModules();
 	
 	protected ModulePlacementPolicy() {
 		setFogDeviceCharacteristics(new HashMap<Integer, FogDeviceCharacteristics>());

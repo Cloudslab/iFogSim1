@@ -20,14 +20,15 @@ import org.fog.entities.FogDevice;
 import org.fog.entities.FogDeviceCharacteristics;
 import org.fog.entities.Sensor;
 import org.fog.entities.SensorCharacteristics;
+import org.fog.placement.ModulePlacementPolicy;
 
-public class ModulePlacementOnlyCloudNew extends ModulePlacementPolicy {
+public class ModulePlacementOnlyCloudSingleInstance extends ModulePlacementPolicy {
 	
 	private List<Sensor> sensors;
 	private List<Actuator> actuators;
 	private int cloudId;
 	
-	public ModulePlacementOnlyCloudNew(List<FogDevice> fogDevices, List<Sensor> sensors, List<Actuator> actuators, Application application){
+	public ModulePlacementOnlyCloudSingleInstance(List<FogDevice> fogDevices, List<Sensor> sensors, List<Actuator> actuators, Application application){
 		super();
 		this.setFogDevices(fogDevices);
 		this.setApplication(application);
@@ -39,14 +40,14 @@ public class ModulePlacementOnlyCloudNew extends ModulePlacementPolicy {
 		this.cloudId = CloudSim.getEntityId("cloud");
 	}
 	
-	@Override
+	/*@Override
 	protected void mapModules() {
 		List<AppModule> modules = getApplication().getModules();
 		for(AppModule module : modules){
 			FogDevice cloud = getDeviceById(cloudId);
 			createModuleInstanceOnDevice(module, cloud);
 		}
-	}
+	}*/
 
 	public List<Actuator> getActuators() {
 		return actuators;
@@ -91,18 +92,20 @@ public class ModulePlacementOnlyCloudNew extends ModulePlacementPolicy {
 		
 		List<ModulePlacement> placements = new ArrayList<ModulePlacement>();
 		
+		ModulePlacement placement = new ModulePlacement();
+		
 		for (int sensorId : getSensorCharacteristics().keySet()) {
-			ModulePlacement placement = new ModulePlacement();
-			placement.addSensorId(getSensorCharacteristics().get(sensorId).getTupleType(), sensorId);
-			ActuatorCharacteristics actuator = getCorresponsingActuator(getSensorCharacteristics().get(sensorId));
-			placement.addActuatorId(actuator.getActuatorType(), actuator.getId());
-			for (AppModule module : getApplication().getModules()) {
-				placement.addMapping(module.getName(), cloud.getId());
-				System.out.println("Cloud ID = "+cloud.getId());
-			}
-			placements.add(placement);
+			placement.addSensorId(getSensorCharacteristics().get(sensorId).getTupleType(), sensorId);	
 		}
 		
+		for (int actuatorId : getActuatorCharacteristics().keySet()) {
+			placement.addActuatorId(getActuatorCharacteristics().get(actuatorId).getActuatorType(), actuatorId);	
+		}
+		
+		for (AppModule module : getApplication().getModules()) {
+			placement.addMapping(module.getName(), cloud.getId());
+		}
+		placements.add(placement);
 		return placements;
 	}
 

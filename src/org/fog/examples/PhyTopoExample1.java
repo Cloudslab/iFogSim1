@@ -3,7 +3,7 @@
  * Description:  iFogSim (Cloud Simulation) Toolkit for Modeling and Simulation of Clouds
  *
  */
-package org.fog.test.perfeval;
+package org.fog.examples;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -34,7 +34,7 @@ import org.fog.entities.Tuple;
 import org.fog.network.EdgeSwitch;
 import org.fog.network.PhysicalTopology;
 import org.fog.network.Switch;
-import org.fog.placement.ModulePlacementOnlyCloudNew;
+import org.fog.placement.ModulePlacementOnlyCloud;
 import org.fog.policy.AppModuleAllocationPolicy;
 import org.fog.scheduler.AppModuleScheduler;
 import org.fog.utils.FogLinearPowerModel;
@@ -45,13 +45,19 @@ import org.fog.utils.distribution.DeterministicDistribution;
 
 /**
  * Class to implement the following topology.
+ *  SW2----FD1	|	    MODULE
+ *  |			|	      /\
+ *  SW1			|	     /  \
+ *  |			|	    S    A
+ *  SW0----FD0	|	
+ *  |			|	
+ * DEV			|	
+ * /\			|	
+ * S A			|	
  * @author Harshit Gupta
+ *
  */
-public class PhyTopoExample2 {
-	
-	private static int NUM_EDGE_SW = 4;
-	private static int NUM_DEV_PER_EDGE_SW = 2;
-	
+public class PhyTopoExample1 {
 	static List<FogDevice> fogDevices = new ArrayList<FogDevice>();
 	static List<Sensor> sensors = new ArrayList<Sensor>();
 	static List<Actuator> actuators = new ArrayList<Actuator>();
@@ -60,7 +66,9 @@ public class PhyTopoExample2 {
 
 		Log.printLine("Starting PhyTopo...");
 		Logger.ENABLED = false;
-		Logger.enableTag("PHYSICAL_TOPO");
+		Logger.enableTag("FOG_DEVICE");
+		Logger.enableTag("SWITCH");
+		Logger.enableTag("LINK");
 		
 		try {
 			Log.disable();
@@ -84,7 +92,7 @@ public class PhyTopoExample2 {
 			broker.setActuatorIds(getIds(actuators));
 			
 			broker.submitApplication(application, 0, 
-					new ModulePlacementOnlyCloudNew(fogDevices, sensors, actuators, application));
+					new ModulePlacementOnlyCloud(fogDevices, sensors, actuators, application));
 			
 			TimeKeeper.getInstance().setSimulationStartTime(Calendar.getInstance().getTimeInMillis());
 
@@ -100,45 +108,36 @@ public class PhyTopoExample2 {
 	}
 
 	private static void createPhysicalTopology(int userId, String appId, Application application) {
-		FogDevice cloud = createFogDevice("CLOUD", true, 102400, 4000, 0.01, 103, 83.25);
-		fogDevices.add(cloud);
-		PhysicalTopology.getInstance().addFogDevice(cloud);
+		FogDevice fd1 = createFogDevice("FD1", true, 102400, 4000, 0.01, 103, 83.25);
+		FogDevice fd0 = createFogDevice("FD0", false, 102400, 4000, 0.01, 103, 83.25);
+		Switch sw0 = new EdgeSwitch("SW0");
+		Switch sw1 = new Switch("SW1");
+		Switch sw2 = new Switch("SW2");
+		EndDevice dev = new EndDevice("DEV");
 		
-		Switch dcSw = new Switch("DC_SW");
-		Switch gwSw = new Switch("GW_SW");
+		int transmissionInterval = 5000;
+		Sensor sensor = new Sensor("s-0", "SENSED_DATA", userId, appId, new DeterministicDistribution(transmissionInterval), application); // inter-transmission time of EEG sensor follows a deterministic distribution
+		sensors.add(sensor);
+		Actuator actuator = new Actuator("a-0", userId, appId, "ACTION", application);
+		actuators.add(actuator);
+		dev.addSensor(sensor);
+		dev.addActuator(actuator);
 		
-		PhysicalTopology.getInstance().addSwitch(dcSw);
-		PhysicalTopology.getInstance().addSwitch(gwSw);
-		PhysicalTopology.getInstance().addLink(dcSw.getId(), cloud.getId(), 2, 1000);
-		PhysicalTopology.getInstance().addLink(dcSw.getId(), gwSw.getId(), 50, 1000);
+		PhysicalTopology.getInstance().addFogDevice(fd0);
+		PhysicalTopology.getInstance().addFogDevice(fd1);
+		PhysicalTopology.getInstance().addSwitch(sw0);
+		PhysicalTopology.getInstance().addSwitch(sw1);
+		PhysicalTopology.getInstance().addSwitch(sw2);
+		PhysicalTopology.getInstance().addEndDevice(dev);
+		fogDevices.add(fd0);
+		fogDevices.add(fd1);
 		
-		for (int i = 0; i < NUM_EDGE_SW ; i++) {
-			FogDevice dev = createFogDevice("FD-"+i, false, 10240, 2000, 0.01, 103, 83.25);
-			fogDevices.add(dev);
-			PhysicalTopology.getInstance().addFogDevice(dev);
-			Switch sw = new Switch("SW-"+i);
-			PhysicalTopology.getInstance().addSwitch(sw);
-			PhysicalTopology.getInstance().addLink(sw.getId(), gwSw.getId(), 5, 1000);
-			PhysicalTopology.getInstance().addLink(sw.getId(), dev.getId(), 5, 1000);
-			Switch esw = new Switch("ESW-"+i);
-			PhysicalTopology.getInstance().addSwitch(esw);
-			PhysicalTopology.getInstance().addLink(esw.getId(), sw.getId(), 5, 1000);
-			
-			for (int j = 0; j < NUM_DEV_PER_EDGE_SW ; j++) {
-				String suffix = i+"-"+j;
-				EndDevice endDevice = new EndDevice("END_DEV-"+suffix);
-				int transmissionInterval = 500;
-				Sensor sensor = new Sensor("s-"+suffix, "SENSED_DATA", userId, appId, new DeterministicDistribution(transmissionInterval), application); // inter-transmission time of EEG sensor follows a deterministic distribution
-				sensors.add(sensor);
-				Actuator actuator = new Actuator("a-"+suffix, userId, appId, "ACTION", application);
-				actuators.add(actuator);
-				endDevice.addSensor(sensor);
-				endDevice.addActuator(actuator);
-				PhysicalTopology.getInstance().addEndDevice(endDevice);
-				PhysicalTopology.getInstance().addLink(esw.getId(), endDevice.getId(), 10, 1000);
-			}
-			
-		}
+		// Now connecting entities with Links
+		PhysicalTopology.getInstance().addLink(dev.getId(), sw0.getId(), 10, 1000);
+		PhysicalTopology.getInstance().addLink(sw0.getId(), sw1.getId(), 15, 1000);
+		PhysicalTopology.getInstance().addLink(sw0.getId(), fd0.getId(), 2, 1000);
+		PhysicalTopology.getInstance().addLink(sw1.getId(), sw2.getId(), 20, 1000);
+		PhysicalTopology.getInstance().addLink(sw2.getId(), fd1.getId(), 2, 1000);
 		
 		if (PhysicalTopology.getInstance().validateTopology()) {
 			System.out.println("Topology validation successful");
@@ -242,8 +241,8 @@ public class PhyTopoExample2 {
 		/*
 		 * Connecting the application modules (vertices) in the application model (directed graph) with edges
 		 */
-		application.addAppEdge("SENSED_DATA", "MODULE", 3, 500, "SENSED_DATA", Tuple.UP, AppEdge.SENSOR);
-		application.addAppEdge("MODULE", "ACTION", 1000, 500, "ACTION", Tuple.DOWN, AppEdge.ACTUATOR);  // adding edge from Client module to Display (actuator) carrying tuples of type SELF_STATE_UPDATE
+		application.addAppEdge("SENSED_DATA", "MODULE", 30000, 10*1024, "SENSED_DATA", Tuple.UP, AppEdge.SENSOR);
+		application.addAppEdge("MODULE", "ACTION", 1000, 1*1024, "ACTION", Tuple.DOWN, AppEdge.ACTUATOR);  // adding edge from Client module to Display (actuator) carrying tuples of type SELF_STATE_UPDATE
 		
 		/*
 		 * Defining the input-output relationships (represented by selectivity) of the application modules. 

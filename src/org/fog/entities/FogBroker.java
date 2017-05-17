@@ -273,7 +273,8 @@ public class FogBroker extends PowerDatacenterBroker{
 			for (String appId : getApplications().keySet()) {
 				Application app = getApplications().get(appId);
 				for (AppLoop loop : app.getLoops()) {
-					System.out.println(getStringForLoopId(loopId) + " ---> "+TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loopId));		
+					if (loop.getLoopId() == loopId)
+						System.out.println(getStringForLoopId(loopId) + " ---> "+TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loopId));		
 				}
 			}
 			

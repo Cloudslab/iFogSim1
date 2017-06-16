@@ -23,5 +23,15 @@ public class GeoLocation {
 		this.longitude = longitude;
 	}
 	
+	public double getDistanceFrom(GeoLocation l) {
+		double dist = Math.sqrt(Math.pow(l.getLatitude() - getLatitude(), 2) 
+				+ Math.pow(l.getLongitude() - getLongitude(), 2));
+		return dist;
+	}
+	
+	@Override
+	public String toString() {
+		return "("+getLatitude()+", "+getLongitude()+")";
+	}
 	
 }

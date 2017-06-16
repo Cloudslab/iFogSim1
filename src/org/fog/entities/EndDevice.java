@@ -6,6 +6,7 @@ import java.util.List;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEvent;
+import org.fog.models.mobility.MobilityModel;
 import org.fog.utils.FogEvents;
 import org.fog.utils.GeoLocation;
 
@@ -17,7 +18,7 @@ public class EndDevice extends SimEntity {
 	private int edgeSwitchId;
 	private int linkId;
 
-	private GeoLocation geoLocation;
+	private MobilityModel mobilityModel;
 	
 	public EndDevice(String name) {
 		super(name);
@@ -26,14 +27,23 @@ public class EndDevice extends SimEntity {
 	}
 
 	protected void sendTuple(Tuple tuple, int dstDeviceId, int dstVmId) {
+		checkHandoff();
 		tuple.setVmId(dstVmId);
 		tuple.setSourceDeviceId(getId());
 		tuple.setDestinationDeviceId(dstDeviceId);
 		send(getLinkId(), CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ARRIVAL, tuple);
 	}
 	
-	protected void sendTuple(Tuple tuple, int dstDeviceId) {
-		send(dstDeviceId, CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ARRIVAL, tuple);
+	/**
+	 * Check whether handoff to another edge device is required. If yes, update routing information. 
+	 */
+	private void checkHandoff() {
+		//GeoLocation currLocation = getMobilityModel().getCurrentLocation(CloudSim.clock());
+		
+	}
+
+	protected void sendTupleToActuator(Tuple tuple, int actuatorId) {
+		send(actuatorId, CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ARRIVAL, tuple);
 	}
 	
 	public void addSensor(Sensor sensor) {
@@ -70,7 +80,7 @@ public class EndDevice extends SimEntity {
 		int destId = tuple.getDestinationDeviceId();
 		for (Actuator a : getActuators()) {
 			if (destId == a.getId()) {
-				sendTuple(tuple, destId);
+				sendTupleToActuator(tuple, destId);
 			}
 		}
 	}
@@ -103,10 +113,10 @@ public class EndDevice extends SimEntity {
 	public void setLinkId(int linkId) {
 		this.linkId = linkId;
 	}
-	public GeoLocation getGeoLocation() {
-		return geoLocation;
+	public MobilityModel getMobilityModel() {
+		return mobilityModel;
 	}
-	public void setGeoLocation(GeoLocation geoLocation) {
-		this.geoLocation = geoLocation;
+	public void setMobilityModel(MobilityModel mobilityModel) {
+		this.mobilityModel = mobilityModel;
 	}
 }

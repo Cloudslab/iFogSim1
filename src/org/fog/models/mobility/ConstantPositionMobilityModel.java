@@ -9,7 +9,7 @@ public class ConstantPositionMobilityModel extends MobilityModel {
 	}
 
 	@Override
-	public GeoLocation getUpdatedLocation(double lastTime,
+	protected GeoLocation getUpdatedLocation(double lastTime,
 			GeoLocation lastLocation, double currTime) {
 		return getInitialLocation();
 	}

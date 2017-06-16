@@ -16,6 +16,7 @@ import org.cloudbus.cloudsim.core.CloudSim;
 import org.fog.entities.Actuator;
 import org.fog.entities.EndDevice;
 import org.fog.entities.FogDevice;
+import org.fog.utils.GeoLocation;
 import org.fog.utils.Logger;
 
 public class PhysicalTopology {
@@ -319,6 +320,29 @@ public class PhysicalTopology {
 			}
 		}
 	}	
+
+	private EdgeSwitch getClosestEdgeSwitch(GeoLocation location) {
+		double min = 10000000;
+		EdgeSwitch sw = null;
+		for (Switch s : getSwitches()) {
+			if (s.isEdgeSwitch()) {
+				double dist = location.getDistanceFrom(((EdgeSwitch) s).getGeoLocation());
+				if (dist <= min) {
+					min = dist;
+					sw = ((EdgeSwitch) s);
+				}
+			}
+		}
+		return sw;
+	}
+	
+	public int checkHandoff(GeoLocation endDeviceLoc, int edgeSwitchId) {
+		EdgeSwitch esw = getClosestEdgeSwitch(endDeviceLoc);
+		if (esw.getId() != edgeSwitchId) {
+			// Handoff required
+		}
+		return esw.getId();
+	}
 	
 	public List<FogDevice> getFogDevices() {
 		return fogDevices;
@@ -346,6 +370,7 @@ public class PhysicalTopology {
 		setEndDevices(new ArrayList<EndDevice>());
 	}
 
+	
 /*	public static void main(String args[]) {
 		int num_user = 1; // number of cloud users
 		Calendar calendar = Calendar.getInstance();

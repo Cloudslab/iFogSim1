@@ -11,14 +11,21 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Class representing the placement of one instance of application.
+ * Class representing the placement of one instance of application. One instance means all modules of application will have 1 instance running. 
  * All the module placements across these objects are independent, i.e. if > 1 modules map to the same Fog Device, they will have separate VMs.
  * TODO Future work would be to define Modules that are merge-able. 
  * @author Harshit Gupta
  * @since iFogSim Toolkit 2.0
  */
 public class ModulePlacement {
+	/**
+	 * Map between sensorType and list of IDs of sensors of that type
+	 */
 	private Map<String, List<Integer>> sensorIds;
+	
+	/**
+	 * Map between actuatorType and list of IDs of actuators of that type
+	 */
 	private Map<String, List<Integer>> actuatorIds;
 	
 	/**
@@ -44,10 +51,20 @@ public class ModulePlacement {
 		getActuatorIds().get(actuatorType).add(actuatorId);
 	}
 	
+	/**
+	 * Specify the mapping of an application module on a fog device
+	 * @param moduleName name of application module to be mapped
+	 * @param deviceId fog device ID on which module is to be mapped
+	 */
 	public void addMapping(String moduleName, Integer deviceId) {
 		placementMap.put(moduleName, deviceId);
 	}
 	
+	/**
+	 * Gets fog device ID on which a module has been mapped in this ModulePlacement
+	 * @param moduleName name of module
+	 * @return
+	 */
 	public Integer getMappedDeviceId(String moduleName) {
 		if (placementMap.containsKey(moduleName))
 			return placementMap.get(moduleName);

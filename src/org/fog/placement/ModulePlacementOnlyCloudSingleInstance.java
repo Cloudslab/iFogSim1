@@ -1,6 +1,6 @@
 /*
  * Title:        iFogSim Toolkit
- * Description:  iFogSim (Cloud Simulation) Toolkit for Modeling and Simulation of Clouds
+ * Description:  iFogSim (Fog Simulation) Toolkit for Modeling and Simulation of Fog Computing
  *
  */
 package org.fog.placement;
@@ -8,10 +8,7 @@ package org.fog.placement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
-import org.cloudbus.cloudsim.core.CloudSim;
 import org.fog.application.AppModule;
 import org.fog.application.Application;
 import org.fog.entities.Actuator;
@@ -20,13 +17,25 @@ import org.fog.entities.FogDevice;
 import org.fog.entities.FogDeviceCharacteristics;
 import org.fog.entities.Sensor;
 import org.fog.entities.SensorCharacteristics;
-import org.fog.placement.ModulePlacementPolicy;
 
+/**
+ * Module Placement policy that places modules only on the cloud. Creates one single instance of application for all sensor-actuator pair.
+ * Ideal for scenarios where all information needs to be processed by one entity, e.g. IoT in smart city applications
+ * 
+ * @author Harshit Gupta
+ * @since iFogSim 2.0
+ */
 public class ModulePlacementOnlyCloudSingleInstance extends ModulePlacementPolicy {
 	
+	/**
+	 * List of sensors considered for placement
+	 */
 	private List<Sensor> sensors;
+	
+	/**
+	 * List of actuators considered for placement
+	 */
 	private List<Actuator> actuators;
-	private int cloudId;
 	
 	public ModulePlacementOnlyCloudSingleInstance(List<FogDevice> fogDevices, List<Sensor> sensors, List<Actuator> actuators, Application application){
 		super();
@@ -36,35 +45,8 @@ public class ModulePlacementOnlyCloudSingleInstance extends ModulePlacementPolic
 		this.setActuators(actuators);
 		this.setModuleToDeviceMap(new HashMap<String, List<Integer>>());
 		this.setDeviceToModuleMap(new HashMap<Integer, List<AppModule>>());
-		this.setModuleInstanceCountMap(new HashMap<Integer, Map<String, Integer>>());
-		this.cloudId = CloudSim.getEntityId("cloud");
 	}
 	
-	/*@Override
-	protected void mapModules() {
-		List<AppModule> modules = getApplication().getModules();
-		for(AppModule module : modules){
-			FogDevice cloud = getDeviceById(cloudId);
-			createModuleInstanceOnDevice(module, cloud);
-		}
-	}*/
-
-	public List<Actuator> getActuators() {
-		return actuators;
-	}
-
-	public void setActuators(List<Actuator> actuators) {
-		this.actuators = actuators;
-	}
-
-	public List<Sensor> getSensors() {
-		return sensors;
-	}
-
-	public void setSensors(List<Sensor> sensors) {
-		this.sensors = sensors;
-	}
-
 	@Override
 	public List<ModulePlacement> computeModulePlacements(
 			List<FogDeviceCharacteristics> fogDeviceCharacteristics,
@@ -81,41 +63,55 @@ public class ModulePlacementOnlyCloudSingleInstance extends ModulePlacementPolic
 			getActuatorCharacteristics().put(ac.getId(), ac);
 		}
 		
+		// Get the cloud datacenter by looking at isCloud() value for each fog device		
 		FogDeviceCharacteristics cloud = null;
 		for (Integer fc : getFogDeviceCharacteristics().keySet()) {
 			if (getFogDeviceCharacteristics().get(fc).isCloudDatacenter())
 				cloud = getFogDeviceCharacteristics().get(fc);
 		}
 		
-		if (cloud == null)
+		if (cloud == null) {
+			// If there is no cloud datacenter, the placement fails
 			return null;
+		}
 		
 		List<ModulePlacement> placements = new ArrayList<ModulePlacement>();
 		
 		ModulePlacement placement = new ModulePlacement();
 		
+		// Adding all sensors to the placement instance, since there is only one instance globally
 		for (int sensorId : getSensorCharacteristics().keySet()) {
 			placement.addSensorId(getSensorCharacteristics().get(sensorId).getTupleType(), sensorId);	
 		}
 		
+		// Adding all actuators to the placement instance, since there is only one instance globally
 		for (int actuatorId : getActuatorCharacteristics().keySet()) {
 			placement.addActuatorId(getActuatorCharacteristics().get(actuatorId).getActuatorType(), actuatorId);	
 		}
 		
+		// Most important, mapping all application modules to the cloud datacenter
 		for (AppModule module : getApplication().getModules()) {
 			placement.addMapping(module.getName(), cloud.getId());
 		}
+		
 		placements.add(placement);
 		return placements;
 	}
-
-	private ActuatorCharacteristics getCorresponsingActuator(
-			SensorCharacteristics sensorCharacteristics) {
-		String suffix = CloudSim.getEntityName(sensorCharacteristics.getId()).substring(2);
-		for (Entry<Integer, ActuatorCharacteristics> e : getActuatorCharacteristics().entrySet()) {
-			if (CloudSim.getEntityName(e.getKey()).contains(suffix))
-				return e.getValue();
-		}
-		return null;
+	
+	public List<Actuator> getActuators() {
+		return actuators;
 	}
+
+	public void setActuators(List<Actuator> actuators) {
+		this.actuators = actuators;
+	}
+
+	public List<Sensor> getSensors() {
+		return sensors;
+	}
+
+	public void setSensors(List<Sensor> sensors) {
+		this.sensors = sensors;
+	}
+
 }

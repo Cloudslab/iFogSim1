@@ -1,11 +1,10 @@
 /*
  * Title:        iFogSim Toolkit
- * Description:  iFogSim (Cloud Simulation) Toolkit for Modeling and Simulation of Clouds
+ * Description:  iFogSim (Fog Simulation) Toolkit for Modeling and Simulation of Fog Computing
  *
  */
 package org.fog.placement;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,30 +12,58 @@ import java.util.Map;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.fog.application.AppModule;
 import org.fog.application.Application;
-import org.fog.entities.Actuator;
 import org.fog.entities.ActuatorCharacteristics;
 import org.fog.entities.FogDevice;
 import org.fog.entities.FogDeviceCharacteristics;
-import org.fog.entities.Sensor;
 import org.fog.entities.SensorCharacteristics;
 
+/**
+ * Abstract class that performs placement of application modules on physical topology.
+ * Each application has its own placement policy.
+ * 
+ * @author Harshit Gupta
+ * @since iFogSim 2.0
+ */
 public abstract class ModulePlacementPolicy {
 	
 	public static int ONLY_CLOUD = 1;
 	public static int EDGEWARDS = 2;
 	public static int USER_MAPPING = 3;
 	
+	/**
+	 * List of fog devices on which modules can be placed
+	 */
 	private List<FogDevice> fogDevices;
+	
+	/**
+	 * Application for which placement needs to be done
+	 */
 	private Application application;
+	
+	/**
+	 * Map from module name to list of fog device IDs it is to be placed on
+	 */
 	private Map<String, List<Integer>> moduleToDeviceMap;
+	
+	/**
+	 * Map from fog device ID to a list of modules that are to be placed on it
+	 */
 	private Map<Integer, List<AppModule>> deviceToModuleMap;
-	private Map<Integer, Map<String, Integer>> moduleInstanceCountMap;
 	
+	/**
+	 * Map from fog device ID to its characteristics
+	 */
 	private Map<Integer, FogDeviceCharacteristics> fogDeviceCharacteristics;
+
+	/**
+	 * Map from sensor ID to its characteristics
+	 */
 	private Map<Integer, SensorCharacteristics> sensorCharacteristics;
+
+	/**
+	 * Map from actuator ID to its characteristics
+	 */
 	private Map<Integer, ActuatorCharacteristics> actuatorCharacteristics;
-	
-	//protected abstract void mapModules();
 	
 	protected ModulePlacementPolicy() {
 		setFogDeviceCharacteristics(new HashMap<Integer, FogDeviceCharacteristics>());
@@ -44,9 +71,23 @@ public abstract class ModulePlacementPolicy {
 		setActuatorCharacteristics(new HashMap<Integer, ActuatorCharacteristics>());
 	}
 
+	/**
+	 * Compute policy-specific placement of application modules on fog devices.
+	 * An abstract method, needs to be implemented by specific policies. 
+	 * @param fogDeviceCharacteristics
+	 * @param sensorCharacteristics
+	 * @param actuatorCharacteristics
+	 * @return
+	 */
 	public abstract List<ModulePlacement> computeModulePlacements(List<FogDeviceCharacteristics> fogDeviceCharacteristics, 
 			List<SensorCharacteristics> sensorCharacteristics, List<ActuatorCharacteristics> actuatorCharacteristics);
 	
+	/**
+	 * Check if application module can be launched on fog device
+	 * @param fogDevice
+	 * @param module
+	 * @return
+	 */
 	protected boolean canBeCreated(FogDevice fogDevice, AppModule module){
 		return fogDevice.getVmAllocationPolicy().allocateHostForVm(module);
 	}
@@ -63,7 +104,7 @@ public abstract class ModulePlacementPolicy {
 		return false;
 	}
 	
-	protected boolean createModuleInstanceOnDevice(AppModule _module, final FogDevice device){
+	/*protected boolean createModuleInstanceOnDevice(AppModule _module, final FogDevice device){
 		AppModule module = null;
 		if(getModuleToDeviceMap().containsKey(_module.getName()))
 			module = new AppModule(_module);
@@ -86,7 +127,7 @@ public abstract class ModulePlacementPolicy {
 			System.err.println("Terminating");
 			return false;
 		}
-	}
+	}*/
 	
 	protected FogDevice getDeviceByName(String deviceName) {
 		for(FogDevice dev : getFogDevices()){
@@ -136,14 +177,6 @@ public abstract class ModulePlacementPolicy {
 		this.deviceToModuleMap = deviceToModuleMap;
 	}
 
-	public Map<Integer, Map<String, Integer>> getModuleInstanceCountMap() {
-		return moduleInstanceCountMap;
-	}
-
-	public void setModuleInstanceCountMap(Map<Integer, Map<String, Integer>> moduleInstanceCountMap) {
-		this.moduleInstanceCountMap = moduleInstanceCountMap;
-	}
-
 	public Map<Integer, FogDeviceCharacteristics> getFogDeviceCharacteristics() {
 		return fogDeviceCharacteristics;
 	}
@@ -167,5 +200,4 @@ public abstract class ModulePlacementPolicy {
 	public void setActuatorCharacteristics(Map<Integer, ActuatorCharacteristics> actuatorCharacteristics) {
 		this.actuatorCharacteristics = actuatorCharacteristics;
 	}
-
 }

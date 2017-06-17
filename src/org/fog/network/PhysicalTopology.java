@@ -1,6 +1,6 @@
 /*
  * Title:        iFogSim Toolkit
- * Description:  iFogSim (Cloud Simulation) Toolkit for Modeling and Simulation of Clouds
+ * Description:  iFogSim (Cloud Simulation) Toolkit for Modeling and Simulation of Fog Computing
  *
  */
 
@@ -32,23 +32,54 @@ public class PhysicalTopology {
 		return instance;
 	}
 	
+	/**
+	 * List of fog devices in the physical topology
+	 */
 	private List<FogDevice> fogDevices;
+	/**
+	 * List of end-devices in the physical topology
+	 */
 	private List<EndDevice> endDevices;
+	/**
+	 * List of switches in the physical topology
+	 */
 	private List<Switch> switches;
+	/**
+	 * List of links in the physical topology
+	 */
 	private List<Link> links;
 
+	/**
+	 * Add link in physical topology
+	 * @param endpoint1 ID of 1st endpoint of link to be created
+	 * @param endpoint2 ID of 2nd endpoint of link to be created
+	 * @param latency latency of link, same for both directions
+	 * @param bandwidth one-directional bandwidth of link. Both directions of communication will receive equal BW equal to this parameter.
+	 */
 	public void addLink(int endpoint1, int endpoint2, double latency, double bandwidth) {
 		getLinks().add(new Link("link-"+endpoint1+"-"+endpoint2, latency, bandwidth, endpoint1, endpoint2));
 	}
 	
+	/**
+	 * Add fog device to physical topology
+	 * @param dev
+	 */
 	public void addFogDevice(FogDevice dev) {
 		getFogDevices().add(dev);
 	}
 
+	/**
+	 * Add end-device to physical topology
+	 * @param dev
+	 */
 	public void addEndDevice(EndDevice dev) {
 		getEndDevices().add(dev);
 	}
 	
+	/**
+	 * Add switch to physical topology
+	 * @param dev
+	 */
 	public void addSwitch(Switch sw) {
 		getSwitches().add(sw);
 	}
@@ -87,6 +118,9 @@ public class PhysicalTopology {
 		return true;
 	}
 	
+	/** 
+	 * Makes the physical topology ready.
+	 */
 	public void setUpEntities() {
 		assignLinksToFogDevices();
 		assignLinksToEndDevices();
@@ -96,9 +130,14 @@ public class PhysicalTopology {
 		calculateRoutingTables();
 	}
 	
+	/**
+	 * Determines the switches neighbouring each switch in topology.
+	 * This information is used for forwarding information when calculating routing tables.
+	 */
 	private void calculateNeighbourSwitches() {
-		for (Switch sw : getSwitches()) {
+		for (Switch sw : getSwitches()) {	// calculate neighbour switches for each switch
 			for (Link l : getLinks()) {
+				// for each link, if this switch is on one end, get ID of entity on other end
 				int neighbour = -1;
 				if (l.getEndpointNorth() == sw.getId()) {
 					neighbour = l.getEndpointSouth();
@@ -106,16 +145,15 @@ public class PhysicalTopology {
 					neighbour = l.getEndpointNorth();
 				}
 				Switch neighbourSw = getSwitch(neighbour);
-				if (neighbourSw != null && neighbour != -1) {
+				if (neighbourSw != null && neighbour != -1) {	// If a neighbour exists and is a switch
 					sw.getNeighbourSwitches().add(neighbour);
 				}
 			}
 		}
-		
 	}
 
 	/**
-	 * Calculates 
+	 * For each switch, calculate the entities (fog devices & end-devices) directly connected to it.
 	 */
 	private void calculateAdjacentEntities() {
 		Logger.debug(LOG_TAG, "Calculating adjacent entities");
@@ -166,49 +204,55 @@ public class PhysicalTopology {
 		return actuators;
 	}
 	
+	/**
+	 * Calculate routing table for each switch.
+	 * Calculate temporary tables with next hop and hop count information for each destination entity.
+	 * SwId --> { Dest --> (Next Hop, Num Hops) }.
+	 * This information is then flooded to neighbours which choose the hop for a dest with shortest num of hops.
+	 */
 	public void calculateRoutingTables() {
-		/**
-		 * SwId --> { Dest --> (Next Hop, Num Hops) }
-		 */
 		Logger.debug(LOG_TAG, "Calculating routing tables");
-		Map<Integer, Map<Integer, Pair<Integer, Integer>>> routingTables;
+		Map<Integer, Map<Integer, Pair<Integer, Integer>>> routingTables; // map to hold entries of the form SwId --> { Dest --> (Next Hop, Num Hops) }. 
 		routingTables = new HashMap<Integer, Map<Integer, Pair<Integer, Integer>>>();
 		
 		int numNodes = getFogDevices().size() + getActuators().size();
 		
 		for (Switch sw : switches) {
 			routingTables.put(sw.getId(), new HashMap<Integer, Pair<Integer, Integer>>());
+			
+			// For each switch, first add all adjacent fog devices to be at a distance of 0 hops.
 			for (int adjEntity : sw.getAdjacentEntities()) {
 				routingTables.get(sw.getId()).put(adjEntity, new Pair<Integer, Integer>(adjEntity, 0));
 			}
+			// For each switch, first add all adjacent actuators to be at a distance of 0 hops.
 			for (int adjDevId : sw.getAdjacentEndDevices()) {
 				EndDevice dev = getEndDevice(adjDevId);
-				
 				for (Actuator a : dev.getActuators())
 					routingTables.get(sw.getId()).put(a.getId(), new Pair<Integer, Integer>(dev.getId(), 0));
 			}
 		}
 		
-		while (!isRoutingConverged(routingTables, numNodes)) {
-			
+		while (!isRoutingConverged(routingTables, numNodes)) {	// loop until the routing tables on switches converges
+			// Each switch floods the information it has to its neighbour switches
 			for (Switch sw : switches) {
 				Map<Integer, Pair<Integer, Integer>> table = routingTables.get(sw.getId());
 				for (int neighbour : sw.getNeighbourSwitches()) {
-					for (Integer dst : table.keySet()) {
+					for (Integer dst : table.keySet()) {	// for each destination reachable from this switch (sw)
 						updateRoutingTable(routingTables, neighbour, dst, 
-								sw.getId(), table.get(dst).getSecond()+1);
+								sw.getId(), table.get(dst).getSecond()+1);	// the neighbour switch can reach the dest via one more hop by choosing sw as the next hop
 					}
 				}
 			}
 		}
 		printRoutingTables(routingTables);
+		// For each switch and each destination, get the next hop and add entry pointing to the link to be used to reach the next hop
 		for (Switch sw : getSwitches()) {
 			Map<Integer, Pair<Integer, Integer>> routingTable = routingTables.get(sw.getId());
 			for (Integer dst : routingTable.keySet()) {
 				int nextHop = routingTable.get(dst).getFirst();
-				Link link = getLink(sw.getId(), nextHop);
+				Link link = getLink(sw.getId(), nextHop);	// get the link to next hop
 				if (link != null)
-					sw.getSwitchingTable().put(dst, link.getId());
+					sw.getSwitchingTable().put(dst, link.getId());	// tell routing table to use link to reach the given next hop
 				else {
 					Logger.error(LOG_TAG, "Sw : "+sw.getName());
 					Logger.error(LOG_TAG, "Link connecting endpoints "+sw.getName()
@@ -263,12 +307,12 @@ public class PhysicalTopology {
 	}
 	
 	/**
-	 * 
-	 * @param routingTables
-	 * @param swId
-	 * @param dst
-	 * @param nextHop
-	 * @param numHops
+	 * Update entry in routing table of a switch for a given destination
+	 * @param routingTables	Data structure holding the unconverged routing tables
+	 * @param swId ID of switch whose routing table is to be modified
+	 * @param dst Destination ID whose entry is to be modified
+	 * @param nextHop New next hop for the destination 
+	 * @param numHops New number of hops for the destination 
 	 */
 	private void updateRoutingTable(Map<Integer, Map<Integer, Pair<Integer, Integer>>> routingTables,
 			int swId, int dst, int nextHop, int numHops) {

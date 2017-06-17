@@ -1,3 +1,7 @@
+/*
+ * Title:        iFogSim Toolkit
+ * Description:  iFogSim (Fog Simulation) Toolkit for Modeling and Simulation of Fog Computing
+ */
 package org.fog.network;
 
 import java.util.ArrayList;
@@ -12,9 +16,18 @@ import org.fog.entities.Tuple;
 import org.fog.utils.FogEvents;
 import org.fog.utils.Logger;
 
+/**
+ * Network switch (L2/L3) used for creating a network topology. 
+ * Introduced in iFogSim 2.0 to allow non-hierarchical topologies of fog devices as well.
+ * @author Harshit Gupta
+ * @since iFogSim 2.0
+ */
 public class Switch extends SimEntity {
 	private static String LOG_TAG = "SWITCH";
 	
+	/**
+	 * List of switches neighbouring this switch
+	 */
 	protected List<Integer> neighbourSwitches;
 	
 	/**
@@ -48,13 +61,17 @@ public class Switch extends SimEntity {
 		return !isCoreSwitch();
 	}
 	
+	/**
+	 * Handler for the arrival of tuple
+	 * @param ev Event containing tuple that just arrived.
+	 */
 	private void processTupleArrival(SimEvent ev) {
 		Tuple tuple = (Tuple) ev.getData();
 		Logger.debug(LOG_TAG, getName(), "Received tuple with dst = "
 		+CloudSim.getEntityName(tuple.getDestinationDeviceId())+" & tupleType = "+tuple.getTupleType());
 		
 		int destId = tuple.getDestinationDeviceId();
-		if (getSwitchingTable().containsKey(destId)) {
+		if (getSwitchingTable().containsKey(destId)) {  // check routing (switching) table for next hop
 			sendNow(getSwitchingTable().get(destId), FogEvents.TUPLE_ARRIVAL, tuple);
 		} else {
 			Logger.error(LOG_TAG, getName(), "DESTINATION NOT IN SWITCHING TABLE");
@@ -63,7 +80,6 @@ public class Switch extends SimEntity {
 	
 	@Override
 	public void startEntity() {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -79,7 +95,6 @@ public class Switch extends SimEntity {
 
 	@Override
 	public void shutdownEntity() {
-		// TODO Auto-generated method stub
 		
 	}
 	

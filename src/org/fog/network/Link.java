@@ -1,3 +1,7 @@
+/*
+ * Title:        iFogSim Toolkit
+ * Description:  iFogSim (Fog Simulation) Toolkit for Modeling and Simulation of Fog Computing
+ */
 package org.fog.network;
 
 import java.util.LinkedList;
@@ -9,28 +13,52 @@ import org.fog.entities.Tuple;
 import org.fog.utils.FogEvents;
 import org.fog.utils.Logger;
 
+/**
+ * Point-to-point network link connecting two entities.
+ * Each link is of the form (A----B) where A and B are entities connected by it.
+ * Each link has two directions : North and South. For instance, A-->B can (arbitrarily) be North and B-->A South.
+ * @author Harshit Gupta
+ * @since iFogSim 2.0
+ */
 public class Link extends SimEntity {
 
 	private static String LOG_TAG = "LINK";
 	
+	/**
+	 * Queue holding packets to be sent North 
+	 */
 	protected Queue<Tuple> northTupleQueue;
+	/**
+	 * Queue holding packets to be sent South 
+	 */
 	protected Queue<Tuple> southTupleQueue;
+	/**
+	 * Flag indicating status of North direction
+	 */
 	boolean isNorthLinkBusy;
+	/**
+	 * Flag indicating status of South direction
+	 */
 	boolean isSouthLinkBusy;
 	
 	/**
-	 * Latency in milliseconds
+	 * Latency in milliseconds, same for both North and South directions.
 	 */
 	private double latency;
 	
 	/**
 	 * Bandwidth in Mbps.
-	 * If value of member = B, uplink BW = B and downlink BW = B independently.
+	 * If value of member = B, North BW = B and South BW = B independently.
 	 */
 	private double bandwidth;
 	
+	/**
+	 * ID of entity on the North end.
+	 */
 	private int endpointNorth;
-	
+	/**
+	 * ID of entity on the South end.
+	 */
 	private int endpointSouth;
 	
 	public Link(String name, double latency, double bandwidth, int endpointNorth, int endpointSouth) {
@@ -51,7 +79,6 @@ public class Link extends SimEntity {
 
 	@Override
 	public void startEntity() {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -73,77 +100,111 @@ public class Link extends SimEntity {
 
 	@Override
 	public void shutdownEntity() {
-		// TODO Auto-generated method stub
 		
 	}
 
+	/**
+	 * Handler for processing an incoming tuple.
+	 * @param ev
+	 */
 	private void processTupleArrival(SimEvent ev) {
 		Tuple tuple = (Tuple) ev.getData();
-		if (ev.getSource() == endpointNorth)
-			sendSouth(tuple);
-		else if (ev.getSource() == endpointSouth)
+		if (ev.getSource() == endpointNorth)  // checks if tuple was received from the North endpoint
+			sendSouth(tuple);  
+		else if (ev.getSource() == endpointSouth)  // checks if tuple was received from the South endpoint
 			sendNorth(tuple);
 	}
 	
+	/**
+	 * Updates the status of South queue.
+	 */
 	protected void updateSouthTupleQueue(){
-		if(!getSouthTupleQueue().isEmpty()){
-			Tuple tuple = getSouthTupleQueue().poll();
-			sendSouthFreeLink(tuple);
+		if(!getSouthTupleQueue().isEmpty()){  // if there are more tuples to send South
+			Tuple tuple = getSouthTupleQueue().poll();  // get next tuple from South queue
+			sendSouthFreeLink(tuple);  // send tuple South
 		}else{
-			setSouthLinkBusy(false);
+			setSouthLinkBusy(false);  // if no more tuples to be sent South, mark South link as FREE
 		}
 	}
 	
+	/**
+	 * Send a tuple in South direction. 
+	 * Link bandwidth can be used for sending this tuple in a dedicated manner.
+	 * @param tuple Tuple to be sent
+	 */
 	protected void sendSouthFreeLink(Tuple tuple){
 		double sizeInBits = tuple.getCloudletFileSize() * 8;
 		double bwInBitsPerSecond = getBandwidth() * 1024 * 1024;
-		double networkDelay = 1000*(sizeInBits/bwInBitsPerSecond);
+		double transmissionDelay = 1000*(sizeInBits/bwInBitsPerSecond);
 		Logger.debug(LOG_TAG, "SizeInBits = "+sizeInBits);
-		Logger.debug(LOG_TAG, "Transmission delay = "+networkDelay);
-		setSouthLinkBusy(true);
-		send(getId(), networkDelay, FogEvents.UPDATE_SOUTH_TUPLE_QUEUE);
-		send(endpointSouth, networkDelay + getLatency(), FogEvents.TUPLE_ARRIVAL, tuple);
+		Logger.debug(LOG_TAG, "Transmission delay = "+transmissionDelay );
+		setSouthLinkBusy(true); // South link has begun sending this tuple. Marking it as busy so next tuples are queued until this is sent. 
+		send(getId(), transmissionDelay , FogEvents.UPDATE_SOUTH_TUPLE_QUEUE);	// update South link once transmission is complete
+		send(endpointSouth, transmissionDelay  + getLatency(), FogEvents.TUPLE_ARRIVAL, tuple);	// Sent tuple arrives at other end of link after given delay
 	}
 	
+	/**
+	 * Send a tuple in South direction to endpoint connected at South end of link.
+	 * @param tuple Tuple to be sent
+	 */
 	protected void sendSouth(Tuple tuple){
 		if(endpointSouth > 0){
 			if(!isSouthLinkBusy()){
-				sendSouthFreeLink(tuple);
+				// if South link is not busy sending a tuple already
+				sendSouthFreeLink(tuple);	// send this tuple immediately
 			}else{
-				southTupleQueue.add(tuple);
+				southTupleQueue.add(tuple);	// queue this tuple for later transmission
 			}
 		}
 	}
-
+	
+	/**
+	 * Updates the status of North queue.
+	 */
 	protected void updateNorthTupleQueue(){
-		if(!getNorthTupleQueue().isEmpty()){
-			Tuple tuple = getNorthTupleQueue().poll();
-			sendNorthFreeLink(tuple);
+		if(!getNorthTupleQueue().isEmpty()){  // if there are more tuples to send North
+			Tuple tuple = getNorthTupleQueue().poll();  // get next tuple from North queue
+			sendNorthFreeLink(tuple);  // send tuple North
 		}else{
-			setNorthLinkBusy(false);
+			setNorthLinkBusy(false);  // if no more tuples to be sent North, mark North link as FREE
 		}
 	}
 	
+	/**
+	 * Send a tuple in North direction. 
+	 * Link bandwidth can be used for sending this tuple in a dedicated manner.
+	 * @param tuple Tuple to be sent
+	 */
 	protected void sendNorthFreeLink(Tuple tuple){
 		double sizeInBits = tuple.getCloudletFileSize() * 8;
 		double bwInBitsPerSecond = getBandwidth() * 1024 * 1024;
 		double networkDelay = 1000*(sizeInBits/bwInBitsPerSecond);
-		Logger.debug(LOG_TAG, "Transmission delay = "+networkDelay);
-		setNorthLinkBusy(true);
-		send(getId(), networkDelay, FogEvents.UPDATE_NORTH_TUPLE_QUEUE);
-		send(endpointNorth, networkDelay + getLatency(), FogEvents.TUPLE_ARRIVAL, tuple);
+		Logger.debug(LOG_TAG, "Transm	ission delay = "+networkDelay);
+		setNorthLinkBusy(true);  // North link has begun sending this tuple. Marking it as busy so next tuples are queued until this is sent.
+		send(getId(), networkDelay, FogEvents.UPDATE_NORTH_TUPLE_QUEUE);  // update North link once transmission is complete
+		send(endpointNorth, networkDelay + getLatency(), FogEvents.TUPLE_ARRIVAL, tuple);  // Sent tuple arrives at other end of link after given delay
 	}
 	
+	/**
+	 * Send a tuple in North direction to endpoint connected at North end of link.
+	 * @param tuple Tuple to be sent
+	 */
 	protected void sendNorth(Tuple tuple){
 		if(endpointNorth > 0){
 			if(!isNorthLinkBusy()){
-				sendNorthFreeLink(tuple);
+				// if North link is not busy sending a tuple already
+				sendNorthFreeLink(tuple);  // send this tuple immediately
 			}else{
-				northTupleQueue.add(tuple);
+				northTupleQueue.add(tuple);	// queue this tuple for later transmission
 			}
 		}
 	}
 	
+	/**
+	 * Get other endpoint of the link
+	 * @param endpoint given endpoint
+	 * @return
+	 */
 	public int getOtherEndpoint(int endpoint) {
 		if (getEndpointNorth() == endpoint)
 			return getEndpointSouth();

@@ -1,6 +1,6 @@
 /*
  * Title:        iFogSim Toolkit
- * Description:  iFogSim (Cloud Simulation) Toolkit for Modeling and Simulation of Clouds
+ * Description:  iFogSim (Cloud Simulation) Toolkit for Modeling and Simulation of Fog Computing
  *
  */
 package org.fog.placement;

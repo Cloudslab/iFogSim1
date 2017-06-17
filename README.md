@@ -1,6 +1,9 @@
 # fogsim
 A Toolkit for Modeling and Simulation of Resource Management Techniques in Internet of Things, Edge and Fog Computing Environments
 
+## IMPORTANT
+Please check the `improv` branch for latest changes. Master branch has been left intact until complete testing.
+
 ## How to run iFogSim ?
 
 * Create a Java project in Eclipse. 

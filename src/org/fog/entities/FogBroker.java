@@ -293,8 +293,20 @@ public class FogBroker extends PowerDatacenterBroker{
 	@Override
 	public void shutdownEntity() {
 		printTimeDetails();
+		printEnergyConsumptionDetails();
 	}
 	
+	private void printEnergyConsumptionDetails() {
+		System.out.println("=========================================");
+		System.out.println("FOG DEVICE ENERGY CONSUMPTION");
+		System.out.println("=========================================");
+		for (int devId : getFogDeviceIds()) {
+			FogDevice dev = (FogDevice) CloudSim.getEntity(devId);
+			System.out.format("%s : %f kJ\n", dev.getName(), dev.getPower()/1000);
+		}
+		System.out.println("=========================================");
+	}
+
 	public void setFogDeviceIds(List<Integer> fogDeviceIds) {
 		this.fogDeviceIds = fogDeviceIds;
 	}

@@ -120,7 +120,21 @@ public class VRGameFog {
 	 * @param userId
 	 * @param appId
 	 */
+
 	private static void createFogDevices(int userId, String appId) {
+		/**
+		 * Creates a vanilla fog device
+		 * @param nodeName name of the device to be used in simulation
+		 * @param mips MIPS
+		 * @param ram RAM
+		 * @param upBw uplink bandwidth
+		 * @param downBw downlink bandwidth
+		 * @param level hierarchy level of the device
+		 * @param ratePerMips cost rate per MIPS used
+		 * @param busyPower
+		 * @param idlePower
+		 * @return
+		 */
 		FogDevice cloud = createFogDevice("cloud", 44800, 40000, 100, 10000, 0, 0.01, 16*103, 16*83.25); // creates the fog device Cloud at the apex of the hierarchy with level=0
 		cloud.setParentId(-1);
 		FogDevice proxy = createFogDevice("proxy-server", 2800, 4000, 10000, 10000, 1, 0.0, 107.339, 83.4333); // creates the fog device Proxy Server (level=1)

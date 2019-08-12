@@ -45,7 +45,7 @@ public class VRGameFog {
 	static List<Sensor> sensors = new ArrayList<Sensor>();
 	static List<Actuator> actuators = new ArrayList<Actuator>();
 	
-	static boolean CLOUD = false;
+	static boolean CLOUD = true;
 	
 	static int numOfDepts = 4;
 	static int numOfMobilesPerDept = 6;

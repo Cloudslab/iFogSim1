@@ -38,7 +38,7 @@ import org.fog.utils.distribution.DeterministicDistribution;
 /**
  * Simulation setup for Arrhythmia classification
  * @author DongJoo Seo
- *
+ * based on VRGameFog example
  */
 public class ArrhythmiaApp {
 	static List<FogDevice> fogDevices = new ArrayList<FogDevice>();
@@ -73,28 +73,21 @@ public class ArrhythmiaApp {
 			createFogDevices(broker.getId(), appId);
 			
 			ModuleMapping moduleMapping = ModuleMapping.createModuleMapping(); // initializing a module mapping
+
 			
-			if(CLOUD){
-				// if the mode of deployment is cloud-based
-				moduleMapping.addModuleToDevice("connector", "cloud"); // fixing all instances of the Connector module to the Cloud
-				moduleMapping.addModuleToDevice("concentration_calculator", "cloud"); // fixing all instances of the Concentration Calculator module to the Cloud
-				for(FogDevice device : fogDevices){
-					if(device.getName().startsWith("m")){
-						moduleMapping.addModuleToDevice("client", device.getName());  // fixing all instances of the Client module to the Smartphones
-					}
+			moduleMapping.addModuleToDevice("cloud_updater", "cloud"); // fixing all instances of the Connector module to the Cloud
+			moduleMapping.addModuleToDevice("classification_module", "fog-layer"); // fixing all instances of the Concentration Calculator module to the Cloud
+			for(FogDevice device : fogDevices){
+				if(device.getName().startsWith("m")){
+					moduleMapping.addModuleToDevice("client", device.getName());  // fixing all instances of the Client module to the Smartphones
 				}
-			}else{
-				// if the mode of deployment is cloud-based
-				moduleMapping.addModuleToDevice("connector", "cloud"); // fixing all instances of the Connector module to the Cloud
 			}
 			
 			
 			Controller controller = new Controller("master-controller", fogDevices, sensors, 
 					actuators);
 			
-			controller.submitApplication(application, 0, 
-					(CLOUD)?(new ModulePlacementMapping(fogDevices, application, moduleMapping))
-							:(new ModulePlacementEdgewards(fogDevices, sensors, actuators, application, moduleMapping)));
+			controller.submitApplication(application, 0, new ModulePlacementMapping(fogDevices, application, moduleMapping));
 
 			TimeKeeper.getInstance().setSimulationStartTime(Calendar.getInstance().getTimeInMillis());
 
@@ -115,22 +108,9 @@ public class ArrhythmiaApp {
 	 * @param appId
 	 */
 	private static void createFogDevices(int userId, String appId) {
-		/**
-		 * Creates a vanilla fog device
-		 * @param nodeName name of the device to be used in simulation
-		 * @param mips MIPS
-		 * @param ram RAM
-		 * @param upBw uplink bandwidth
-		 * @param downBw downlink bandwidth
-		 * @param level hierarchy level of the device
-		 * @param ratePerMips cost rate per MIPS used
-		 * @param busyPower
-		 * @param idlePower
-		 * @return
-		 */
 
 		// assumption
-		FogDevice cloud = createFogDevice("cloud-layer", 150000, 400000, 10000, 10000, 0, 0.01, 16*103, 16*83.25); // creates the fog device Cloud at the apex of the hierarchy with level=0
+		FogDevice cloud = createFogDevice("cloud", 150000, 400000, 10000, 10000, 0, 0.01, 16*103, 16*83.25); // creates the fog device Cloud at the apex of the hierarchy with level=0
 		cloud.setParentId(-1);
 		
 		fogDevices.add(cloud);
@@ -151,6 +131,7 @@ public class ArrhythmiaApp {
 		FogDevice fog = createFogDevice("fog-layer", 40000, 16000, 10000, 10000, 1, 0.0, 107.339, 83.4333); // creates the fog device Proxy Server (level=1)
 		fog.setParentId(parentId); // setting Cloud as parent of the Proxy Server
 		fog.setUplinkLatency(100); // latency of connection between gateways and cloud is 100 ms
+		fogDevices.add(fog);
 		
 		for(int i=0;i<numOfSensorNode;i++){
 			String sensorNodeId = id+"-"+i;
@@ -172,7 +153,7 @@ public class ArrhythmiaApp {
 		sensorNode.setParentId(parentId);
 		Sensor ecgSensor = new Sensor("s-"+id, "ECG", userId, appId, new DeterministicDistribution(ECG_TRANSMISSION_TIME)); // inter-transmission time of EEG sensor follows a deterministic distribution
 		sensors.add(ecgSensor);
-		Actuator notification = new Actuator("a-"+id, userId, appId, "NOTIFICATION");
+		Actuator notification = new Actuator("a-"+id, userId, appId, "NOTIFIER");
 		actuators.add(notification);
 		ecgSensor.setGatewayDeviceId(sensorNode.getId());
 		ecgSensor.setLatency(6.0);  // latency of connection between ECG sensors and the parent Smartphone is 6 ms
@@ -220,7 +201,7 @@ public class ArrhythmiaApp {
 
 		String arch = "x86"; // system architecture
 		String os = "Linux"; // operating system
-		String vmm = "";
+		String vmm = "docker";
 		double time_zone = -8.0; // time zone this resource located
 
 		// TODO: make more configurable
@@ -266,36 +247,63 @@ public class ArrhythmiaApp {
 		// TODO : check the RAM size of application and apply below
 		
 		application.addAppModule("client", 10); // adding module Client to the application model
-		application.addAppModule("concentration_calculator", 10); // adding module Concentration Calculator to the application model
-		application.addAppModule("connector", 10); // adding module Connector to the application model
+		application.addAppModule("classification_module", 10); // adding classification module to the application model
+		application.addAppModule("cloud_updater", 10); // adding cloud updater module to the application model
 		
 		/*
 		 * Connecting the application modules (vertices) in the application model (directed graph) with edges
 		 */
-		if(ECG_TRANSMISSION_TIME==10)
-			application.addAppEdge("EEG", "client", 2000, 500, "EEG", Tuple.UP, AppEdge.SENSOR); // adding edge from EEG (sensor) to Client module carrying tuples of type EEG
-		else
-			application.addAppEdge("EEG", "client", 3000, 500, "EEG", Tuple.UP, AppEdge.SENSOR);
-		application.addAppEdge("client", "concentration_calculator", 3500, 500, "_SENSOR", Tuple.UP, AppEdge.MODULE); // adding edge from Client to Concentration Calculator module carrying tuples of type _SENSOR
-		application.addAppEdge("concentration_calculator", "connector", 100, 1000, 1000, "PLAYER_GAME_STATE", Tuple.UP, AppEdge.MODULE); // adding periodic edge (period=1000ms) from Concentration Calculator to Connector module carrying tuples of type PLAYER_GAME_STATE
-		application.addAppEdge("concentration_calculator", "client", 14, 500, "CONCENTRATION", Tuple.DOWN, AppEdge.MODULE);  // adding edge from Concentration Calculator to Client module carrying tuples of type CONCENTRATION
-		application.addAppEdge("connector", "client", 100, 28, 1000, "GLOBAL_GAME_STATE", Tuple.DOWN, AppEdge.MODULE); // adding periodic edge (period=1000ms) from Connector to Client module carrying tuples of type GLOBAL_GAME_STATE
-		application.addAppEdge("client", "DISPLAY", 1000, 500, "SELF_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);  // adding edge from Client module to Display (actuator) carrying tuples of type SELF_STATE_UPDATE
-		application.addAppEdge("client", "DISPLAY", 1000, 500, "GLOBAL_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);  // adding edge from Client module to Display (actuator) carrying tuples of type GLOBAL_STATE_UPDATE
+		
+		/*  The workflow of below sample application
+		 * 
+		 *  ECG --------> client --------> classification module --------> cloud updater
+		 *                 |  ^                     |
+		 *                 |  |                     |
+		 *  Notifier  <----   -----------------------
+		 *                                        
+		 */
+		
+		// TODO : Making sure about each params(tupleCpuLenth, tupleNwLength)
+		application.addAppEdge("ECG", "client", 2000, 500, "ECG", Tuple.UP, AppEdge.SENSOR);
+		// adding edge from ECG (sensor) to Client module carrying tuples of type ECG
+		
+		application.addAppEdge("client", "classification_module", 3500, 500, "_SENSOR", Tuple.UP, AppEdge.MODULE); 
+		// adding edge from Client to Concentration Calculator module carrying tuples of type _SENSOR
+		
+		application.addAppEdge("classification_module", "cloud_updater", 100, 1000, 1000, "USERS_STATE", Tuple.UP, AppEdge.MODULE); 
+		// adding periodic edge (period=1000ms) from Concentration Calculator to Connector module carrying tuples of type USERS_STATE
+		
+		application.addAppEdge("classification_module", "client", 14, 500, "CLASSIFIED_RESULT", Tuple.DOWN, AppEdge.MODULE);
+		// adding edge from Concentration Calculator to Client module carrying tuples of type CONCENTRATION
+		
+		//application.addAppEdge("cloud_updater", "client", 100, 28, 1000, "USERS_STATE", Tuple.DOWN, AppEdge.MODULE); 
+		// adding periodic edge (period=1000ms) from cloud_updater to Client module carrying tuples of type USERS_STATE
+		
+		application.addAppEdge("client", "NOTIFIER", 1000, 500, "SELF_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
+		// adding edge from Client module to Display (actuator) carrying tuples of type SELF_STATE_UPDATE
+		
+		//application.addAppEdge("client", "DISPLAY", 1000, 500, "GLOBAL_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
+		// adding edge from Client module to Display (actuator) carrying tuples of type GLOBAL_STATE_UPDATE
 		
 		/*
 		 * Defining the input-output relationships (represented by selectivity) of the application modules. 
 		 */
-		application.addTupleMapping("client", "EEG", "_SENSOR", new FractionalSelectivity(0.9)); // 0.9 tuples of type _SENSOR are emitted by Client module per incoming tuple of type EEG 
-		application.addTupleMapping("client", "CONCENTRATION", "SELF_STATE_UPDATE", new FractionalSelectivity(1.0)); // 1.0 tuples of type SELF_STATE_UPDATE are emitted by Client module per incoming tuple of type CONCENTRATION 
-		application.addTupleMapping("concentration_calculator", "_SENSOR", "CONCENTRATION", new FractionalSelectivity(1.0)); // 1.0 tuples of type CONCENTRATION are emitted by Concentration Calculator module per incoming tuple of type _SENSOR 
-		application.addTupleMapping("client", "GLOBAL_GAME_STATE", "GLOBAL_STATE_UPDATE", new FractionalSelectivity(1.0)); // 1.0 tuples of type GLOBAL_STATE_UPDATE are emitted by Client module per incoming tuple of type GLOBAL_GAME_STATE 
+		application.addTupleMapping("client", "ECG", "_SENSOR", new FractionalSelectivity(0.9)); 
+		// 0.9 tuples of type _SENSOR are emitted by Client module per incoming tuple of type ECG
+		
+		application.addTupleMapping("client", "CLASSIFIED_RESULT", "SELF_STATE_UPDATE", new FractionalSelectivity(1.0)); 
+		// 1.0 tuples of type SELF_STATE_UPDATE are emitted by Client module per incoming tuple of type CONCENTRATION 
+		
+		application.addTupleMapping("classification_module", "_SENSOR", "CLASSIFIED_RESULT", new FractionalSelectivity(1.0));
+		// 1.0 tuples of type CONCENTRATION are emitted by Concentration Calculator module per incoming tuple of type _SENSOR 
+
+		application.addTupleMapping("classification_module", "_SENSOR", "USERS_STATE", new FractionalSelectivity(1.0));
 	
 		/*
 		 * Defining application loops to monitor the latency of. 
-		 * Here, we add only one loop for monitoring : EEG(sensor) -> Client -> Concentration Calculator -> Client -> DISPLAY (actuator)
+		 * Here, we add only one loop for monitoring : ECG(sensor) -> Client -> Classification Module -> Client -> NOTIFIER (actuator)
 		 */
-		final AppLoop loop1 = new AppLoop(new ArrayList<String>(){{add("EEG");add("client");add("concentration_calculator");add("client");add("DISPLAY");}});
+		final AppLoop loop1 = new AppLoop(new ArrayList<String>(){{add("ECG");add("client");add("classification_module");add("client");add("NOTIFIER");}});
 		List<AppLoop> loops = new ArrayList<AppLoop>(){{add(loop1);}};
 		application.setLoops(loops);
 		

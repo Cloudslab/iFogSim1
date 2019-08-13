@@ -128,7 +128,6 @@ public class Controller extends SimEntity{
 		for(FogDevice fogDevice : getFogDevices()){
 			System.out.println(fogDevice.getName() + " : Energy Consumed = "+fogDevice.getEnergyConsumption());
 		}
-		System.out.println("===========================");
 	}
 
 	private String getStringForLoopId(int loopId){

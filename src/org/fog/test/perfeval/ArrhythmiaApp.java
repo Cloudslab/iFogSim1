@@ -95,7 +95,7 @@ public class ArrhythmiaApp {
 
 			CloudSim.stopSimulation();
 
-			Log.printLine("VRGame finished!");
+			Log.printLine("arrhythmia finished!");
 		} catch (Exception e) {
 			e.printStackTrace();
 			Log.printLine("Unwanted errors happen");

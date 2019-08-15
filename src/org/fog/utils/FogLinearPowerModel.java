@@ -58,7 +58,7 @@ public class FogLinearPowerModel implements PowerModel {
 	 * 
 	 * @return the max power
 	 */
-	protected double getMaxPower() {
+	public double getMaxPower() {
 		return maxPower;
 	}
 
@@ -67,7 +67,7 @@ public class FogLinearPowerModel implements PowerModel {
 	 * 
 	 * @param maxPower the new max power
 	 */
-	protected void setMaxPower(double maxPower) {
+	public void setMaxPower(double maxPower) {
 		this.maxPower = maxPower;
 	}
 
@@ -94,7 +94,7 @@ public class FogLinearPowerModel implements PowerModel {
 	 * 
 	 * @return the static power
 	 */
-	protected double getStaticPower() {
+	public double getStaticPower() {
 		return staticPower;
 	}
 

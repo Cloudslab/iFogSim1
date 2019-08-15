@@ -2,6 +2,7 @@ package org.fog.entities;
 
 import java.util.ArrayList;
 
+import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.UtilizationModelFull;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.SimEntity;
@@ -80,8 +81,10 @@ public class Sensor extends SimEntity{
 	
 	public void transmit(){
 		AppEdge _edge = null;
+		// TODO: fix it!
 		for(AppEdge edge : getApp().getEdges()){
-			if(edge.getSource().equals(getTupleType()))
+			if(edge.getSource().equals(getTupleType()) && 
+					this.getName().substring(this.getName().length()-1).equals(edge.getDestination().substring(edge.getDestination().length()-1)))
 				_edge = edge;
 		}
 		long cpuLength = (long) _edge.getTupleCpuLength();
@@ -94,7 +97,9 @@ public class Sensor extends SimEntity{
 		
 		tuple.setDestModuleName(_edge.getDestination());
 		tuple.setSrcModuleName(getSensorName());
-		Logger.debug(getName(), "Sending tuple with tupleId = "+tuple.getCloudletId());
+		Log.format("---------------------START SENDING %s------------------------\n",tuple.getCloudletId());
+		Log.format("%.4f : Sending tuple with Id = %s , type = %s\n",CloudSim.clock() , tuple.getCloudletId(), tuple.getTupleType());
+//		Logger.debug(getName(), "Sending tuple with tupleId = "+tuple.getCloudletId());
 
 		int actualTupleId = updateTimings(getSensorName(), tuple.getDestModuleName());
 		tuple.setActualTupleId(actualTupleId);

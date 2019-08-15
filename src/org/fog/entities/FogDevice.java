@@ -1,6 +1,7 @@
 package org.fog.entities;
 
 import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,6 +38,7 @@ import org.fog.utils.Logger;
 import org.fog.utils.ModuleLaunchConfig;
 import org.fog.utils.NetworkUsageMonitor;
 import org.fog.utils.TimeKeeper;
+import org.fog.utils.FogLinearPowerModel;
 
 public class FogDevice extends PowerDatacenter {
 	protected Queue<Tuple> northTupleQueue;
@@ -146,6 +148,16 @@ public class FogDevice extends PowerDatacenter {
 		setTotalCost(0);
 		setModuleInstanceCount(new HashMap<String, Map<String, Integer>>());
 		setChildToLatencyMap(new HashMap<Integer, Double>());
+        System.out.println("name:" + name + System.lineSeparator() +
+                "mips: " + characteristics.getHostList().get(0).getPeList().get(0).getPeProvisioner().getMips() + System.lineSeparator() +
+                "ram: " + characteristics.getHostList().get(0).getRamProvisioner().getRam() + System.lineSeparator() +
+                "upBw:" + uplinkBandwidth + System.lineSeparator() +
+                "downBw:" + downlinkBandwidth + System.lineSeparator() +
+                "level:" + level + System.lineSeparator() +
+                "ratePerMips:" + ratePerMips + System.lineSeparator() +
+                "busyPower: " + ((FogLinearPowerModel) ((PowerHost) characteristics.getHostList().get(0)).getPowerModel()).getMaxPower() + System.lineSeparator() +
+                "idlePower: " + ((FogLinearPowerModel) ((PowerHost) characteristics.getHostList().get(0)).getPowerModel()).getStaticPower() +
+                System.lineSeparator());
 	}
 
 	public FogDevice(
@@ -336,7 +348,7 @@ public class FogDevice extends PowerDatacenter {
 		 * Since tuples sent through a DOWN application edge are anyways broadcasted, only UP tuples are replicated
 		 */
 		for(int i = 0;i<((edge.getDirection()==Tuple.UP)?instanceCount:1);i++){
-			//System.out.println(CloudSim.clock()+" : Sending periodic tuple "+edge.getTupleType());
+			System.out.println(CloudSim.clock()+" : Sending periodic tuple "+edge.getTupleType());
 			Tuple tuple = applicationMap.get(module.getAppId()).createTuple(edge, getId(), module.getId());
 			updateTimingsOnSending(tuple);
 			sendToSelf(tuple);			
@@ -377,25 +389,25 @@ public class FogDevice extends PowerDatacenter {
 		double timeFrameDatacenterEnergy = 0.0;
 
 		for (PowerHost host : this.<PowerHost> getHostList()) {
-			Log.printLine();
+//			Log.printLine();
 
 			double time = host.updateVmsProcessing(currentTime); // inform VMs to update processing
 			if (time < minTime) {
 				minTime = time;
 			}
 
-			Log.formatLine(
-					"%.2f: [Host #%d] utilization is %.2f%%",
-					currentTime,
-					host.getId(),
-					host.getUtilizationOfCpu() * 100);
+//			Log.formatLine(
+//					"%.2f: [Host #%d] utilization is %.2f%%",
+//					currentTime,
+//					host.getId(),
+//					host.getUtilizationOfCpu() * 100);
 		}
 
 		if (timeDiff > 0) {
-			Log.formatLine(
-					"\nEnergy consumption for the last time frame from %.2f to %.2f:",
-					getLastProcessTime(),
-					currentTime);
+//			Log.formatLine(
+//					"\nEnergy consumption for the last time frame from %.2f to %.2f:",
+//					getLastProcessTime(),
+//					currentTime);
 
 			for (PowerHost host : this.<PowerHost> getHostList()) {
 				double previousUtilizationOfCpu = host.getPreviousUtilizationOfCpu();
@@ -406,25 +418,25 @@ public class FogDevice extends PowerDatacenter {
 						timeDiff);
 				timeFrameDatacenterEnergy += timeFrameHostEnergy;
 
-				Log.printLine();
-				Log.formatLine(
-						"%.2f: [Host #%d] utilization at %.2f was %.2f%%, now is %.2f%%",
-						currentTime,
-						host.getId(),
-						getLastProcessTime(),
-						previousUtilizationOfCpu * 100,
-						utilizationOfCpu * 100);
-				Log.formatLine(
-						"%.2f: [Host #%d] energy is %.2f W*sec",
-						currentTime,
-						host.getId(),
-						timeFrameHostEnergy);
+//				Log.printLine();
+//				Log.formatLine(
+//						"%.2f: [Host #%d] utilization at %.2f was %.2f%%, now is %.2f%%",
+//						currentTime,
+//						host.getId(),
+//						getLastProcessTime(),
+//						previousUtilizationOfCpu * 100,
+//						utilizationOfCpu * 100);
+//				Log.formatLine(
+//						"%.2f: [Host #%d] energy is %.2f W*sec",
+//						currentTime,
+//						host.getId(),
+//						timeFrameHostEnergy);
 			}
 
-			Log.formatLine(
-					"\n%.2f: Data center's energy is %.2f W*sec\n",
-					currentTime,
-					timeFrameDatacenterEnergy);
+//			Log.formatLine(
+//					"\n%.2f: Data center's energy is %.2f W*sec\n",
+//					currentTime,
+//					timeFrameDatacenterEnergy);
 		}
 
 		setPower(getPower() + timeFrameDatacenterEnergy);
@@ -443,7 +455,7 @@ public class FogDevice extends PowerDatacenter {
 			}
 		}*/
 		
-		Log.printLine();
+//		Log.printLine();
 
 		setLastProcessTime(currentTime);
 		return minTime;
@@ -620,11 +632,9 @@ public class FogDevice extends PowerDatacenter {
 			updateCloudTraffic();
 		}
 		
-		/*if(getName().equals("d-0") && tuple.getTupleType().equals("_SENSOR")){
-			System.out.println(++numClients);
-		}*/
-		Logger.debug(getName(), "Received tuple "+tuple.getCloudletId()+"with tupleType = "+tuple.getTupleType()+"\t| Source : "+
-		CloudSim.getEntityName(ev.getSource())+"|Dest : "+CloudSim.getEntityName(ev.getDestination()));
+		Log.formatLine("%.4f : %s received tuple %s[id=%d] (from %s to %s)",
+				CloudSim.clock(), getName(), tuple.getTupleType(), tuple.getCloudletId(),
+				CloudSim.getEntityName(ev.getSource()), CloudSim.getEntityName(ev.getDestination()));
 		send(ev.getSource(), CloudSim.getMinTimeBetweenEvents(), FogEvents.TUPLE_ACK);
 		
 		if(FogUtils.appIdToGeoCoverageMap.containsKey(tuple.getAppId())){
@@ -647,6 +657,7 @@ public class FogDevice extends PowerDatacenter {
 		
 		
 		if(getName().equals("cloud") && tuple.getDestModuleName()==null){
+			Log.formatLine("%.4f : cloud send and received %s[id=%d]", tuple.getTupleType(), tuple.getCloudletId());
 			sendNow(getControllerId(), FogEvents.TUPLE_FINISHED, null);
 		}
 		
@@ -666,7 +677,7 @@ public class FogDevice extends PowerDatacenter {
 				//Logger.error(getName(), "Executing tuple for operator " + moduleName);
 				
 				updateTimingsOnReceipt(tuple);
-				
+				Log.formatLine("%.4f : execute tuple name : %s[id : %d] on %s",CloudSim.clock(), tuple.getTupleType(),tuple.getCloudletId(), getName());
 				executeTuple(ev, tuple.getDestModuleName());
 			}else if(tuple.getDestModuleName()!=null){
 				if(tuple.getDirection() == Tuple.UP)
@@ -719,7 +730,7 @@ public class FogDevice extends PowerDatacenter {
 	}
 	
 	protected void executeTuple(SimEvent ev, String moduleName){
-		Logger.debug(getName(), "Executing tuple on module "+moduleName);
+		Log.formatLine("%.4f : Executing tuple on device %s with module %s",CloudSim.clock(),getName(),moduleName);
 		Tuple tuple = (Tuple)ev.getData();
 		
 		AppModule module = getModuleByName(moduleName);

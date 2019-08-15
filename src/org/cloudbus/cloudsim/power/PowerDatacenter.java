@@ -96,7 +96,7 @@ public class PowerDatacenter extends Datacenter {
 		// if some time passed since last processing
 		if (currentTime > getLastProcessTime()) {
 			
-			double minTime = updateCloudetProcessingWithoutSchedulingFutureEventsForce();
+ 			double minTime = updateCloudetProcessingWithoutSchedulingFutureEventsForce();
 			if (!isDisableMigrations()) {
 				List<Map<String, Object>> migrationMap = getVmAllocationPolicy().optimizeAllocation(
 						getVmList());

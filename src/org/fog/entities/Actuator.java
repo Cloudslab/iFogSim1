@@ -1,5 +1,6 @@
 package org.fog.entities;
 
+import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEvent;
@@ -53,11 +54,12 @@ public class Actuator extends SimEntity{
 
 	private void processTupleArrival(SimEvent ev) {
 		Tuple tuple = (Tuple)ev.getData();
-		Logger.debug(getName(), "Received tuple "+tuple.getCloudletId()+"on "+tuple.getDestModuleName());
+//		Logger.debug(getName(), "Received tuple "+tuple.getCloudletId()+"on "+tuple.getDestModuleName());
+		Log.formatLine("%.4f : Received tuple : (id: %s),(name: %s) on %s",
+				CloudSim.clock(),tuple.getCloudletId(), tuple.getTupleType(), tuple.getDestModuleName());
 		String srcModule = tuple.getSrcModuleName();
 		String destModule = tuple.getDestModuleName();
 		Application app = getApp();
-		
 		for(AppLoop loop : app.getLoops()){
 			if(loop.hasEdge(srcModule, destModule) && loop.isEndModule(destModule)){
 				

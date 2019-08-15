@@ -26,7 +26,6 @@ import org.fog.entities.Sensor;
 import org.fog.entities.Tuple;
 import org.fog.placement.Controller;
 import org.fog.placement.ModuleMapping;
-import org.fog.placement.ModulePlacementEdgewards;
 import org.fog.placement.ModulePlacementMapping;
 import org.fog.policy.AppModuleAllocationPolicy;
 import org.fog.scheduler.StreamOperatorScheduler;
@@ -44,19 +43,19 @@ public class ArrhythmiaApp {
 	static List<FogDevice> fogDevices = new ArrayList<FogDevice>();
 	static List<Sensor> sensors = new ArrayList<Sensor>();
 	static List<Actuator> actuators = new ArrayList<Actuator>();
-	
+	static List<AppLoop> loops = new ArrayList<AppLoop>();
 	static boolean CLOUD = false;
 	
 	static int numOfGWNode = 1;
-	static int numOfSensorNode = 10;
-	static double ECG_TRANSMISSION_TIME = 5.1;
+	static int numOfSensorNode = 2;
+	static double ECG_TRANSMISSION_TIME = 6.1;
 	
 	public static void main(String[] args) {
 
 		Log.printLine("Starting Arrhythmia Applications...");
 
 		try {
-			Log.disable();
+			//Log.disable();
 			int num_user = 1; // number of cloud users
 			Calendar calendar = Calendar.getInstance();
 			boolean trace_flag = false; // mean trace events
@@ -79,7 +78,9 @@ public class ArrhythmiaApp {
 			moduleMapping.addModuleToDevice("classification_module", "fog-layer"); // fixing all instances of the Concentration Calculator module to the Cloud
 			for(FogDevice device : fogDevices){
 				if(device.getName().startsWith("m")){
-					moduleMapping.addModuleToDevice("client", device.getName());  // fixing all instances of the Client module to the Smartphones
+					String last = device.getName().substring(device.getName().length()-1);
+					Log.formatLine("device name : %s , app name : %s", device.getName(),"client"+Integer.valueOf(last));
+					moduleMapping.addModuleToDevice("client"+Integer.valueOf(last), device.getName());  // fixing all instances of the Client module to the Smartphones
 				}
 			}
 			
@@ -202,7 +203,7 @@ public class ArrhythmiaApp {
 		String arch = "x86"; // system architecture
 		String os = "Linux"; // operating system
 		String vmm = "docker";
-		double time_zone = -8.0; // time zone this resource located
+		double time_zone = 10.0; // time zone this resource located
 
 		// TODO: make more configurable
 		double cost = 3.0; // the cost of using processing in this resource
@@ -246,7 +247,9 @@ public class ArrhythmiaApp {
 		 */
 		// TODO : check the RAM size of application and apply below
 		
-		application.addAppModule("client", 10); // adding module Client to the application model
+		for(int i=0; i < numOfSensorNode; i++) {
+			application.addAppModule("client"+String.valueOf(i), 10); // adding module Client to the application model
+		}
 		application.addAppModule("classification_module", 10); // adding classification module to the application model
 		application.addAppModule("cloud_updater", 10); // adding cloud updater module to the application model
 		
@@ -264,49 +267,54 @@ public class ArrhythmiaApp {
 		 */
 		
 		// TODO : Making sure about each params(tupleCpuLenth, tupleNwLength)
-		application.addAppEdge("ECG", "client", 2000, 500, "ECG", Tuple.UP, AppEdge.SENSOR);
-		// adding edge from ECG (sensor) to Client module carrying tuples of type ECG
+
+
+		for(int i=0; i< numOfSensorNode; i++) {
+			application.addAppEdge("ECG", "client"+String.valueOf(i), 500, 500, "ECG", Tuple.UP, AppEdge.SENSOR);			
+			// adding edge from ECG (sensor) to Client module carrying tuples of type ECG	 
+			application.addAppEdge("client"+String.valueOf(i), "classification_module", 3500, 500, "_SENSOR"+String.valueOf(i), Tuple.UP, AppEdge.MODULE);
+			// adding edge from Client to Concentration Calculator module carrying tuples of type _SENSOR
+		}
 		
-		application.addAppEdge("client", "classification_module", 3500, 500, "_SENSOR", Tuple.UP, AppEdge.MODULE); 
-		// adding edge from Client to Concentration Calculator module carrying tuples of type _SENSOR
-		
-		application.addAppEdge("classification_module", "cloud_updater", 100, 1000, 1000, "USERS_STATE", Tuple.UP, AppEdge.MODULE); 
+		application.addAppEdge("classification_module", "cloud_updater", 100, 100, 1000, "USERS_STATE", Tuple.UP, AppEdge.MODULE); 
 		// adding periodic edge (period=1000ms) from Concentration Calculator to Connector module carrying tuples of type USERS_STATE
-		
-		application.addAppEdge("classification_module", "client", 14, 500, "CLASSIFIED_RESULT", Tuple.DOWN, AppEdge.MODULE);
-		// adding edge from Concentration Calculator to Client module carrying tuples of type CONCENTRATION
-		
-		//application.addAppEdge("cloud_updater", "client", 100, 28, 1000, "USERS_STATE", Tuple.DOWN, AppEdge.MODULE); 
-		// adding periodic edge (period=1000ms) from cloud_updater to Client module carrying tuples of type USERS_STATE
-		
-		application.addAppEdge("client", "NOTIFIER", 1000, 500, "SELF_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
-		// adding edge from Client module to Display (actuator) carrying tuples of type SELF_STATE_UPDATE
-		
-		//application.addAppEdge("client", "DISPLAY", 1000, 500, "GLOBAL_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
-		// adding edge from Client module to Display (actuator) carrying tuples of type GLOBAL_STATE_UPDATE
-		
+
+		for(int i=0; i< numOfSensorNode; i++) {		
+			application.addAppEdge("classification_module", "client"+String.valueOf(i), 14, 500, "CLASSIFIED_RESULT"+String.valueOf(i), Tuple.DOWN, AppEdge.MODULE);
+			// adding edge from Concentration Calculator to Client module carrying tuples of type CONCENTRATION
+			application.addAppEdge("client"+String.valueOf(i), "NOTIFIER", 50, 20, "SELF_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
+			// adding edge from Client module to Display (actuator) carrying tuples of type SELF_STATE_UPDATE
+		}
+
 		/*
 		 * Defining the input-output relationships (represented by selectivity) of the application modules. 
 		 */
-		application.addTupleMapping("client", "ECG", "_SENSOR", new FractionalSelectivity(0.9)); 
-		// 0.9 tuples of type _SENSOR are emitted by Client module per incoming tuple of type ECG
-		
-		application.addTupleMapping("client", "CLASSIFIED_RESULT", "SELF_STATE_UPDATE", new FractionalSelectivity(1.0)); 
-		// 1.0 tuples of type SELF_STATE_UPDATE are emitted by Client module per incoming tuple of type CONCENTRATION 
-		
-		application.addTupleMapping("classification_module", "_SENSOR", "CLASSIFIED_RESULT", new FractionalSelectivity(1.0));
-		// 1.0 tuples of type CONCENTRATION are emitted by Concentration Calculator module per incoming tuple of type _SENSOR 
+		for(int i=0; i< numOfSensorNode; i++) {		
+			application.addTupleMapping("client"+String.valueOf(i), "ECG", "_SENSOR"+String.valueOf(i), new FractionalSelectivity(0.9)); 
+			// 0.9 tuples of type _SENSOR are emitted by Client module per incoming tuple of type ECG			
+			application.addTupleMapping("classification_module", "_SENSOR"+String.valueOf(i), "CLASSIFIED_RESULT"+String.valueOf(i), new FractionalSelectivity(1.0));
+			// 1.0 tuples of type CONCENTRATION are emitted by Concentration Calculator module per incoming tuple of type _SENSOR 
+
+		}
 
 		application.addTupleMapping("classification_module", "_SENSOR", "USERS_STATE", new FractionalSelectivity(1.0));
-	
+		
+		for(int i=0; i< numOfSensorNode; i++) {		
+			application.addTupleMapping("client"+String.valueOf(i), "CLASSIFIED_RESULT"+String.valueOf(i), "SELF_STATE_UPDATE", new FractionalSelectivity(1.0)); 
+			// 1.0 tuples of type SELF_STATE_UPDATE are emitted by Client module per incoming tuple of type CONCENTRATION 
+		}
 		/*
 		 * Defining application loops to monitor the latency of. 
 		 * Here, we add only one loop for monitoring : ECG(sensor) -> Client -> Classification Module -> Client -> NOTIFIER (actuator)
 		 */
-		final AppLoop loop1 = new AppLoop(new ArrayList<String>(){{add("ECG");add("client");add("classification_module");add("client");add("NOTIFIER");}});
-		List<AppLoop> loops = new ArrayList<AppLoop>(){{add(loop1);}};
-		application.setLoops(loops);
 		
+		for(int i=0; i< numOfSensorNode; i++) {
+			String cli = new String("client"+String.valueOf(i));
+			loops.add(new AppLoop(new ArrayList<String>(){{add("ECG");add(cli);add("classification_module");add(cli);add("NOTIFIER");}}));
+//			AppLoop loop1 = new AppLoop(new ArrayList<String>(){{add("ECG");add("client");add("classification_module");add("client");add("NOTIFIER");}});
+		}
+//		List<AppLoop> loops = new ArrayList<AppLoop>(1){{add(loop1);}};
+		application.setLoops(loops);
 		return application;
 	}
 }

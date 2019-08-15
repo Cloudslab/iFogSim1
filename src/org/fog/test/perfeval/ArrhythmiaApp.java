@@ -47,7 +47,7 @@ public class ArrhythmiaApp {
 	static boolean CLOUD = false;
 	
 	static int numOfGWNode = 1;
-	static int numOfSensorNode = 2;
+	static int numOfSensorNode = 10;
 	static double ECG_TRANSMISSION_TIME = 6.1;
 	
 	public static void main(String[] args) {
@@ -275,7 +275,7 @@ public class ArrhythmiaApp {
 			application.addAppEdge("client"+String.valueOf(i), "classification_module", 3500, 500, "_SENSOR"+String.valueOf(i), Tuple.UP, AppEdge.MODULE);
 			// adding edge from Client to Concentration Calculator module carrying tuples of type _SENSOR
 		}
-		
+	
 		application.addAppEdge("classification_module", "cloud_updater", 100, 100, 1000, "USERS_STATE", Tuple.UP, AppEdge.MODULE); 
 		// adding periodic edge (period=1000ms) from Concentration Calculator to Connector module carrying tuples of type USERS_STATE
 

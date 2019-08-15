@@ -1,10 +1,17 @@
 package org.fog.placement;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEvent;
@@ -24,7 +31,8 @@ import org.fog.utils.TimeKeeper;
 public class Controller extends SimEntity{
 	
 	public static boolean ONLY_CLOUD = false;
-		
+	
+	private FileWriter output = null;
 	private List<FogDevice> fogDevices;
 	private List<Sensor> sensors;
 	private List<Actuator> actuators;
@@ -103,6 +111,9 @@ public class Controller extends SimEntity{
 			printPowerDetails();
 			printCostDetails();
 			printNetworkUsageDetails();
+			if(Config.USING_FILE_REULST)
+				makeResultOutput();
+			System.out.println("Simulation end!");
 			System.exit(0);
 			break;
 			
@@ -112,7 +123,46 @@ public class Controller extends SimEntity{
 	private void printNetworkUsageDetails() {
 		System.out.println("Total network usage = "+NetworkUsageMonitor.getNetworkUsage()/Config.MAX_SIMULATION_TIME);		
 	}
-
+	private void makeResultOutput() {
+		try {
+			output = new FileWriter(Config.RESULT_OUTPUT_FOLDER_PATH + "/" + Config.RESULT_OUTPUT_APP_NAME + "_" + java.time.LocalDateTime.now()+".csv");
+		} catch (IOException e) {
+			Log.printLine("failed to open result file.\n");
+			System.exit(1);
+		}
+		try {
+			ArrayList<String> data = new ArrayList<String>();
+			output.append("Total execution time");
+			String temp = Double.toString(Calendar.getInstance().getTimeInMillis() - TimeKeeper.getInstance().getSimulationStartTime());
+			data.add(temp);
+			output.append(",");
+			for(Integer loopId : TimeKeeper.getInstance().getLoopIdToTupleIds().keySet()) {
+				output.append("Average Latency of Control Loop : "+getStringForLoopId(loopId).replace(",", "_"));
+				data.add(Double.toString(TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loopId)));
+				output.append(",");
+			}
+			for(FogDevice fogDevice : getFogDevices()){
+				output.append("Energy Consumption["+fogDevice.getName()+"]");
+				data.add(Double.toString(fogDevice.getEnergyConsumption()));
+				output.append(",");
+			}
+			output.append("Total network usage");
+			data.add(Double.toString(NetworkUsageMonitor.getNetworkUsage()/Config.MAX_SIMULATION_TIME));
+			output.append("");
+			output.append("\n");
+			
+			//TODO : have to modify for multi time simulation
+		    output.append(String.join(",", data));
+		    output.append("\n");
+			
+			output.flush();
+			output.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Something wrong occured when write result file!\n");
+			System.exit(1);
+		}				
+	}
 	private FogDevice getCloud(){
 		for(FogDevice dev : getFogDevices())
 			if(dev.getName().equals("cloud"))
@@ -149,16 +199,6 @@ public class Controller extends SimEntity{
 		System.out.println("APPLICATION LOOP DELAYS");
 		System.out.println("=========================================");
 		for(Integer loopId : TimeKeeper.getInstance().getLoopIdToTupleIds().keySet()){
-			/*double average = 0, count = 0;
-			for(int tupleId : TimeKeeper.getInstance().getLoopIdToTupleIds().get(loopId)){
-				Double startTime = 	TimeKeeper.getInstance().getEmitTimes().get(tupleId);
-				Double endTime = 	TimeKeeper.getInstance().getEndTimes().get(tupleId);
-				if(startTime == null || endTime == null)
-					break;
-				average += endTime-startTime;
-				count += 1;
-			}
-			System.out.println(getStringForLoopId(loopId) + " ---> "+(average/count));*/
 			System.out.println(getStringForLoopId(loopId) + " ---> "+TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loopId));
 		}
 		System.out.println("=========================================");
@@ -170,6 +210,7 @@ public class Controller extends SimEntity{
 		}
 		
 		System.out.println("=========================================");
+
 	}
 
 	protected void manageResources(){

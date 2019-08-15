@@ -26,6 +26,20 @@ git pull origin master
 
 * run example files in there with JAVA
 
+## Get Result using file
+
+*   check src/org/fog/utils/Config class
+*	you can get result as csv file format. 
+*   if you run with ArrhythmiaApp.java with file output then, you can get below results,
+```
+	Total execution time	,
+    Average Latency of Control Loop (application Loop),
+    	Energy Consumption[cloud],
+    	Energy Consumption[fog-layer],
+    	Energy Consumption of each device,	
+    	Total network usage
+```
+	
 # References
 1. Harshit Gupta, Amir Vahid Dastjerdi , Soumya K. Ghosh, and Rajkumar Buyya, <A href="http://www.buyya.com/papers/iFogSim.pdf">iFogSim: A Toolkit for Modeling and Simulation of Resource Management Techniques in Internet of Things, Edge and Fog Computing Environments</A>, Software: Practice and Experience (SPE), Volume 47, Issue 9, Pages: 1275-1296, ISSN: 0038-0644, Wiley Press, New York, USA, September 2017.
 

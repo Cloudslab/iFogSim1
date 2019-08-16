@@ -47,7 +47,7 @@ public class ArrhythmiaApp {
 	static boolean CLOUD = false;
 	
 	static int numOfGWNode = 1;
-	static int numOfSensorNode = 10;
+	static int numOfSensorNode = 16;
 	static double ECG_TRANSMISSION_TIME = 6.1;
 	
 	public static void main(String[] args) {
@@ -78,9 +78,10 @@ public class ArrhythmiaApp {
 			moduleMapping.addModuleToDevice("classification_module", "fog-layer"); // fixing all instances of the Concentration Calculator module to the Cloud
 			for(FogDevice device : fogDevices){
 				if(device.getName().startsWith("m")){
-					String last = device.getName().substring(device.getName().length()-1);
-					Log.formatLine("device name : %s , app name : %s", device.getName(),"client"+Integer.valueOf(last));
-					moduleMapping.addModuleToDevice("client"+Integer.valueOf(last), device.getName());  // fixing all instances of the Client module to the Smartphones
+					String[] temps = device.getName().split("-");
+					String last = temps[temps.length-1];
+					Log.formatLine("device name : %s , app name : %s", device.getName(),"client"+"-"+Integer.valueOf(last));
+					moduleMapping.addModuleToDevice("client"+"-"+Integer.valueOf(last), device.getName());  // fixing all instances of the Client module to the Smartphones
 				}
 			}
 			
@@ -248,7 +249,7 @@ public class ArrhythmiaApp {
 		// TODO : check the RAM size of application and apply below
 		
 		for(int i=0; i < numOfSensorNode; i++) {
-			application.addAppModule("client"+String.valueOf(i), 10); // adding module Client to the application model
+			application.addAppModule("client"+"-"+String.valueOf(i), 10); // adding module Client to the application model
 		}
 		application.addAppModule("classification_module", 10); // adding classification module to the application model
 		application.addAppModule("cloud_updater", 10); // adding cloud updater module to the application model
@@ -270,9 +271,9 @@ public class ArrhythmiaApp {
 
 
 		for(int i=0; i< numOfSensorNode; i++) {
-			application.addAppEdge("ECG", "client"+String.valueOf(i), 500, 500, "ECG", Tuple.UP, AppEdge.SENSOR);			
+			application.addAppEdge("ECG", "client"+"-"+String.valueOf(i), 500, 500, "ECG", Tuple.UP, AppEdge.SENSOR);			
 			// adding edge from ECG (sensor) to Client module carrying tuples of type ECG	 
-			application.addAppEdge("client"+String.valueOf(i), "classification_module", 3500, 500, "_SENSOR"+String.valueOf(i), Tuple.UP, AppEdge.MODULE);
+			application.addAppEdge("client"+"-"+String.valueOf(i), "classification_module", 3500, 500, "_SENSOR"+"-"+String.valueOf(i), Tuple.UP, AppEdge.MODULE);
 			// adding edge from Client to Concentration Calculator module carrying tuples of type _SENSOR
 		}
 	
@@ -280,9 +281,9 @@ public class ArrhythmiaApp {
 		// adding periodic edge (period=1000ms) from Concentration Calculator to Connector module carrying tuples of type USERS_STATE
 
 		for(int i=0; i< numOfSensorNode; i++) {		
-			application.addAppEdge("classification_module", "client"+String.valueOf(i), 14, 500, "CLASSIFIED_RESULT"+String.valueOf(i), Tuple.DOWN, AppEdge.MODULE);
+			application.addAppEdge("classification_module", "client"+"-"+String.valueOf(i), 14, 500, "CLASSIFIED_RESULT"+"-"+String.valueOf(i), Tuple.DOWN, AppEdge.MODULE);
 			// adding edge from Concentration Calculator to Client module carrying tuples of type CONCENTRATION
-			application.addAppEdge("client"+String.valueOf(i), "NOTIFIER", 50, 20, "SELF_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
+			application.addAppEdge("client"+"-"+String.valueOf(i), "NOTIFIER", 50, 20, "SELF_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
 			// adding edge from Client module to Display (actuator) carrying tuples of type SELF_STATE_UPDATE
 		}
 
@@ -290,9 +291,9 @@ public class ArrhythmiaApp {
 		 * Defining the input-output relationships (represented by selectivity) of the application modules. 
 		 */
 		for(int i=0; i< numOfSensorNode; i++) {		
-			application.addTupleMapping("client"+String.valueOf(i), "ECG", "_SENSOR"+String.valueOf(i), new FractionalSelectivity(0.9)); 
+			application.addTupleMapping("client"+"-"+String.valueOf(i), "ECG", "_SENSOR"+"-"+String.valueOf(i), new FractionalSelectivity(0.9)); 
 			// 0.9 tuples of type _SENSOR are emitted by Client module per incoming tuple of type ECG			
-			application.addTupleMapping("classification_module", "_SENSOR"+String.valueOf(i), "CLASSIFIED_RESULT"+String.valueOf(i), new FractionalSelectivity(1.0));
+			application.addTupleMapping("classification_module", "_SENSOR"+"-"+String.valueOf(i), "CLASSIFIED_RESULT"+"-"+String.valueOf(i), new FractionalSelectivity(1.0));
 			// 1.0 tuples of type CONCENTRATION are emitted by Concentration Calculator module per incoming tuple of type _SENSOR 
 
 		}
@@ -300,7 +301,7 @@ public class ArrhythmiaApp {
 		application.addTupleMapping("classification_module", "_SENSOR", "USERS_STATE", new FractionalSelectivity(1.0));
 		
 		for(int i=0; i< numOfSensorNode; i++) {		
-			application.addTupleMapping("client"+String.valueOf(i), "CLASSIFIED_RESULT"+String.valueOf(i), "SELF_STATE_UPDATE", new FractionalSelectivity(1.0)); 
+			application.addTupleMapping("client"+"-"+String.valueOf(i), "CLASSIFIED_RESULT"+"-"+String.valueOf(i), "SELF_STATE_UPDATE", new FractionalSelectivity(1.0)); 
 			// 1.0 tuples of type SELF_STATE_UPDATE are emitted by Client module per incoming tuple of type CONCENTRATION 
 		}
 		/*
@@ -309,7 +310,7 @@ public class ArrhythmiaApp {
 		 */
 		
 		for(int i=0; i< numOfSensorNode; i++) {
-			String cli = new String("client"+String.valueOf(i));
+			String cli = new String("client"+"-"+String.valueOf(i));
 			loops.add(new AppLoop(new ArrayList<String>(){{add("ECG");add(cli);add("classification_module");add(cli);add("NOTIFIER");}}));
 //			AppLoop loop1 = new AppLoop(new ArrayList<String>(){{add("ECG");add("client");add("classification_module");add("client");add("NOTIFIER");}});
 		}

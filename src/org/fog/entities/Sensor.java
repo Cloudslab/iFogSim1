@@ -83,8 +83,11 @@ public class Sensor extends SimEntity{
 		AppEdge _edge = null;
 		// TODO: fix it!
 		for(AppEdge edge : getApp().getEdges()){
-			if(edge.getSource().equals(getTupleType()) && 
-					this.getName().substring(this.getName().length()-1).equals(edge.getDestination().substring(edge.getDestination().length()-1)))
+			String[] t1 = this.getName().split("-");
+			String last_s = t1[t1.length-1];
+			String[] t2 = edge.getDestination().split("-");
+			String last_d = t2[t2.length-1];
+			if(edge.getSource().equals(getTupleType()) && last_s.equals(last_d))
 				_edge = edge;
 		}
 		long cpuLength = (long) _edge.getTupleCpuLength();

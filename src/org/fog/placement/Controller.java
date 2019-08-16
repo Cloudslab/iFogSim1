@@ -27,19 +27,20 @@ import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
 import org.fog.utils.NetworkUsageMonitor;
 import org.fog.utils.TimeKeeper;
+import org.fog.test.perfeval.ArrhythmiaApp;
 
 public class Controller extends SimEntity{
 	
 	public static boolean ONLY_CLOUD = false;
-	
+	public static int using_fresult = -1;
 	private FileWriter output = null;
 	private List<FogDevice> fogDevices;
 	private List<Sensor> sensors;
 	private List<Actuator> actuators;
-	
+	private String result_fpath = null;
+
 	private Map<String, Application> applications;
 	private Map<String, Integer> appLaunchDelays;
-
 	private Map<String, ModulePlacement> appModulePlacementPolicy;
 	
 	public Controller(String name, List<FogDevice> fogDevices, List<Sensor> sensors, List<Actuator> actuators) {
@@ -55,7 +56,20 @@ public class Controller extends SimEntity{
 		setSensors(sensors);
 		connectWithLatencies();
 	}
-
+	public Controller(String name, List<FogDevice> fogDevices, List<Sensor> sensors, List<Actuator> actuators,int using_fresult) {
+		super(name);
+		this.applications = new HashMap<String, Application>();
+		setAppLaunchDelays(new HashMap<String, Integer>());
+		setAppModulePlacementPolicy(new HashMap<String, ModulePlacement>());
+		for(FogDevice fogDevice : fogDevices){
+			fogDevice.setControllerId(getId());
+		}
+		setFogDevices(fogDevices);
+		setActuators(actuators);
+		setSensors(sensors);
+		connectWithLatencies();
+		this.using_fresult = using_fresult;
+	}
 	private FogDevice getFogDeviceById(int id){
 		for(FogDevice fogDevice : getFogDevices()){
 			if(id==fogDevice.getId())
@@ -63,7 +77,12 @@ public class Controller extends SimEntity{
 		}
 		return null;
 	}
-	
+	public String getResult_fpath() {
+		return result_fpath;
+	}
+	public void setResult_fpath(String result_fpath) {
+		this.result_fpath = result_fpath;
+	}
 	private void connectWithLatencies(){
 		for(FogDevice fogDevice : getFogDevices()){
 			FogDevice parent = getFogDeviceById(fogDevice.getParentId());
@@ -92,7 +111,20 @@ public class Controller extends SimEntity{
 			sendNow(dev.getId(), FogEvents.RESOURCE_MGMT);
 
 	}
-
+	private void processStop() {
+		CloudSim.stopSimulation();
+		if(this.using_fresult == 1) {
+			makeResultOutput();
+		} else {
+			printTimeDetails();
+			printPowerDetails();
+			printCostDetails();
+			printNetworkUsageDetails();
+		}
+		System.out.println("Simulation end!");
+		CloudSim.stopSimulation();
+		CloudSim.terminateSimulation();		
+	}
 	@Override
 	public void processEvent(SimEvent ev) {
 		switch(ev.getTag()){
@@ -106,26 +138,17 @@ public class Controller extends SimEntity{
 			manageResources();
 			break;
 		case FogEvents.STOP_SIMULATION:
-			CloudSim.stopSimulation();
-			printTimeDetails();
-			printPowerDetails();
-			printCostDetails();
-			printNetworkUsageDetails();
-			if(Config.USING_FILE_REULST)
-				makeResultOutput();
-			System.out.println("Simulation end!");
-			System.exit(0);
+			processStop();
 			break;
 			
 		}
 	}
-	
 	private void printNetworkUsageDetails() {
 		System.out.println("Total network usage = "+NetworkUsageMonitor.getNetworkUsage()/Config.MAX_SIMULATION_TIME);		
 	}
 	private void makeResultOutput() {
 		try {
-			output = new FileWriter(Config.RESULT_OUTPUT_FOLDER_PATH + "/" + Config.RESULT_OUTPUT_APP_NAME + "_" + java.time.LocalDateTime.now()+".csv");
+			output = new FileWriter(this.result_fpath);
 		} catch (IOException e) {
 			Log.printLine("failed to open result file.\n");
 			System.exit(1);

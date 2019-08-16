@@ -49,7 +49,6 @@ public class FogDevice extends PowerDatacenter {
 	protected Map<String, Application> applicationMap;
 	protected Map<String, List<String>> appToModulesMap;
 	protected Map<Integer, Double> childToLatencyMap;
- 
 	
 	protected Map<Integer, Integer> cloudTrafficMap;
 	
@@ -148,7 +147,7 @@ public class FogDevice extends PowerDatacenter {
 		setTotalCost(0);
 		setModuleInstanceCount(new HashMap<String, Map<String, Integer>>());
 		setChildToLatencyMap(new HashMap<Integer, Double>());
-        System.out.println("name:" + name + System.lineSeparator() +
+        Log.print("name:" + name + System.lineSeparator() +
                 "mips: " + characteristics.getHostList().get(0).getPeList().get(0).getPeProvisioner().getMips() + System.lineSeparator() +
                 "ram: " + characteristics.getHostList().get(0).getRamProvisioner().getRam() + System.lineSeparator() +
                 "upBw:" + uplinkBandwidth + System.lineSeparator() +
@@ -317,7 +316,7 @@ public class FogDevice extends PowerDatacenter {
 		if(!moduleInstanceCount.containsKey(appId))
 			moduleInstanceCount.put(appId, new HashMap<String, Integer>());
 		moduleInstanceCount.get(appId).put(config.getModule().getName(), config.getInstanceCount());
-		System.out.println(getName()+ " Creating "+config.getInstanceCount()+" instances of module "+config.getModule().getName());
+		Log.print(getName()+ " Creating "+config.getInstanceCount()+" instances of module "+config.getModule().getName());
 	}
 
 	private AppModule getModuleByName(String moduleName){
@@ -348,7 +347,7 @@ public class FogDevice extends PowerDatacenter {
 		 * Since tuples sent through a DOWN application edge are anyways broadcasted, only UP tuples are replicated
 		 */
 		for(int i = 0;i<((edge.getDirection()==Tuple.UP)?instanceCount:1);i++){
-			System.out.println(CloudSim.clock()+" : Sending periodic tuple "+edge.getTupleType());
+			Log.print(CloudSim.clock()+" : Sending periodic tuple "+edge.getTupleType());
 			Tuple tuple = applicationMap.get(module.getAppId()).createTuple(edge, getId(), module.getId());
 			updateTimingsOnSending(tuple);
 			sendToSelf(tuple);			

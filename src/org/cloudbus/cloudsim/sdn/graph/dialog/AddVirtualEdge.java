@@ -131,7 +131,7 @@ public class AddVirtualEdge extends JDialog {
 
 		inputPanel.add(sourceNode);
 		// inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-		inputPanel.add(new Label("    ¡ª"));
+		inputPanel.add(new Label("-2"));
 		inputPanel.add(targetNode);
 		inputPanel.add(Box.createHorizontalGlue());
 		inputPanelWrapper.add(inputPanel);

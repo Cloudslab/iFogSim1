@@ -1,6 +1,10 @@
 package org.fog.test.perfeval;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,6 +33,7 @@ import org.fog.placement.ModuleMapping;
 import org.fog.placement.ModulePlacementMapping;
 import org.fog.policy.AppModuleAllocationPolicy;
 import org.fog.scheduler.StreamOperatorScheduler;
+import org.fog.utils.Config;
 import org.fog.utils.FogLinearPowerModel;
 import org.fog.utils.FogUtils;
 import org.fog.utils.TimeKeeper;
@@ -45,17 +50,83 @@ public class ArrhythmiaApp {
 	static List<Actuator> actuators = new ArrayList<Actuator>();
 	static List<AppLoop> loops = new ArrayList<AppLoop>();
 	static boolean CLOUD = false;
-	
 	static int numOfGWNode = 1;
-	static int numOfSensorNode = 16;
+	static Object[] configs = new Object[]{};
+	static int using_fresult = -1;
+	static int numOfSensorNode = Config.NUMBER_OF_EDGE;
 	static double ECG_TRANSMISSION_TIME = 6.1;
 	
 	public static void main(String[] args) {
-
 		Log.printLine("Starting Arrhythmia Applications...");
 
+		if(args.length != 0) {
+			openConfigFile(args[0]);
+		}
+		runSimulation();
+		System.exit(0);
+	}
+
+	public static List<String> readFile(String filename)
+	{
+	  List<String> records = new ArrayList<String>();
+	  try
+	  {
+	    BufferedReader reader = new BufferedReader(new FileReader(filename));
+	    String line;
+	    while ((line = reader.readLine()) != null)
+	    {
+	      records.add(line);
+	    }
+	    reader.close();
+	    return records;
+	  }
+	  catch (Exception e)
+	  {
+	    System.err.format("Exception occurred trying to read '%s'.", filename);
+	    e.printStackTrace();
+	    return null;
+	  }
+	}
+	private static Object[] appendValue(Object[] obj, Object newObj) {
+		ArrayList<Object> temp = new ArrayList<Object>(Arrays.asList(obj));
+		temp.add(newObj);
+		return temp.toArray();
+
+	}
+	// open config file for multiple simulation or configuable simulation
+	public static void openConfigFile(String filepath) {
+		List<String> t = readFile(filepath);
+//		RESULT_OUTPUT_FOLDER_PATH=/Users/seodongjoo/git/iFogSim/results
+//				RESULT_OUTPUT_APP_NAME=Arrhythmia
+//				NUMBER_OF_EDGE=16
+//				USING_FILE_REULST=1
+		// output path
+		String[] origin_data = t.get(0).split("=");
+		String value = origin_data[origin_data.length-1];
+		configs = appendValue(configs,value);
+		
+		// app name
+		origin_data = t.get(1).split("=");
+		value = origin_data[origin_data.length-1];
+		configs = appendValue(configs,value);
+		
+		// number of edges
+		origin_data = t.get(2).split("=");
+		value = origin_data[origin_data.length-1];
+		configs = appendValue(configs,Integer.valueOf(value));
+		numOfSensorNode = Integer.valueOf(value);
+		
+		// using file result
+		origin_data = t.get(3).split("=");
+		value = origin_data[origin_data.length-1];
+		configs = appendValue(configs,Integer.valueOf(value));
+		
+		using_fresult = (int)configs[3];
+	}
+
+	private static void runSimulation() {
 		try {
-			//Log.disable();
+			Log.disable();
 			int num_user = 1; // number of cloud users
 			Calendar calendar = Calendar.getInstance();
 			boolean trace_flag = false; // mean trace events
@@ -84,26 +155,27 @@ public class ArrhythmiaApp {
 					moduleMapping.addModuleToDevice("client"+"-"+Integer.valueOf(last), device.getName());  // fixing all instances of the Client module to the Smartphones
 				}
 			}
+			Controller controller = new Controller("master-controller", fogDevices, sensors, actuators,using_fresult);
 			
-			
-			Controller controller = new Controller("master-controller", fogDevices, sensors, 
-					actuators);
+			if(using_fresult == 1) {
+//				RESULT_OUTPUT_FOLDER_PATH=/Users/seodongjoo/git/iFogSim/results
+//				RESULT_OUTPUT_APP_NAME=Arrhythmia
+//				NUMBER_OF_EDGE=16
+//				USING_FILE_REULST=1
+				controller.setResult_fpath((String)configs[0] + "/" + (String)configs[1] + "_"+ String.valueOf((Integer)configs[2]) + "_" + java.time.LocalDateTime.now()+".csv");
+			}
 			
 			controller.submitApplication(application, 0, new ModulePlacementMapping(fogDevices, application, moduleMapping));
 
 			TimeKeeper.getInstance().setSimulationStartTime(Calendar.getInstance().getTimeInMillis());
 
-			CloudSim.startSimulation();
-
-			CloudSim.stopSimulation();
-
+			CloudSim.startSimulation();			
 			Log.printLine("arrhythmia finished!");
 		} catch (Exception e) {
 			e.printStackTrace();
 			Log.printLine("Unwanted errors happen");
 		}
 	}
-
 	/**
 	 * Creates the fog devices in the physical topology of the simulation.
 	 * @param userId

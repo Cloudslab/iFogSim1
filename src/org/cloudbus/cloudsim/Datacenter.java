@@ -723,12 +723,8 @@ public class Datacenter extends SimEntity {
 			// if this cloudlet is in the exec queue
 			if (estimatedFinishTime > 0.0 && !Double.isInfinite(estimatedFinishTime)) {
 				estimatedFinishTime += fileTransferTime;
-				/*	edited by HARSHIT	*/
-				//if(getName().equals("gateway-3"))
-				//System.out.println(getName()+" : ESTIMATED FINISH TIME ON "+((StreamOperator)vm).getName()+": "+estimatedFinishTime);
 				send(getId(), CloudSim.getMinTimeBetweenEvents()
 						+estimatedFinishTime, CloudSimTags.VM_DATACENTER_EVENT);
-				/*	edit done	*/
 			}
 
 			if (ack) {

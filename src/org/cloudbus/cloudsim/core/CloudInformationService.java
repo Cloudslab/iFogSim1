@@ -71,6 +71,7 @@ public class CloudInformationService extends SimEntity {
 	@Override
 	public void processEvent(SimEvent ev) {
 		int id = -1;  // requester id
+		//Log.printLine(ev.getTag());
 		switch (ev.getTag()) {
 		// storing regional GIS id
 			case CloudSimTags.REGISTER_REGIONAL_GIS:
@@ -119,7 +120,7 @@ public class CloudInformationService extends SimEntity {
 				break;
 
 			default:
-				processOtherEvent(ev);
+//				processOtherEvent(ev);
 				break;
 		}
 	}

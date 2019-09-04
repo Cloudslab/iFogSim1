@@ -374,7 +374,6 @@ public class ArrhythmiaApp {
 		
 		for(int i=0; i< numOfSensorNode; i++) {		
 			application.addTupleMapping("client"+"-"+String.valueOf(i), "CLASSIFIED_RESULT"+"-"+String.valueOf(i), "SELF_STATE_UPDATE", new FractionalSelectivity(1.0)); 
-			// 1.0 tuples of type SELF_STATE_UPDATE are emitted by Client module per incoming tuple of type CONCENTRATION 
 		}
 		/*
 		 * Defining application loops to monitor the latency of. 

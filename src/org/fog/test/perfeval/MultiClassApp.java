@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Log;
@@ -56,7 +57,10 @@ public class MultiClassApp {
 	static int using_fresult = -1;
 	static int USING_EXECUTION_MAP = -1;
 	static int numOfSensorNode = Config.NUMBER_OF_EDGE;
-	static double ECG_TRANSMISSION_TIME = 100;
+	static double CLASS1_TRANSMISSION_TIME = 1000;
+	static double CLASS2_TRANSMISSION_TIME = 100;
+	static double CLASS3_TRANSMISSION_TIME = 500;
+	static double CLASS4_TRANSMISSION_TIME = 10;
 	static int NUMBER_OF_APPS = 0;
 	static int NUMBER_OF_CLASS1 = 0;
 	static int NUMBER_OF_CLASS2 = 0;
@@ -75,23 +79,41 @@ public class MultiClassApp {
 		startSimulation();
 		System.exit(0);
 	}
+	public static int randomVarible(List<Integer> list) {
+	    Random rand = new Random();
+	    return list.get(rand.nextInt(list.size()));
+	}
 	private static void startSimulation() {
 		Log.printLine("CREATE APPLICATIONS");
 		try {
-			//Log.disable();
 			int num_user = 1;
 			Calendar calendar = Calendar.getInstance();
 			boolean trace_flag = false;
 			
+			List<Integer> device_idx = new ArrayList() {};
+			for(int x = 0; x < numOfSensorNode; x++) {
+				device_idx.add(x);
+			}
+			List<Integer> random_idx = new ArrayList() {};
+			for(int x = 0; x < NUMBER_OF_APPS; x++) {
+				random_idx.add(randomVarible(device_idx));
+			}
+			Log.printLine(random_idx);
+			// c1,c2,c3,c4 5 5 5 5
+			// device lists 에서 랜덤으로 5개 뽑기			
 			// TODO: fix by file input 
 			int[] test_map[] = {{0,1,2,3},{0,1,2,3},{0,1,2,3},{0,1,2,3}};
+			List<List<Integer>> test_map2 = new ArrayList<List<Integer>>();
+			for(int x=0;x < 4;x++) {
+				
+			}
 			
 			HashMap<String, int[]> class_map = new HashMap<String, int[]>();
 
 			for(int x=0;x < 4;x++) {
 				class_map.put(appIds[x],test_map[x]);
 			}
-
+//			Log.disable();
 			//init
 			CloudSim.init( num_user, calendar, trace_flag);
 			
@@ -232,16 +254,27 @@ public class MultiClassApp {
 		for(int i=0; i < num_of_class1; i++) {
 			Log.printLine("make app edge sensor->edge, edge->fog: "+"CAM_"+appId+"-"+appId+"-"+String.valueOf(i)+
 					","+appId+"-"+String.valueOf(i)+"-"+appId+"_fog");
-			application.addAppEdge("CAM_"+appId, appId+"-"+String.valueOf(i), 100, 500, "CAM_"+appId, Tuple.UP, AppEdge.SENSOR);
-			application.addAppEdge(appId+"-"+String.valueOf(i), appId+"_fog", 100, 500, "DATA"+"-"+String.valueOf(i), Tuple.UP, AppEdge.MODULE);
+			application.addAppEdge("CAM_"+appId, appId+"-"+String.valueOf(i), 10, 500, "CAM_"+appId, Tuple.UP, AppEdge.SENSOR);
+			application.addAppEdge(appId+"-"+String.valueOf(i), appId+"_fog", 20, 500, "DATA"+"-"+String.valueOf(i), Tuple.UP, AppEdge.MODULE);
 		}
 
-		application.addAppEdge(appId+"_fog", appId+"_cloud", 100, 30, 200, "USERS_STATE", Tuple.UP, AppEdge.MODULE);
+		application.addAppEdge(appId+"_fog", appId+"_cloud", 30, 200, "USERS_STATE", Tuple.UP, AppEdge.MODULE);
 
 		for(int i=0; i< numOfSensorNode; i++) {		
 			Log.printLine("make app edge fog->edge, edge->act: "+appId+"_fog"+"-"+appId+"-"+String.valueOf(i)+
 					","+appId+"-"+String.valueOf(i)+"-"+appId+"_ACT");
-			application.addAppEdge(appId+"_fog", appId+"-"+String.valueOf(i), 50, 500, "RESULT"+"-"+String.valueOf(i), Tuple.DOWN, AppEdge.MODULE);
+			if(appId.equals("class1")) {
+				application.addAppEdge(appId+"_fog", appId+"-"+String.valueOf(i), 5000, 500, "RESULT"+"-"+String.valueOf(i), Tuple.DOWN, AppEdge.MODULE);				
+			}
+			else if(appId.equals("class2")) {
+				application.addAppEdge(appId+"_fog", appId+"-"+String.valueOf(i), 100, 500, "RESULT"+"-"+String.valueOf(i), Tuple.DOWN, AppEdge.MODULE);				
+			}
+			else if(appId.equals("class3")) {
+				application.addAppEdge(appId+"_fog", appId+"-"+String.valueOf(i), 2200, 500, "RESULT"+"-"+String.valueOf(i), Tuple.DOWN, AppEdge.MODULE);				
+			}
+			else {
+				application.addAppEdge(appId+"_fog", appId+"-"+String.valueOf(i), 30, 500, "RESULT"+"-"+String.valueOf(i), Tuple.DOWN, AppEdge.MODULE);
+			}
 			application.addAppEdge(appId+"-"+String.valueOf(i), appId+"_ACT", 50, 20, "SELF_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
 		}
 		
@@ -263,6 +296,8 @@ public class MultiClassApp {
 					"SELF_STATE_UPDATE");
 			application.addTupleMapping(appId+"-"+String.valueOf(i), "RESULT"+"-"+String.valueOf(i), "SELF_STATE_UPDATE", new FractionalSelectivity(1.0)); 
 		}
+		application.addTupleMapping(appId+"_cloud", "USERS_STATE", "CLOUD_RESULT", new FractionalSelectivity(1.0));
+
 		for(int i=0; i< numOfSensorNode; i++) {
 			String cli = new String(appId+"-"+String.valueOf(i));
 			String sensor = new String("CAM_"+appId+"-"+String.valueOf(i));
@@ -297,7 +332,19 @@ public class MultiClassApp {
 		
 		for(String appId : appIds) {
 			for(int idx_of_sensor_device : class_map.get(appId)) {
-				Sensor sensor = new Sensor("s-0-"+String.valueOf(idx_of_sensor_device),"CAM_"+appId, userId, appId, new DeterministicDistribution(ECG_TRANSMISSION_TIME));
+				Sensor sensor = null;
+				if(appId.equals("class1")) {
+					sensor = new Sensor("s-0-"+String.valueOf(idx_of_sensor_device),"CAM_"+appId, userId, appId, new DeterministicDistribution(CLASS1_TRANSMISSION_TIME));				
+				}
+				else if(appId.equals("class2")) {
+					sensor = new Sensor("s-0-"+String.valueOf(idx_of_sensor_device),"CAM_"+appId, userId, appId, new DeterministicDistribution(CLASS2_TRANSMISSION_TIME));				
+				}
+				else if(appId.equals("class3")) {
+					sensor = new Sensor("s-0-"+String.valueOf(idx_of_sensor_device),"CAM_"+appId, userId, appId, new DeterministicDistribution(CLASS3_TRANSMISSION_TIME));				
+				}
+				else {
+					sensor = new Sensor("s-0-"+String.valueOf(idx_of_sensor_device),"CAM_"+appId, userId, appId, new DeterministicDistribution(CLASS4_TRANSMISSION_TIME));				
+				}
 				sensors.add(sensor);
 				Actuator noti = new Actuator(appId+"_act-"+String.valueOf(idx_of_sensor_device),userId,appId,appId+"_ACT");
 				actuators.add(noti);

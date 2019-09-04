@@ -1,10 +1,8 @@
 package org.fog.placement;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 
 import java.util.HashMap;
@@ -27,7 +25,7 @@ import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
 import org.fog.utils.NetworkUsageMonitor;
 import org.fog.utils.TimeKeeper;
-import org.fog.test.perfeval.ArrhythmiaApp;
+import org.fog.test.perfeval.MultiClassApp;
 
 public class Controller extends SimEntity{
 	
@@ -114,7 +112,8 @@ public class Controller extends SimEntity{
 	private void processStop() {
 		CloudSim.stopSimulation();
 		if(this.using_fresult == 1) {
-			makeResultOutput();
+//		if(false) {
+		makeResultOutput();
 		} else {
 			printTimeDetails();
 			printPowerDetails();

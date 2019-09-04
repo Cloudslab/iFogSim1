@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 

@@ -49,7 +49,7 @@ public abstract class ModulePlacement {
 			module = _module;
 			
 		if(canBeCreated(device, module)){
-			Log.print("Creating "+module.getName()+" on device "+device.getName());
+			Log.printLine("in ModulePlacement, Creating "+module.getName()+" on device "+device.getName());
 			
 			if(!getDeviceToModuleMap().containsKey(device.getId()))
 				getDeviceToModuleMap().put(device.getId(), new ArrayList<AppModule>());

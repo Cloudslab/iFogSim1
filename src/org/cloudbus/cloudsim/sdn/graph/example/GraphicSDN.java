@@ -8,11 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map.Entry;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -26,20 +23,18 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JSeparator;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.cloudbus.cloudsim.sdn.graph.core.Bridge;
-import org.cloudbus.cloudsim.sdn.graph.core.Edge;
+
 import org.cloudbus.cloudsim.sdn.graph.core.Graph;
 import org.cloudbus.cloudsim.sdn.graph.core.GraphView;
-import org.cloudbus.cloudsim.sdn.graph.core.Node;
+
 import org.cloudbus.cloudsim.sdn.graph.dialog.*;
 
 public class GraphicSDN extends JFrame {

@@ -316,7 +316,7 @@ public class FogDevice extends PowerDatacenter {
 		if(!moduleInstanceCount.containsKey(appId))
 			moduleInstanceCount.put(appId, new HashMap<String, Integer>());
 		moduleInstanceCount.get(appId).put(config.getModule().getName(), config.getInstanceCount());
-		Log.print(getName()+ " Creating "+config.getInstanceCount()+" instances of module "+config.getModule().getName());
+		Log.printLine(getName()+ " Creating "+config.getInstanceCount()+" instances of module "+config.getModule().getName());
 	}
 
 	private AppModule getModuleByName(String moduleName){
@@ -532,6 +532,7 @@ public class FogDevice extends PowerDatacenter {
 	
 	protected void updateAllocatedMips(String incomingOperator){
 		getHost().getVmScheduler().deallocatePesForAllVms();
+		// if possible allocate instance to vm
 		for(final Vm vm : getHost().getVmList()){
 			if(vm.getCloudletScheduler().runningCloudlets() > 0 || ((AppModule)vm).getName().equals(incomingOperator)){
 				getHost().getVmScheduler().allocatePesForVm(vm, new ArrayList<Double>(){
@@ -542,8 +543,7 @@ public class FogDevice extends PowerDatacenter {
 					protected static final long serialVersionUID = 1L;
 				{add(0.0);}});
 			}
-		}
-		
+		}		
 		updateEnergyConsumption();
 		
 	}
@@ -734,6 +734,7 @@ public class FogDevice extends PowerDatacenter {
 		
 		AppModule module = getModuleByName(moduleName);
 		
+		// if tuple direction is upside
 		if(tuple.getDirection() == Tuple.UP){
 			String srcModule = tuple.getSrcModuleName();
 			if(!module.getDownInstanceIdsMaps().containsKey(srcModule))
@@ -743,11 +744,11 @@ public class FogDevice extends PowerDatacenter {
 			
 			int instances = -1;
 			for(String _moduleName : module.getDownInstanceIdsMaps().keySet()){
+				// get the size of memory
 				instances = Math.max(module.getDownInstanceIdsMaps().get(_moduleName).size(), instances);
 			}
 			module.setNumInstances(instances);
 		}
-		
 		TimeKeeper.getInstance().tupleStartedExecution(tuple);
 		updateAllocatedMips(moduleName);
 		processCloudletSubmit(ev, false);

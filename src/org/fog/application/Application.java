@@ -209,6 +209,7 @@ public class Application {
 							tuples.add(tuple);
 						//}
 					}else{
+						// if not actuator 
 						Tuple tuple = new Tuple(appId, FogUtils.generateTupleId(), edge.getDirection(),  
 								(long) (edge.getTupleCpuLength()),
 								inputTuple.getNumberOfPes(),

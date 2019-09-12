@@ -82,14 +82,26 @@ public class Sensor extends SimEntity{
 	public void transmit(){
 		AppEdge _edge = null;
 		// TODO: fix it!
+//		Log.printLine(getApp().getEdgeMap());
 		for(AppEdge edge : getApp().getEdges()){
 			String[] t1 = this.getName().split("-");
 			String last_s = t1[t1.length-1];
 			String[] t2 = edge.getDestination().split("-");
 			String last_d = t2[t2.length-1];
-			if(edge.getSource().equals(getTupleType()) && last_s.equals(last_d))
+			String[] t3 = this.sensorName.split("_");
+//			Log.printLine("App name: "+getApp().getAppId());
+//			Log.printLine(t3[1]);
+//			Log.printLine("sensor name : "+this.sensorName);
+//			Log.printLine("device name : "+this.getName());
+//			Log.printLine("dest name : "+this.destModuleName);
+//			Log.printLine("Source : "+edge.getSource() +" Tuple : "+getTupleType());
+			if(edge.getSource().equals(getTupleType()) && last_s.equals(last_d)) {
 				_edge = edge;
+//				Log.printLine("here: "+edge.getSource()+","+getTupleType()+"  "+last_s+","+last_d);
+			}
+
 		}
+//		Log.printLine(_edge);
 		long cpuLength = (long) _edge.getTupleCpuLength();
 		long nwLength = (long) _edge.getTupleNwLength();
 		

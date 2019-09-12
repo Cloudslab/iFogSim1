@@ -96,4 +96,7 @@ public class VmSchedulerTimeSharedOverbookingEnergy extends VmSchedulerTimeShare
 	private double getTotalMips() {
 		return this.getPeList().size() * this.getPeCapacity();
 	}
+	
+	
+	
 }

@@ -403,6 +403,7 @@ public abstract class SimEntity implements Cloneable {
 		SimEvent ev = evbuf != null ? evbuf : getNextEvent();
 
 		while (ev != null) {
+//			System.out.println(ev.toString());
 			processEvent(ev);
 			if (state != RUNNABLE) {
 				break;
@@ -540,7 +541,7 @@ public abstract class SimEntity implements Cloneable {
 		if (entityId != srcId) {// does not delay self messages
 			delay += getNetworkDelay(srcId, entityId);
 		}
-
+//		System.out.println(String.valueOf(entityId)+" "+String.valueOf(delay)+" "+String.valueOf(cloudSimTag)+" "+String.valueOf(data));
 		schedule(entityId, delay, cloudSimTag, data);
 	}
 

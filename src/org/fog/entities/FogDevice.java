@@ -303,7 +303,7 @@ public class FogDevice extends PowerDatacenter {
 	 */
 	private void manageResources(SimEvent ev) {
 		updateEnergyConsumption();
-		send(getId(), Config.RESOURCE_MGMT_INTERVAL, FogEvents.RESOURCE_MGMT);
+		send(getId(), Config.RESOURCE_MANAGE_INTERVAL, FogEvents.RESOURCE_MGMT);
 	}
 
 	/**
@@ -389,7 +389,6 @@ public class FogDevice extends PowerDatacenter {
 
 		for (PowerHost host : this.<PowerHost> getHostList()) {
 //			Log.printLine();
-
 			double time = host.updateVmsProcessing(currentTime); // inform VMs to update processing
 			if (time < minTime) {
 				minTime = time;
@@ -442,10 +441,6 @@ public class FogDevice extends PowerDatacenter {
 
 		checkCloudletCompletion();
 
-		/** Remove completed VMs **/
-		/**
-		 * Change made by HARSHIT GUPTA
-		 */
 		/*for (PowerHost host : this.<PowerHost> getHostList()) {
 			for (Vm vm : host.getCompletedVms()) {
 				getVmAllocationPolicy().deallocateHostForVm(vm);
@@ -470,7 +465,6 @@ public class FogDevice extends PowerDatacenter {
 				while (vm.getCloudletScheduler().isFinishedCloudlets()) {
 					Cloudlet cl = vm.getCloudletScheduler().getNextFinishedCloudlet();
 					if (cl != null) {
-						
 						cloudletCompleted = true;
 						Tuple tuple = (Tuple)cl;
 						TimeKeeper.getInstance().tupleEndedExecution(tuple);
@@ -531,16 +525,19 @@ public class FogDevice extends PowerDatacenter {
 	}
 	
 	protected void updateAllocatedMips(String incomingOperator){
+//		System.out.println("updateAllocatedMips");
+//		System.out.println(incomingOperator);
 		getHost().getVmScheduler().deallocatePesForAllVms();
 		// if possible allocate instance to vm
 		for(final Vm vm : getHost().getVmList()){
+
 			if(vm.getCloudletScheduler().runningCloudlets() > 0 || ((AppModule)vm).getName().equals(incomingOperator)){
 				getHost().getVmScheduler().allocatePesForVm(vm, new ArrayList<Double>(){
-					protected static final long serialVersionUID = 1L;
 				{add((double) getHost().getTotalMips());}});
 			}else{
+//				System.out.println(String.valueOf(vm.getCloudletScheduler().runningCloudlets())+ " " + ((AppModule)vm).getName() + " " + incomingOperator);
+//				System.out.println("updateAllocatedMips");
 				getHost().getVmScheduler().allocatePesForVm(vm, new ArrayList<Double>(){
-					protected static final long serialVersionUID = 1L;
 				{add(0.0);}});
 			}
 		}		
@@ -552,6 +549,7 @@ public class FogDevice extends PowerDatacenter {
 		double totalMipsAllocated = 0;
 		for(final Vm vm : getHost().getVmList()){
 			AppModule operator = (AppModule)vm;
+//			System.out.println("here2");
 			operator.updateVmProcessing(CloudSim.clock(), getVmAllocationPolicy().getHost(operator).getVmScheduler()
 					.getAllocatedMipsForVm(operator));
 			totalMipsAllocated += getHost().getTotalAllocatedMipsForVm(vm);
@@ -643,10 +641,11 @@ public class FogDevice extends PowerDatacenter {
 			sendTupleToActuator(tuple);
 			return;
 		}
-		
+//		System.out.println(ev);
 		if(getHost().getVmList().size() > 0){
 			final AppModule operator = (AppModule)getHost().getVmList().get(0);
 			if(CloudSim.clock() > 0){
+//				System.out.println("processTupleArrival");
 				getHost().getVmScheduler().deallocatePesForVm(operator);
 				getHost().getVmScheduler().allocatePesForVm(operator, new ArrayList<Double>(){
 					protected static final long serialVersionUID = 1L;
@@ -753,9 +752,9 @@ public class FogDevice extends PowerDatacenter {
 		updateAllocatedMips(moduleName);
 		processCloudletSubmit(ev, false);
 		updateAllocatedMips(moduleName);
-		/*for(Vm vm : getHost().getVmList()){
-			Logger.error(getName(), "MIPS allocated to "+((AppModule)vm).getName()+" = "+getHost().getTotalAllocatedMipsForVm(vm));
-		}*/
+//		for(Vm vm : getHost().getVmList()){
+//			System.out.println(getName()+ "MIPS allocated to "+((AppModule)vm).getName()+" = "+getHost().getTotalAllocatedMipsForVm(vm));
+//		}
 	}
 	
 	protected void processModuleArrival(SimEvent ev){
@@ -771,13 +770,15 @@ public class FogDevice extends PowerDatacenter {
 		}
 		
 		initializePeriodicTuples(module);
-		
+//		System.out.println("here1");		
 		module.updateVmProcessing(CloudSim.clock(), getVmAllocationPolicy().getHost(module).getVmScheduler()
 				.getAllocatedMipsForVm(module));
 	}
 	
 	private void initializePeriodicTuples(AppModule module) {
 		String appId = module.getAppId();
+//		System.out.println("initializePeriodicTuples");
+//		System.out.println(module.getName());
 		Application app = getApplicationMap().get(appId);
 		List<AppEdge> periodicEdges = app.getPeriodicEdges(module.getName());
 		for(AppEdge edge : periodicEdges){

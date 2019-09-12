@@ -43,6 +43,7 @@ public abstract class ModulePlacement {
 	
 	protected boolean createModuleInstanceOnDevice(AppModule _module, final FogDevice device){
 		AppModule module = null;
+		Log.printLine("here");
 		if(getModuleToDeviceMap().containsKey(_module.getName()))
 			module = new AppModule(_module);
 		else

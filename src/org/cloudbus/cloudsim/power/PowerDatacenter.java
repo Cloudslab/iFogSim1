@@ -86,18 +86,22 @@ public class PowerDatacenter extends Datacenter {
 	@Override
 	protected void updateCloudletProcessing() {
 		if (getCloudletSubmitted() == -1 || getCloudletSubmitted() == CloudSim.clock()) {
+//			System.out.println(getCloudletSubmitted());
+//			System.out.println(CloudSim.clock());
 			CloudSim.cancelAll(getId(), new PredicateType(CloudSimTags.VM_DATACENTER_EVENT));
+//			System.out.println(getSchedulingInterval());
 			schedule(getId(), getSchedulingInterval(), CloudSimTags.VM_DATACENTER_EVENT);
 			return;
 		}
 		
 		double currentTime = CloudSim.clock();
-
+//		for (Vm vm : this.getVmList()) {
+//			System.out.println(vm.getCurrentRequestedTotalMips());
+//		}
 		// if some time passed since last processing
 		if (currentTime > getLastProcessTime()) {
-			
  			double minTime = updateCloudetProcessingWithoutSchedulingFutureEventsForce();
-			if (!isDisableMigrations()) {
+ 			if (!isDisableMigrations()) {
 				List<Map<String, Object>> migrationMap = getVmAllocationPolicy().optimizeAllocation(
 						getVmList());
 

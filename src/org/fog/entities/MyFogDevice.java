@@ -293,7 +293,7 @@ public class MyFogDevice extends PowerDatacenter {
 	 */
 	private void manageResources(SimEvent ev) {
 		updateEnergyConsumption();
-		send(getId(), Config.RESOURCE_MGMT_INTERVAL, FogEvents.RESOURCE_MGMT);
+		send(getId(), Config.RESOURCE_MANAGE_INTERVAL, FogEvents.RESOURCE_MGMT);
 	}
 
 	/**

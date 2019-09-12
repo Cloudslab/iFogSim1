@@ -66,9 +66,14 @@ public class HostDynamicWorkload extends Host {
 		setPreviousUtilizationMips(getUtilizationMips());
 		setUtilizationMips(0);
 		double hostTotalRequestedMips = 0;
-
+//		for (Vm vm : this.getVmList()) {
+//			System.out.println(vm.getCurrentRequestedTotalMips());
+//		}
+//		System.out.println("updateVmsProcessing");
 		for (Vm vm : getVmList()) {
+//			System.out.println(vm.getCurrentRequestedMips());
 			getVmScheduler().deallocatePesForVm(vm);
+
 		}
 
 		for (Vm vm : getVmList()) {

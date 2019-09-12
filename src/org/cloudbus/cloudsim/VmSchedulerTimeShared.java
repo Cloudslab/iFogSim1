@@ -168,6 +168,7 @@ public class VmSchedulerTimeShared extends VmScheduler {
 	public void deallocatePesForVm(Vm vm) {
 		getMipsMapRequested().remove(vm.getUid());
 		setPesInUse(0);
+//		System.out.println("deallocatePesForVm");
 		getMipsMap().clear();
 		setAvailableMips(PeList.getTotalMips(getPeList()));
 

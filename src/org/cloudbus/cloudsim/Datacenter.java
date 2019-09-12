@@ -149,11 +149,13 @@ public class Datacenter extends SimEntity {
 
 			// New Cloudlet arrives
 			case CloudSimTags.CLOUDLET_SUBMIT:
+				//System.out.println("CLOUDLET_SUBMIT");
 				processCloudletSubmit(ev, false);
 				break;
 
 			// New Cloudlet arrives, but the sender asks for an ack
 			case CloudSimTags.CLOUDLET_SUBMIT_ACK:
+				//System.out.println("CLOUDLET_SUBMIT_ACK");
 				processCloudletSubmit(ev, true);
 				break;
 
@@ -674,8 +676,10 @@ public class Datacenter extends SimEntity {
 	 * @post $none
 	 */
 	protected void processCloudletSubmit(SimEvent ev, boolean ack) {
+		//System.out.println("processCloudletSubmit");
 		updateCloudletProcessing();
 		try {
+			//System.out.println("find!!!");
 			// gets the Cloudlet object
 			Cloudlet cl = (Cloudlet) ev.getData();
 			// checks whether this Cloudlet has finished or not
@@ -708,6 +712,7 @@ public class Datacenter extends SimEntity {
 			}
 
 			// process this Cloudlet to this CloudResource
+//			System.out.println("processCloudletSubmit2");
 			cl.setResourceParameter(getId(), getCharacteristics().getCostPerSecond(), getCharacteristics()
 					.getCostPerBw());
 
@@ -723,6 +728,9 @@ public class Datacenter extends SimEntity {
 			// if this cloudlet is in the exec queue
 			if (estimatedFinishTime > 0.0 && !Double.isInfinite(estimatedFinishTime)) {
 				estimatedFinishTime += fileTransferTime;
+				CloudSim.getMinTimeBetweenEvents();
+//				System.out.println("processCloudletSubmit");
+//				System.out.println("estimatedFinishTime : "+String.valueOf(estimatedFinishTime));
 				send(getId(), CloudSim.getMinTimeBetweenEvents()
 						+estimatedFinishTime, CloudSimTags.VM_DATACENTER_EVENT);
 			}
@@ -736,7 +744,9 @@ public class Datacenter extends SimEntity {
 				// unique tag = operation tag
 				int tag = CloudSimTags.CLOUDLET_SUBMIT_ACK;
 				sendNow(cl.getUserId(), tag, data);
+				
 			}
+//			System.out.println("processCloudletSubmit3");
 		} catch (ClassCastException c) {
 			Log.printLine(getName() + ".processCloudletSubmit(): " + "ClassCastException error.");
 			c.printStackTrace();

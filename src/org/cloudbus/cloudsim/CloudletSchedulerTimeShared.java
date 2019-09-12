@@ -63,14 +63,12 @@ public class CloudletSchedulerTimeShared extends CloudletScheduler {
 	@Override
 	public double updateVmProcessing(double currentTime, List<Double> mipsShare) {
 		setCurrentMipsShare(mipsShare);
+//		System.out.println("set current mips share : "+ String.valueOf(mipsShare));
 		double timeSpam = currentTime - getPreviousTime();
-
 		for (ResCloudlet rcl : getCloudletExecList()) {
-						
 			rcl.updateCloudletFinishedSoFar((long) (getCapacity(mipsShare) * timeSpam * rcl.getNumberOfPes() * Consts.MILLION));
-			//System.out.println(getTotalCurrentAllocatedMipsForCloudlet(rcl, getPreviousTime()));
-			//OLA System.out.println(CloudSim.clock()+ " : Remaining length of tuple ID "+((Tuple)rcl.getCloudlet()).getActualTupleId()+" = "+rcl.getRemainingCloudletLength());
-			
+//			System.out.println(getTotalCurrentAllocatedMipsForCloudlet(rcl, getPreviousTime()));
+//			System.out.println(CloudSim.clock()+ " : Remaining length of tuple ID "+((Tuple)rcl.getCloudlet()).getActualTupleId()+" = "+rcl.getRemainingCloudletLength());
 		}
 
 		if (getCloudletExecList().size() == 0) {
@@ -83,6 +81,7 @@ public class CloudletSchedulerTimeShared extends CloudletScheduler {
 		List<ResCloudlet> toRemove = new ArrayList<ResCloudlet>();
 		for (ResCloudlet rcl : getCloudletExecList()) {
 			long remainingLength = rcl.getRemainingCloudletLength();
+			//System.out.println(remainingLength);
 			if (remainingLength == 0) {// finished: remove from the list
 				toRemove.add(rcl);
 				cloudletFinish(rcl);
@@ -93,8 +92,11 @@ public class CloudletSchedulerTimeShared extends CloudletScheduler {
 
 		// estimate finish time of cloudlets
 		for (ResCloudlet rcl : getCloudletExecList()) {
+			//System.out.println("current Time: "+String.valueOf(currentTime)+" "+"remainingCloudLength :"+String.valueOf(rcl.getRemainingCloudletLength())+
+			//		"getCapacity :"+String.valueOf(getCapacity(mipsShare))+" numberofPes : "+String.valueOf(rcl.getNumberOfPes()));
 			double estimatedFinishTime = currentTime
 					+ (rcl.getRemainingCloudletLength() / (getCapacity(mipsShare) * rcl.getNumberOfPes()));
+			//System.out.println(estimatedFinishTime);
 			if (estimatedFinishTime - currentTime < CloudSim.getMinTimeBetweenEvents()) {
 				estimatedFinishTime = currentTime + CloudSim.getMinTimeBetweenEvents();
 			}
@@ -117,24 +119,32 @@ public class CloudletSchedulerTimeShared extends CloudletScheduler {
 	protected double getCapacity(List<Double> mipsShare) {
 		double capacity = 0.0;
 		int cpus = 0;
+//		System.out.println(mipsShare);
+//		System.out.println("mips");
 		for (Double mips : mipsShare) {
+			//System.out.println(mips);
 			capacity += mips;
 			if (mips > 0.0) {
 				cpus++;
 			}
 		}
+		//System.out.println(capacity);
+		//System.out.println("end");
 		currentCPUs = cpus;
 
 		int pesInUse = 0;
+
 		for (ResCloudlet rcl : getCloudletExecList()) {
 			pesInUse += rcl.getNumberOfPes();
 		}
-
+		//System.out.println("pesInuse : "+String.valueOf(pesInUse));
 		if (pesInUse > currentCPUs) {
 			capacity /= pesInUse;
 		} else {
 			capacity /= currentCPUs;
 		}
+//		System.out.println(capacity);
+//		System.out.println("!!");
 		return capacity;
 	}
 
@@ -376,6 +386,8 @@ public class CloudletSchedulerTimeShared extends CloudletScheduler {
 	 */
 	@Override
 	public boolean isFinishedCloudlets() {
+//		System.out.println("isFinishedCloudlets");
+//		System.out.println(getCloudletFinishedList().size());
 		return getCloudletFinishedList().size() > 0;
 	}
 
@@ -500,6 +512,7 @@ public class CloudletSchedulerTimeShared extends CloudletScheduler {
 	 */
 	@Override
 	public double getTotalCurrentAvailableMipsForCloudlet(ResCloudlet rcl, List<Double> mipsShare) {
+		
 		return getCapacity(getCurrentMipsShare());
 	}
 

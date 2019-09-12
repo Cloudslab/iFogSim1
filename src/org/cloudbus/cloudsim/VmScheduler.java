@@ -85,6 +85,7 @@ public abstract class VmScheduler {
 	 * @post $none
 	 */
 	public void deallocatePesForAllVms() {
+//		System.out.println("deallocatePesForAllVms");
 		getMipsMap().clear();
 		setAvailableMips(PeList.getTotalMips(getPeList()));
 		for (Pe pe : getPeList()) {
@@ -111,6 +112,7 @@ public abstract class VmScheduler {
 	 * @post $none
 	 */
 	public List<Double> getAllocatedMipsForVm(Vm vm) {
+//		System.out.println(getMipsMap());
 		return getMipsMap().get(vm.getUid());
 	}
 

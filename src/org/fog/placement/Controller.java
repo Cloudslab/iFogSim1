@@ -95,6 +95,7 @@ public class Controller extends SimEntity{
 	@Override
 	public void startEntity() {
 		for(String appId : applications.keySet()){
+			Log.printLine(appId);
 			if(getAppLaunchDelays().get(appId)==0)
 				processAppSubmit(applications.get(appId));
 			else
@@ -111,8 +112,8 @@ public class Controller extends SimEntity{
 	}
 	private void processStop() {
 		CloudSim.stopSimulation();
-		if(this.using_fresult == 1) {
-//		if(false) {
+//		if(this.using_fresult == 1) {
+		if(false) {
 		makeResultOutput();
 		} else {
 			printTimeDetails();
@@ -154,7 +155,7 @@ public class Controller extends SimEntity{
 		}
 		try {
 			ArrayList<String> data = new ArrayList<String>();
-			output.append("Total execution time");
+			output.append("execution_time");
 			String temp = Double.toString(Calendar.getInstance().getTimeInMillis() - TimeKeeper.getInstance().getSimulationStartTime());
 			data.add(temp);
 			output.append(",");
@@ -164,11 +165,11 @@ public class Controller extends SimEntity{
 				output.append(",");
 			}
 			for(FogDevice fogDevice : getFogDevices()){
-				output.append("Energy Consumption["+fogDevice.getName()+"]");
+				output.append(fogDevice.getName());
 				data.add(Double.toString(fogDevice.getEnergyConsumption()));
 				output.append(",");
 			}
-			output.append("Total network usage");
+			output.append("Total_network_usage");
 			data.add(Double.toString(NetworkUsageMonitor.getNetworkUsage()/Config.MAX_SIMULATION_TIME));
 			output.append("");
 			output.append("\n");

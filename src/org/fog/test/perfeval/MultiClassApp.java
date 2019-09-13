@@ -176,11 +176,28 @@ public class MultiClassApp {
 	static int SINGLE_APP = 0;
 	static int CLASS1_MIPS = 48000;
 	static int CLASS2_MIPS = 4835;
-	static int CLASS3_MIPS = 60045;
+	static int CLASS3_MIPS = 1000000;
 	static int CLASS4_MIPS = 3062;
-	static int CLOUD_MIPS = 40000;
-	static int FOG_MIPS = 5900;
-	static int EDGE_MIPS = 300;
+	static int CLOUD_MIPS = 227000;
+	static int FOG_MIPS = 84000;
+	static int EDGE_MIPS = 2225;
+	
+	//class3 
+	static long EDGE_UPBW = 150000;
+	static long EDGE_DOWNBW = 150000;
+	static long FOG_UPBW = 2187;
+	static long FOG_DOWNBW = 2187;
+	static long CLOUD_UPBW = 1500;
+	static long CLOUD_DOWNBW = 1000;
+	
+	static double CLASS1_INPUT_SIZE = 164000/1024;
+	static double CLASS1_OUTPUT_SIZE = 161/1024;
+	static double CLASS2_INPUT_SIZE = 14000000/1024;
+	static double CLASS2_OUTPUT_SIZE = 615000/1024;
+	static double CLASS3_INPUT_SIZE = 8200000/1024;
+	static double CLASS3_OUTPUT_SIZE = 8200000/1024;
+	static double CLASS4_INPUT_SIZE = 146000/1024;
+	static double CLASS4_OUTPUT_SIZE = 14800000/1024;
 	
 	public static void main(String[] args) {
 		Log.printLine("Starting multi class Applications...");
@@ -403,7 +420,28 @@ public class MultiClassApp {
 		printOneStringLog("Make appModule","name","class"+number_of_class+"_cloud");
 		String appName = "class"+number_of_class;
 		String fog = appName+"_fog";
-		String cloud = appName+"_cloud";		
+		String cloud = appName+"_cloud";
+		double up_size = 0;
+		double down_size = 0;
+		switch(appName) {
+		case "class1":
+			up_size = CLASS1_INPUT_SIZE;
+			down_size = CLASS1_OUTPUT_SIZE;
+			break;
+		case "class2":
+			up_size = CLASS2_INPUT_SIZE;
+			down_size = CLASS2_OUTPUT_SIZE;
+			break;
+		case "class3":
+			up_size = CLASS3_INPUT_SIZE;
+			down_size = CLASS3_OUTPUT_SIZE;
+			break;
+		case "class4":
+			up_size = CLASS4_INPUT_SIZE;
+			down_size = CLASS4_OUTPUT_SIZE;
+			break;
+		}
+		
 		// 3. make appEdges;
 		switch(offloading_policy) {
 		case 0:
@@ -415,16 +453,16 @@ public class MultiClassApp {
 					
 					
 					if(appName.equals("class1")) {
-						app.addAppEdge(cam_data, edge, CLASS1_MIPS, 50, cam_data, Tuple.UP, AppEdge.SENSOR);
+						app.addAppEdge(cam_data, edge, CLASS1_MIPS, up_size, cam_data, Tuple.UP, AppEdge.SENSOR);
 					}
 					else if(appName.equals("class2")) {
-						app.addAppEdge(cam_data, edge, CLASS2_MIPS, 50, cam_data, Tuple.UP, AppEdge.SENSOR);
+						app.addAppEdge(cam_data, edge, CLASS2_MIPS, up_size, cam_data, Tuple.UP, AppEdge.SENSOR);
 					}
 					else if(appName.equals("class3")) {
-						app.addAppEdge(cam_data, edge, CLASS3_MIPS, 50, cam_data, Tuple.UP, AppEdge.SENSOR);
+						app.addAppEdge(cam_data, edge, CLASS3_MIPS, up_size, cam_data, Tuple.UP, AppEdge.SENSOR);
 					}
 					else {
-						app.addAppEdge(cam_data, edge, CLASS4_MIPS, 50, cam_data, Tuple.UP, AppEdge.SENSOR);
+						app.addAppEdge(cam_data, edge, CLASS4_MIPS, up_size, cam_data, Tuple.UP, AppEdge.SENSOR);
 					}					
 
 					app.addAppEdge(edge, fog, 50, 50, data, Tuple.UP, AppEdge.MODULE);				
@@ -435,11 +473,11 @@ public class MultiClassApp {
 					
 					// make edge -> act
 					String act = "ACT"+number_of_class+"-"+String.valueOf(i);
-					app.addAppEdge(edge,act, 50, 20,"SELF_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
+					app.addAppEdge(edge,act, 50, 50,"SELF_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
 					
 				}
 				// make fog -> cloud
-				app.addAppEdge(fog,cloud, 50, 20,"USERS_STATE", Tuple.UP, AppEdge.MODULE);
+				app.addAppEdge(fog,cloud, 50, 50,"USERS_STATE", Tuple.UP, AppEdge.MODULE);
 			break;
 		case 1:
 			for(int i=0; i < NUMBER_OF_APPS; i++) {
@@ -447,33 +485,33 @@ public class MultiClassApp {
 				String edge = appName+"-"+String.valueOf(i);
 				String cam_data ="CAM_CLASS"+number_of_class+"-"+String.valueOf(i);
 
-				app.addAppEdge(cam_data, edge, 50, 50, cam_data, Tuple.UP, AppEdge.SENSOR); //edge computing
+				app.addAppEdge(cam_data, edge, 50, up_size, cam_data, Tuple.UP, AppEdge.SENSOR); //edge computing
 				
 				// make edge -> fog				
 				String data ="DATA"+number_of_class+"-"+String.valueOf(i);
 				if(appName.equals("class1")) {
-					app.addAppEdge(edge, fog, CLASS1_MIPS, 50, data, Tuple.UP, AppEdge.MODULE);
+					app.addAppEdge(edge, fog, CLASS1_MIPS, up_size, data, Tuple.UP, AppEdge.MODULE);
 				}
 				else if(appName.equals("class2")) {
-					app.addAppEdge(edge, fog, CLASS2_MIPS, 50, data, Tuple.UP, AppEdge.MODULE);
+					app.addAppEdge(edge, fog, CLASS2_MIPS, up_size, data, Tuple.UP, AppEdge.MODULE);
 				}
 				else if(appName.equals("class3")) {
-					app.addAppEdge(edge, fog, CLASS3_MIPS, 50, data, Tuple.UP, AppEdge.MODULE);
+					app.addAppEdge(edge, fog, CLASS3_MIPS, up_size, data, Tuple.UP, AppEdge.MODULE);
 				}
 				else {
-					app.addAppEdge(edge, fog, CLASS4_MIPS, 50, data, Tuple.UP, AppEdge.MODULE);
+					app.addAppEdge(edge, fog, CLASS4_MIPS, up_size, data, Tuple.UP, AppEdge.MODULE);
 				} // fog computing 
 
 				// make fog -> edge
 				String result = "RESULT"+number_of_class+"-"+String.valueOf(i);
-				app.addAppEdge(fog, edge, 50, 50, result, Tuple.DOWN, AppEdge.MODULE);
+				app.addAppEdge(fog, edge, 50, down_size, result, Tuple.DOWN, AppEdge.MODULE);
 				// make edge -> act
 				String act = "ACT"+number_of_class+"-"+String.valueOf(i);
-				app.addAppEdge(edge,act, 50, 20,"SELF_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
+				app.addAppEdge(edge,act, 50, 50,"SELF_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
 				
 			}
 			// make fog -> cloud
-			app.addAppEdge(fog,cloud, 50, 20,"USERS_STATE", Tuple.UP, AppEdge.MODULE);			
+			app.addAppEdge(fog,cloud, 50, 50,"USERS_STATE", Tuple.UP, AppEdge.MODULE);			
 			break;
 		case 2:
 			for(int i=0; i < NUMBER_OF_APPS; i++) {
@@ -481,11 +519,11 @@ public class MultiClassApp {
 				String edge = appName+"-"+String.valueOf(i);
 				String cam_data ="CAM_CLASS"+number_of_class+"-"+String.valueOf(i);
 
-				app.addAppEdge(cam_data, edge, 50, 50, cam_data, Tuple.UP, AppEdge.SENSOR); //edge computing
+				app.addAppEdge(cam_data, edge, 50, up_size, cam_data, Tuple.UP, AppEdge.SENSOR); //edge computing
 				
 				// make edge -> fog				
 				String data ="DATA"+number_of_class+"-"+String.valueOf(i);
-				app.addAppEdge(edge, fog, 50, 50, data, Tuple.UP, AppEdge.MODULE);
+				app.addAppEdge(edge, fog, 50, up_size, data, Tuple.UP, AppEdge.MODULE);
 				
 				// make fog -> cloud
 				String cinput = "CINPUT"+number_of_class+"-"+String.valueOf(i);
@@ -493,21 +531,21 @@ public class MultiClassApp {
 				String cresult = "CRESULT"+number_of_class+"-"+String.valueOf(i);
 
 				if(appName.equals("class1")) {
-					app.addAppEdge(fog, cloud, CLASS1_MIPS, 50, cinput, Tuple.UP, AppEdge.MODULE);
+					app.addAppEdge(fog, cloud, CLASS1_MIPS, up_size, cinput, Tuple.UP, AppEdge.MODULE);
 				}
 				else if(appName.equals("class2")) {
-					app.addAppEdge(fog, cloud, CLASS2_MIPS, 50, cinput, Tuple.UP, AppEdge.MODULE);
+					app.addAppEdge(fog, cloud, CLASS2_MIPS, up_size, cinput, Tuple.UP, AppEdge.MODULE);
 				}
 				else if(appName.equals("class3")) {
-					app.addAppEdge(fog, cloud, CLASS3_MIPS, 50, cinput, Tuple.UP, AppEdge.MODULE);
+					app.addAppEdge(fog, cloud, CLASS3_MIPS, up_size, cinput, Tuple.UP, AppEdge.MODULE);
 				}
 				else {
-					app.addAppEdge(fog, cloud, CLASS4_MIPS, 50, cinput, Tuple.UP, AppEdge.MODULE);
+					app.addAppEdge(fog, cloud, CLASS4_MIPS, up_size, cinput, Tuple.UP, AppEdge.MODULE);
 				}  
 				// cloud -> fog
-				app.addAppEdge(cloud, fog, 50, 50, cresult, Tuple.DOWN, AppEdge.MODULE);
+				app.addAppEdge(cloud, fog, 50, down_size, cresult, Tuple.DOWN, AppEdge.MODULE);
 				// make fog -> edge
-				app.addAppEdge(fog, edge, 50, 50, result, Tuple.DOWN, AppEdge.MODULE);				
+				app.addAppEdge(fog, edge, 50, down_size, result, Tuple.DOWN, AppEdge.MODULE);				
 				// make edge -> act
 				String act = "ACT"+number_of_class+"-"+String.valueOf(i);
 				app.addAppEdge(edge,act, 50, 20,"SELF_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
@@ -770,12 +808,13 @@ public class MultiClassApp {
 		
 		//TODO: make fog,cloud devices configurable, now these fixed to 1
 		// 1. make cloud device
-		FogDevice cloud = createFogDevice("cloud", CLOUD_MIPS, 32000, 10000, 10000, 0, 0.01, 100, 50); 
+		FogDevice cloud = createFogDevice("cloud", CLOUD_MIPS, 32000, CLOUD_UPBW*NUMBER_OF_APPS, CLOUD_DOWNBW, 0, 0.01, 100, 50); 
 		cloud.setParentId(-1);		
 		fogDevices.add(cloud);
 		
 		// 2. make fog device
-		FogDevice fog = createFogDevice("fog-layer", FOG_MIPS, 8000, 1000, 1000, 1, 0.0, 8, 3.5);
+		// bandwidth(kb/s)
+		FogDevice fog = createFogDevice("fog-layer", FOG_MIPS, 8000, FOG_UPBW*NUMBER_OF_APPS, CLOUD_DOWNBW, 1, 0.0, 8, 3.5);
 		fog.setParentId(cloud.getId()); 
 		fog.setUplinkLatency(FOG_TO_CLOUD_LATENCY);
 		fogDevices.add(fog);
@@ -783,7 +822,7 @@ public class MultiClassApp {
 		// 3. make edge device
 		for(int i=0;i<numOfSensorNode;i++){
 			String sensorNodeId = "0-"+i;
-			FogDevice sensorNode = createFogDevice("m-"+sensorNodeId, EDGE_MIPS, 1000, 1000, 1000, 2, 0, 1.0815,0.5665);
+			FogDevice sensorNode = createFogDevice("m-"+sensorNodeId, EDGE_MIPS*NUMBER_OF_APPS, 1000, EDGE_UPBW, EDGE_DOWNBW, 2, 0, 1.0815,0.5665);
 			sensorNode.setParentId(fog.getId());
 			sensorNode.setUplinkLatency(EDGE_TO_FOG_LATENCY);
 			fogDevices.add(sensorNode);

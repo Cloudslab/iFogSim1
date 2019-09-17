@@ -559,13 +559,13 @@ public class FogDevice extends PowerDatacenter {
 		double currentEnergyConsumption = getEnergyConsumption();
 		double newEnergyConsumption = currentEnergyConsumption + (timeNow-lastUtilizationUpdateTime)*getHost().getPowerModel().getPower(lastUtilization);
 		setEnergyConsumption(newEnergyConsumption);
-	
-		/*if(getName().equals("d-0")){
-			System.out.println("------------------------");
-			System.out.println("Utilization = "+lastUtilization);
-			System.out.println("Power = "+getHost().getPowerModel().getPower(lastUtilization));
-			System.out.println(timeNow-lastUtilizationUpdateTime);
-		}*/
+		
+//		if(getName().equals("m-0-0")){
+//			System.out.println("------------------------");
+//			System.out.println("Utilization = "+lastUtilization);
+//			System.out.println("Power = "+getHost().getPowerModel().getPower(lastUtilization));
+//			System.out.println(timeNow-lastUtilizationUpdateTime);
+//		}
 		
 		double currentCost = getTotalCost();
 		double newcost = currentCost + (timeNow-lastUtilizationUpdateTime)*getRatePerMips()*lastUtilization*getHost().getTotalMips();
@@ -628,7 +628,7 @@ public class FogDevice extends PowerDatacenter {
 		if(getName().equals("cloud")){
 			updateCloudTraffic();
 		}
-		
+//		
 		Log.formatLine("%.4f : %s received tuple %s[id=%d] (from %s to %s)",
 				CloudSim.clock(), getName(), tuple.getTupleType(), tuple.getCloudletId(),
 				CloudSim.getEntityName(ev.getSource()), CloudSim.getEntityName(ev.getDestination()));
@@ -641,7 +641,7 @@ public class FogDevice extends PowerDatacenter {
 			sendTupleToActuator(tuple);
 			return;
 		}
-//		System.out.println(ev);
+
 		if(getHost().getVmList().size() > 0){
 			final AppModule operator = (AppModule)getHost().getVmList().get(0);
 			if(CloudSim.clock() > 0){

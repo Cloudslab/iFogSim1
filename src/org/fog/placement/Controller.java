@@ -88,7 +88,7 @@ public class Controller extends SimEntity{
 				continue;
 			double latency = fogDevice.getUplinkLatency();
 			parent.getChildToLatencyMap().put(fogDevice.getId(), latency);
-			parent.getChildrenIds().add(fogDevice.getId());
+			parent.getChildrenIds().add(fogDevice.getId());	
 		}
 	}
 	
@@ -118,8 +118,8 @@ public class Controller extends SimEntity{
 		} else {
 			printTimeDetails();
 			printPowerDetails();
-			printCostDetails();
-			printNetworkUsageDetails();
+//			printCostDetails();
+//			printNetworkUsageDetails();
 		}
 		System.out.println("Simulation end!");
 		CloudSim.stopSimulation();
@@ -198,9 +198,18 @@ public class Controller extends SimEntity{
 	}
 	
 	private void printPowerDetails() {
+		double avg = 0;
+		double count = 0;
 		for(FogDevice fogDevice : getFogDevices()){
-			System.out.println(fogDevice.getName() + " : Energy Consumed = "+fogDevice.getEnergyConsumption());
+			//System.out.println(fogDevice.getName() + " : Energy Consumed = "+fogDevice.getEnergyConsumption());
+			//System.out.println(fogDevice.getEnergyConsumption());
+			if(count++ >= 2) {
+				avg += fogDevice.getEnergyConsumption();				
+			}
 		}
+		System.out.println(getFogDevices().get(0).getEnergyConsumption());
+		System.out.println(getFogDevices().get(1).getEnergyConsumption());
+		System.out.println(avg/(count-2));
 	}
 
 	private String getStringForLoopId(int loopId){
@@ -214,25 +223,30 @@ public class Controller extends SimEntity{
 		return null;
 	}
 	private void printTimeDetails() {
-		System.out.println("=========================================");
-		System.out.println("============== RESULTS ==================");
-		System.out.println("=========================================");
-		System.out.println("EXECUTION TIME : "+ (Calendar.getInstance().getTimeInMillis() - TimeKeeper.getInstance().getSimulationStartTime()));
-		System.out.println("=========================================");
-		System.out.println("APPLICATION LOOP DELAYS");
-		System.out.println("=========================================");
+//		System.out.println("=========================================");
+//		System.out.println("============== RESULTS ==================");
+//		System.out.println("=========================================");
+//		System.out.println("EXECUTION TIME : "+ (Calendar.getInstance().getTimeInMillis() - TimeKeeper.getInstance().getSimulationStartTime()));
+//		System.out.println("=========================================");
+		double avg = 0;
+		double count = 0;
+//		System.out.println("APPLICATION LOOP DELAYS");
+//		System.out.println("=========================================");
 		for(Integer loopId : TimeKeeper.getInstance().getLoopIdToTupleIds().keySet()){
-			System.out.println(getStringForLoopId(loopId) + " ---> "+TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loopId));
+//			System.out.println(getStringForLoopId(loopId) + " ---> "+TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loopId));
+			count++;
+			avg += TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loopId);
 		}
-		System.out.println("=========================================");
-		System.out.println("TUPLE CPU EXECUTION DELAY");
-		System.out.println("=========================================");
+		System.out.println(avg/count);
+//		System.out.println("=========================================");
+//		System.out.println("TUPLE CPU EXECUTION DELAY");
+//		System.out.println("=========================================");
 		
 		for(String tupleType : TimeKeeper.getInstance().getTupleTypeToAverageCpuTime().keySet()){
-			System.out.println(tupleType + " ---> "+TimeKeeper.getInstance().getTupleTypeToAverageCpuTime().get(tupleType));
+//			System.out.println(tupleType + " ---> "+TimeKeeper.getInstance().getTupleTypeToAverageCpuTime().get(tupleType));
+//			System.out.println(TimeKeeper.getInstance().getTupleTypeToAverageCpuTime().get(tupleType));
 		}
-		
-		System.out.println("=========================================");
+//		System.out.println("=========================================");
 
 	}
 

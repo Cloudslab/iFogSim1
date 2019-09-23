@@ -16,9 +16,10 @@ import org.cloudbus.cloudsim.provisioners.BwProvisioner;
 import org.cloudbus.cloudsim.provisioners.RamProvisioner;
 
 /**
- * Host executes actions related to management of virtual machines (e.g., creation and destruction).
- * A host has a defined policy for provisioning memory and bw, as well as an allocation policy for
- * Pe's to virtual machines. A host is associated to a datacenter. It can host virtual machines.
+ * Host executes actions related to management of virtual machines (e.g.,
+ * creation and destruction). A host has a defined policy for provisioning
+ * memory and bw, as well as an allocation policy for Pe's to virtual machines.
+ * A host is associated to a datacenter. It can host virtual machines.
  * 
  * @author Rodrigo N. Calheiros
  * @author Anton Beloglazov
@@ -59,20 +60,15 @@ public class Host {
 	/**
 	 * Instantiates a new host.
 	 * 
-	 * @param id the id
+	 * @param id             the id
 	 * @param ramProvisioner the ram provisioner
-	 * @param bwProvisioner the bw provisioner
-	 * @param storage the storage
-	 * @param peList the pe list
-	 * @param vmScheduler the vm scheduler
+	 * @param bwProvisioner  the bw provisioner
+	 * @param storage        the storage
+	 * @param peList         the pe list
+	 * @param vmScheduler    the vm scheduler
 	 */
-	public Host(
-			int id,
-			RamProvisioner ramProvisioner,
-			BwProvisioner bwProvisioner,
-			long storage,
-			List<? extends Pe> peList,
-			VmScheduler vmScheduler) {
+	public Host(int id, RamProvisioner ramProvisioner, BwProvisioner bwProvisioner, long storage,
+			List<? extends Pe> peList, VmScheduler vmScheduler) {
 		setId(id);
 		setRamProvisioner(ramProvisioner);
 		setBwProvisioner(bwProvisioner);
@@ -87,8 +83,9 @@ public class Host {
 	 * Requests updating of processing of cloudlets in the VMs running in this host.
 	 * 
 	 * @param currentTime the current time
-	 * @return expected time of completion of the next cloudlet in all VMs in this host.
-	 *         Double.MAX_VALUE if there is no future events expected in this host
+	 * @return expected time of completion of the next cloudlet in all VMs in this
+	 *         host. Double.MAX_VALUE if there is no future events expected in this
+	 *         host
 	 * @pre currentTime >= 0.0
 	 * @post $none
 	 */
@@ -114,27 +111,27 @@ public class Host {
 
 		if (!getVmsMigratingIn().contains(vm)) {
 			if (getStorage() < vm.getSize()) {
-				Log.printLine("[VmScheduler.addMigratingInVm] Allocation of VM #" + vm.getId() + " to Host #"
-						+ getId() + " failed by storage");
+				Log.printLine("[VmScheduler.addMigratingInVm] Allocation of VM #" + vm.getId() + " to Host #" + getId()
+						+ " failed by storage");
 				System.exit(0);
 			}
 
 			if (!getRamProvisioner().allocateRamForVm(vm, vm.getCurrentRequestedRam())) {
-				Log.printLine("[VmScheduler.addMigratingInVm] Allocation of VM #" + vm.getId() + " to Host #"
-						+ getId() + " failed by RAM");
+				Log.printLine("[VmScheduler.addMigratingInVm] Allocation of VM #" + vm.getId() + " to Host #" + getId()
+						+ " failed by RAM");
 				System.exit(0);
 			}
 
 			if (!getBwProvisioner().allocateBwForVm(vm, vm.getCurrentRequestedBw())) {
-				Log.printLine("[VmScheduler.addMigratingInVm] Allocation of VM #" + vm.getId() + " to Host #"
-						+ getId() + " failed by BW");
+				Log.printLine("[VmScheduler.addMigratingInVm] Allocation of VM #" + vm.getId() + " to Host #" + getId()
+						+ " failed by BW");
 				System.exit(0);
 			}
 
 			getVmScheduler().getVmsMigratingIn().add(vm.getUid());
 			if (!getVmScheduler().allocatePesForVm(vm, vm.getCurrentRequestedMips())) {
-				Log.printLine("[VmScheduler.addMigratingInVm] Allocation of VM #" + vm.getId() + " to Host #"
-						+ getId() + " failed by MIPS");
+				Log.printLine("[VmScheduler.addMigratingInVm] Allocation of VM #" + vm.getId() + " to Host #" + getId()
+						+ " failed by MIPS");
 				System.exit(0);
 			}
 
@@ -187,8 +184,8 @@ public class Host {
 	public boolean isSuitableForVm(Vm vm) {
 		return (getVmScheduler().getPeCapacity() >= vm.getCurrentRequestedMaxMips()
 				&& getVmScheduler().getAvailableMips() >= vm.getCurrentRequestedTotalMips()
-				&& getRamProvisioner().isSuitableForVm(vm, vm.getCurrentRequestedRam()) && getBwProvisioner()
-				.isSuitableForVm(vm, vm.getCurrentRequestedBw()));
+				&& getRamProvisioner().isSuitableForVm(vm, vm.getCurrentRequestedRam())
+				&& getBwProvisioner().isSuitableForVm(vm, vm.getCurrentRequestedBw()));
 	}
 
 	/**
@@ -287,7 +284,7 @@ public class Host {
 	/**
 	 * Returns a VM object.
 	 * 
-	 * @param vmId the vm id
+	 * @param vmId   the vm id
 	 * @param userId ID of VM's owner
 	 * @return the virtual machine object, $null if not found
 	 * @pre $none
@@ -332,7 +329,7 @@ public class Host {
 	/**
 	 * Allocates PEs for a VM.
 	 * 
-	 * @param vm the vm
+	 * @param vm        the vm
 	 * @param mipsShare the mips share
 	 * @return $true if this policy allows a new VM in the host, $false otherwise
 	 * @pre $none
@@ -357,7 +354,8 @@ public class Host {
 	 * Returns the MIPS share of each Pe that is allocated to a given VM.
 	 * 
 	 * @param vm the vm
-	 * @return an array containing the amount of MIPS of each pe that is available to the VM
+	 * @return an array containing the amount of MIPS of each pe that is available
+	 *         to the VM
 	 * @pre $none
 	 * @post $none
 	 */
@@ -372,6 +370,7 @@ public class Host {
 	 * @return the allocated mips for vm
 	 */
 	public double getTotalAllocatedMipsForVm(Vm vm) {
+//		System.out.println(vm.getId());
 		return getVmScheduler().getTotalAllocatedMipsForVm(vm);
 	}
 
@@ -512,7 +511,7 @@ public class Host {
 	/**
 	 * Sets the pe list.
 	 * 
-	 * @param <T> the generic type
+	 * @param <T>    the generic type
 	 * @param peList the new pe list
 	 */
 	protected <T extends Pe> void setPeList(List<T> peList) {
@@ -549,12 +548,12 @@ public class Host {
 	}
 
 	/**
-	 * Sets the PEs of this machine to a FAILED status. NOTE: <tt>resName</tt> is used for debugging
-	 * purposes, which is <b>ON</b> by default. Use {@link #setFailed(boolean)} if you do not want
-	 * this information.
+	 * Sets the PEs of this machine to a FAILED status. NOTE: <tt>resName</tt> is
+	 * used for debugging purposes, which is <b>ON</b> by default. Use
+	 * {@link #setFailed(boolean)} if you do not want this information.
 	 * 
 	 * @param resName the name of the resource
-	 * @param failed the failed
+	 * @param failed  the failed
 	 * @return <tt>true</tt> if successful, <tt>false</tt> otherwise
 	 */
 	public boolean setFailed(String resName, boolean failed) {
@@ -580,10 +579,10 @@ public class Host {
 	/**
 	 * Sets the particular Pe status on this Machine.
 	 * 
-	 * @param peId the pe id
+	 * @param peId   the pe id
 	 * @param status Pe status, either <tt>Pe.FREE</tt> or <tt>Pe.BUSY</tt>
-	 * @return <tt>true</tt> if the Pe status has changed, <tt>false</tt> otherwise (Pe id might not
-	 *         be exist)
+	 * @return <tt>true</tt> if the Pe status has changed, <tt>false</tt> otherwise
+	 *         (Pe id might not be exist)
 	 * @pre peID >= 0
 	 * @post $none
 	 */

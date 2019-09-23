@@ -14,12 +14,6 @@ import org.fog.utils.Config;
 
 import com.google.common.primitives.Ints;
 
-/**
- * Simulation setup for Multi class Applications on each device
- * 
- * @author DongJoo Seo based on VRGameFog example
- */
-
 class ClassInfo {
 	static HashMap<String, ArrayList<Integer>> map_of_each_class = null;
 	// [string:[1,2],...]
@@ -52,21 +46,21 @@ class ClassInfo {
 	static int OFFLOADING_POLICY = -1;
 	static int CLASS_NUM = -1;
 	static int SINGLE_APP = 0;
-	static int CLASS1_MIPS = 48000;
-	static int CLASS2_MIPS = 4835;
+	static int CLASS1_MIPS = 3290000;
+	static int CLASS2_MIPS = 105840;
 	static int CLASS3_MIPS = 1000000;
-	static int CLASS4_MIPS = 3062;
-	static int CLOUD_MIPS = 225000;
+	static int CLASS4_MIPS = 59000;
+	static int CLOUD_MIPS[] = { 727000, 275000, 225000, 225000 };
 	static int FOG_MIPS = 84000;
-	static int EDGE_MIPS = 2225;
+	static int EDGE_MIPS[] = { 2636, 2280, 2225, 2225 };
 
 	// class3
-	static long EDGE_UPBW = 2187000;
-	static long EDGE_DOWNBW = 1953000;
-	static long FOG_UPBW = 1000000;
-	static long FOG_DOWNBW = 1000000;
-	static long CLOUD_UPBW = 1500000;
-	static long CLOUD_DOWNBW = 150000;
+	static double EDGE_UPBW[] = { 2187000, 2187000, 2187000, 2187000 };
+	static double EDGE_DOWNBW[] = { -1, -1, -1, -1 };
+	static double FOG_UPBW[] = { -1, -1, -1, -1 };
+	static double FOG_DOWNBW[] = { -1, -1, -1, -1 };
+	static double CLOUD_UPBW[] = { -1, -1, -1, -1 };
+	static double CLOUD_DOWNBW[] = { 1500000, 1500000, 1500000, 1500000 };
 
 	static double CLASS1_INPUT_SIZE = 164000 / 1024;
 	static double CLASS1_OUTPUT_SIZE = 161 / 1024;
@@ -74,8 +68,8 @@ class ClassInfo {
 	static double CLASS2_OUTPUT_SIZE = 615000 / 1024;
 	static double CLASS3_INPUT_SIZE = 8200000 / 1024;
 	static double CLASS3_OUTPUT_SIZE = 8200000 / 1024;
-	static double CLASS4_INPUT_SIZE = 146000 / 1024;
-	static double CLASS4_OUTPUT_SIZE = 14800000 / 1024;
+	static double CLASS4_INPUT_SIZE = 145536 / 1024;
+	static double CLASS4_OUTPUT_SIZE = 13846510 / 1024;
 
 	static int CLOUD_NETWORK = -1;
 	static int PACKET_LOSS = -1;
@@ -89,6 +83,56 @@ class ClassInfo {
 	static int CLOUD_MAXBW = 10000000;
 
 	static int using_fresult = -1;
+
+	// class1
+	// Upload throughput 10009.76563 8897.569444 6159.855769 4106.570513 544.7491497
+	// 306.8127395 113.5859929
+	// download throughput 180.7201868 174.6961806 112.3046875 74.86979167
+	// 9.88846305 5.555708922 2.05256609
+
+	// class2
+	// Upload throughput 2902.733546 1660.618851 1088.52508 385.0147846 179.6094982
+	// 59.86458972 51.54918558
+	// download throughput 889.7569444 508.9711335 333.6588542 117.993308
+	// 55.04912351 18.34970784 15.800735
+
+	// class3
+	// Upload throughput 2187.926913 1016.21986 309.4208849 99.67404157 51.00517516
+	// 30.51292676 16.5436999
+	// download throughput 1953.125 906.8870328 276.1314655 88.97569444 45.39576247
+	// 27.23745748 14.82928241
+
+	// class4
+	// Upload throughput 14851.88802 6789.434524 1679.36543 720.0915404 412.0755058
+	// 226.6742846 138.0233543
+	// download throughput 1775.568182 782.9428494 200.7378472 86.03050595
+	// 49.16028912 27.06577715 16.49900114
+
+	// 4 7
+	// [class_num][packet_loss]
+	static double EDGE_UP_BW_ALL_CLASS[][] = { { 10009, 8897, 6159, 4106, 544, 306, 113 },
+			{ 2902, 1660, 1088, 385, 179, 59, 51 }, { 2187, 1016, 309, 99, 51, 30, 16 },
+			{ 14851, 6789, 1679, 720, 412, 226, 138 } };
+	static double FOG_DOWN_BW_ALL_CLASS[][] = { { 180, 174, 112, 74, 9, 5, 2 }, { 889, 508, 333, 117, 55, 18, 15 },
+			{ 1953, 906, 276, 88, 45, 27, 14 }, { 1775, 782, 200, 86, 49, 27, 16 } };
+
+//	Upload throughput	125.1220703	586.6529304	625.6103516
+//	download throughput	0.1572265625	1.965332031	2.382220644
+
+//	Upload throughput	126.5914352	613.088565	2059.017319
+//	download throughput	250.2441406	734.2126375	786.107248
+
+//	Upload throughput	133.4635417	657.996097	1542.931118
+//	download throughput	263.3282637	1407.348418	999.7269039
+
+//	Upload throughput	123.9809783	617.2213203	720.0915404
+//	download throughput	267.4523501	936.6898898	1790.969641
+	// 4 3
+	// [class_num][network type]
+	static double FOG_UP_BW_ALL_CLASS[][] = { { 625, 586, 125 }, { 2059.017319, 613.088565, 126.5914352 },
+			{ 1280, 650, 133 }, { 720.0915404, 617.2213203, 123.9809783 } };
+	static double CLOUD_DOWN_BW_ALL_CLASS[][] = { { 2.38, 1.96, 0.15 }, { 786.107248, 734.2126375, 250.2441406 },
+			{ 1250, 1400, 260 }, { 1790.969641, 936.6898898, 267.4523501 } };
 
 	static Object[] configs = new Object[] {};
 
@@ -154,53 +198,40 @@ class ClassInfo {
 	}
 
 	public static void setFogPacketLossAndCloudNetwork() {
+		int class_num = CLASS_NUM - 1;
 		switch (ClassInfo.PACKET_LOSS) {
 		case 5:
-			ClassInfo.EDGE_UPBW = 1016;
-			ClassInfo.FOG_DOWNBW = 906;
+			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][1];
+			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][1];
 			break;
 		case 10:
-			ClassInfo.EDGE_UPBW = 309;
-			ClassInfo.FOG_DOWNBW = 276;
+			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][2];
+			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][2];
 			break;
 		case 15:
-			ClassInfo.EDGE_UPBW = 99;
-			ClassInfo.FOG_DOWNBW = 88;
+			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][3];
+			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][3];
 			break;
 		case 20:
-			ClassInfo.EDGE_UPBW = 51;
-			ClassInfo.FOG_DOWNBW = 45;
+			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][4];
+			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][4];
 			break;
 		case 25:
-			ClassInfo.EDGE_UPBW = 30;
-			ClassInfo.FOG_DOWNBW = 27;
+			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][5];
+			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][5];
 			break;
 		case 30:
-			ClassInfo.EDGE_UPBW = 16;
-			ClassInfo.FOG_DOWNBW = 14;
+			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][6];
+			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][6];
 			break;
 		default:
-			ClassInfo.EDGE_UPBW = 2187;
-			ClassInfo.FOG_DOWNBW = 1953;
+			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][0];
+			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][0];
 			break;
 		}
 
-		switch (ClassInfo.CLOUD_NETWORK) {
-		case 0:
-			ClassInfo.FOG_UPBW = 1280;
-			ClassInfo.CLOUD_DOWNBW = 1250;
-			break;
-		case 1:
-			ClassInfo.FOG_UPBW = 650;
-			ClassInfo.CLOUD_DOWNBW = 1400;
-			break;
-		case 2:
-			ClassInfo.FOG_UPBW = 133;
-			ClassInfo.CLOUD_DOWNBW = 260;
-			break;
-		default:
-			break;
-		}
+		ClassInfo.FOG_UPBW[class_num] = FOG_UP_BW_ALL_CLASS[class_num][CLOUD_NETWORK];
+		ClassInfo.CLOUD_DOWNBW[class_num] = CLOUD_DOWN_BW_ALL_CLASS[class_num][CLOUD_NETWORK];
 	}
 
 	public static void openExecutionMapFile(String filepath) {
@@ -316,6 +347,12 @@ class ClassInfo {
 		value = origin_data[origin_data.length - 1];
 		configs = appendValue(configs, Integer.valueOf(value));
 		PACKET_LOSS = Integer.valueOf(value);
+
+		origin_data = t.get(19).split("=");
+		value = origin_data[origin_data.length - 1];
+		configs = appendValue(configs, Integer.valueOf(value));
+		Config.MAX_SIMULATION_TIME = Integer.valueOf(value);
+
 		setFogPacketLossAndCloudNetwork();
 		openExecutionMapFile(filepath_map);
 	}
@@ -405,4 +442,51 @@ class ClassInfo {
 		Log.printLine(number_of_each_class);
 
 	}
+
+	public static void printTwoStringLog(String Purpose, String left, String l1, String right, String r1) {
+		Log.printLine("[" + Purpose + "] " + left + ": " + l1 + " ," + right + " : " + r1);
+	}
+
+	public static void printOneStringLog(String Purpose, String left, String l1) {
+		Log.printLine("[" + Purpose + "] " + left + ": " + l1);
+	}
+
+	public static Integer getKIndexofList(Integer k, Integer how_many, List<Integer> li) {
+		Integer total = 0;
+		Integer z = 0;
+		Integer i = 0;
+		List<Integer> temp = li;
+		while (true) {
+			z = temp.indexOf(k);
+			if (i == how_many) {
+				total += z;
+				return total;
+			} else {
+				temp = temp.subList(z + 1, temp.size());
+				total += z;
+				total++;
+				i++;
+				continue;
+			}
+		}
+	}
+
+	public static Integer getWhichDevice(Integer idx_in_r) {
+		Integer z = idx_in_r;
+		if (z < ClassInfo.NUMBER_OF_CLASS1) {
+			return 0;
+		} else if (z >= ClassInfo.NUMBER_OF_CLASS1 && z < ClassInfo.NUMBER_OF_CLASS1 + ClassInfo.NUMBER_OF_CLASS2) {
+			return 1;
+		} else if (z >= ClassInfo.NUMBER_OF_CLASS1 + ClassInfo.NUMBER_OF_CLASS2
+				&& z < ClassInfo.NUMBER_OF_CLASS1 + ClassInfo.NUMBER_OF_CLASS2 + ClassInfo.NUMBER_OF_CLASS3) {
+			return 2;
+		} else if (z >= ClassInfo.NUMBER_OF_CLASS1 + ClassInfo.NUMBER_OF_CLASS2 + ClassInfo.NUMBER_OF_CLASS3
+				&& z < ClassInfo.NUMBER_OF_CLASS1 + ClassInfo.NUMBER_OF_CLASS2 + ClassInfo.NUMBER_OF_CLASS3
+						+ ClassInfo.NUMBER_OF_CLASS4) {
+			return 3;
+		} else {
+			return -1;
+		}
+	}
+
 }

@@ -18,9 +18,10 @@ import org.cloudbus.cloudsim.lists.PeList;
 import org.cloudbus.cloudsim.provisioners.PeProvisioner;
 
 /**
- * VmSchedulerTimeShared is a VMM allocation policy that allocates one or more Pe to a VM, and
- * allows sharing of PEs by multiple VMs. This class also implements 10% performance degration due
- * to VM migration. This scheduler does not support over-subscription.
+ * VmSchedulerTimeShared is a VMM allocation policy that allocates one or more
+ * Pe to a VM, and allows sharing of PEs by multiple VMs. This class also
+ * implements 10% performance degration due to VM migration. This scheduler does
+ * not support over-subscription.
  * 
  * @author Rodrigo N. Calheiros
  * @author Anton Beloglazov
@@ -46,6 +47,7 @@ public class VmSchedulerTimeShared extends VmScheduler {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see cloudsim.VmScheduler#allocatePesForVm(cloudsim.Vm, java.util.List)
 	 */
 	@Override
@@ -70,7 +72,7 @@ public class VmSchedulerTimeShared extends VmScheduler {
 	/**
 	 * Allocate pes for vm.
 	 * 
-	 * @param vmUid the vm uid
+	 * @param vmUid              the vm uid
 	 * @param mipsShareRequested the mips share requested
 	 * @return true, if successful
 	 */
@@ -78,7 +80,8 @@ public class VmSchedulerTimeShared extends VmScheduler {
 		double totalRequestedMips = 0;
 		double peMips = getPeCapacity();
 		for (Double mips : mipsShareRequested) {
-			// each virtual PE of a VM must require not more than the capacity of a physical PE
+			// each virtual PE of a VM must require not more than the capacity of a physical
+			// PE
 			if (mips > peMips) {
 				return false;
 			}
@@ -162,6 +165,7 @@ public class VmSchedulerTimeShared extends VmScheduler {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see cloudsim.VmScheduler#deallocatePesForVm(cloudsim.Vm)
 	 */
 	@Override
@@ -197,8 +201,8 @@ public class VmSchedulerTimeShared extends VmScheduler {
 	}
 
 	/**
-	 * Returns maximum available MIPS among all the PEs. For the time shared policy it is just all
-	 * the avaiable MIPS.
+	 * Returns maximum available MIPS among all the PEs. For the time shared policy
+	 * it is just all the avaiable MIPS.
 	 * 
 	 * @return max mips
 	 */

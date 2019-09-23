@@ -4,7 +4,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +24,9 @@ import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
 import org.fog.utils.NetworkUsageMonitor;
 import org.fog.utils.TimeKeeper;
-import org.fog.test.perfeval.MultiClassApp;
 
-public class Controller extends SimEntity{
-	
+public class Controller extends SimEntity {
+
 	public static boolean ONLY_CLOUD = false;
 	public static int using_fresult = -1;
 	private FileWriter output = null;
@@ -40,13 +38,13 @@ public class Controller extends SimEntity{
 	private Map<String, Application> applications;
 	private Map<String, Integer> appLaunchDelays;
 	private Map<String, ModulePlacement> appModulePlacementPolicy;
-	
+
 	public Controller(String name, List<FogDevice> fogDevices, List<Sensor> sensors, List<Actuator> actuators) {
 		super(name);
 		this.applications = new HashMap<String, Application>();
 		setAppLaunchDelays(new HashMap<String, Integer>());
 		setAppModulePlacementPolicy(new HashMap<String, ModulePlacement>());
-		for(FogDevice fogDevice : fogDevices){
+		for (FogDevice fogDevice : fogDevices) {
 			fogDevice.setControllerId(getId());
 		}
 		setFogDevices(fogDevices);
@@ -54,12 +52,14 @@ public class Controller extends SimEntity{
 		setSensors(sensors);
 		connectWithLatencies();
 	}
-	public Controller(String name, List<FogDevice> fogDevices, List<Sensor> sensors, List<Actuator> actuators,int using_fresult) {
+
+	public Controller(String name, List<FogDevice> fogDevices, List<Sensor> sensors, List<Actuator> actuators,
+			int using_fresult) {
 		super(name);
 		this.applications = new HashMap<String, Application>();
 		setAppLaunchDelays(new HashMap<String, Integer>());
 		setAppModulePlacementPolicy(new HashMap<String, ModulePlacement>());
-		for(FogDevice fogDevice : fogDevices){
+		for (FogDevice fogDevice : fogDevices) {
 			fogDevice.setControllerId(getId());
 		}
 		setFogDevices(fogDevices);
@@ -68,53 +68,58 @@ public class Controller extends SimEntity{
 		connectWithLatencies();
 		this.using_fresult = using_fresult;
 	}
-	private FogDevice getFogDeviceById(int id){
-		for(FogDevice fogDevice : getFogDevices()){
-			if(id==fogDevice.getId())
+
+	private FogDevice getFogDeviceById(int id) {
+		for (FogDevice fogDevice : getFogDevices()) {
+			if (id == fogDevice.getId())
 				return fogDevice;
 		}
 		return null;
 	}
+
 	public String getResult_fpath() {
 		return result_fpath;
 	}
+
 	public void setResult_fpath(String result_fpath) {
 		this.result_fpath = result_fpath;
 	}
-	private void connectWithLatencies(){
-		for(FogDevice fogDevice : getFogDevices()){
+
+	private void connectWithLatencies() {
+		for (FogDevice fogDevice : getFogDevices()) {
 			FogDevice parent = getFogDeviceById(fogDevice.getParentId());
-			if(parent == null)
+			if (parent == null)
 				continue;
 			double latency = fogDevice.getUplinkLatency();
 			parent.getChildToLatencyMap().put(fogDevice.getId(), latency);
-			parent.getChildrenIds().add(fogDevice.getId());	
+			parent.getChildrenIds().add(fogDevice.getId());
 		}
 	}
-	
+
 	@Override
 	public void startEntity() {
-		for(String appId : applications.keySet()){
+		for (String appId : applications.keySet()) {
 			Log.printLine(appId);
-			if(getAppLaunchDelays().get(appId)==0)
+			if (getAppLaunchDelays().get(appId) == 0)
 				processAppSubmit(applications.get(appId));
 			else
 				send(getId(), getAppLaunchDelays().get(appId), FogEvents.APP_SUBMIT, applications.get(appId));
 		}
 
 		send(getId(), Config.RESOURCE_MANAGE_INTERVAL, FogEvents.CONTROLLER_RESOURCE_MANAGE);
-		
+
 		send(getId(), Config.MAX_SIMULATION_TIME, FogEvents.STOP_SIMULATION);
-		
-		for(FogDevice dev : getFogDevices())
+
+		for (FogDevice dev : getFogDevices())
 			sendNow(dev.getId(), FogEvents.RESOURCE_MGMT);
 
 	}
+
 	private void processStop() {
 		CloudSim.stopSimulation();
 //		if(this.using_fresult == 1) {
-		if(false) {
-		makeResultOutput();
+		if (false) {
+			makeResultOutput();
 		} else {
 			printTimeDetails();
 			printPowerDetails();
@@ -123,11 +128,12 @@ public class Controller extends SimEntity{
 		}
 		System.out.println("Simulation end!");
 		CloudSim.stopSimulation();
-		CloudSim.terminateSimulation();		
+		CloudSim.terminateSimulation();
 	}
+
 	@Override
 	public void processEvent(SimEvent ev) {
-		switch(ev.getTag()){
+		switch (ev.getTag()) {
 		case FogEvents.APP_SUBMIT:
 			processAppSubmit(ev);
 			break;
@@ -140,12 +146,15 @@ public class Controller extends SimEntity{
 		case FogEvents.STOP_SIMULATION:
 			processStop();
 			break;
-			
+
 		}
 	}
+
 	private void printNetworkUsageDetails() {
-		System.out.println("Total network usage = "+NetworkUsageMonitor.getNetworkUsage()/Config.MAX_SIMULATION_TIME);		
+		System.out
+				.println("Total network usage = " + NetworkUsageMonitor.getNetworkUsage() / Config.MAX_SIMULATION_TIME);
 	}
+
 	private void makeResultOutput() {
 		try {
 			output = new FileWriter(this.result_fpath);
@@ -156,72 +165,76 @@ public class Controller extends SimEntity{
 		try {
 			ArrayList<String> data = new ArrayList<String>();
 			output.append("execution_time");
-			String temp = Double.toString(Calendar.getInstance().getTimeInMillis() - TimeKeeper.getInstance().getSimulationStartTime());
+			String temp = Double.toString(
+					Calendar.getInstance().getTimeInMillis() - TimeKeeper.getInstance().getSimulationStartTime());
 			data.add(temp);
 			output.append(",");
-			for(Integer loopId : TimeKeeper.getInstance().getLoopIdToTupleIds().keySet()) {
-				output.append("Average Latency of Control Loop : "+getStringForLoopId(loopId).replace(",", "_"));
+			for (Integer loopId : TimeKeeper.getInstance().getLoopIdToTupleIds().keySet()) {
+				output.append("Average Latency of Control Loop : " + getStringForLoopId(loopId).replace(",", "_"));
 				data.add(Double.toString(TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loopId)));
 				output.append(",");
 			}
-			for(FogDevice fogDevice : getFogDevices()){
+			for (FogDevice fogDevice : getFogDevices()) {
 				output.append(fogDevice.getName());
 				data.add(Double.toString(fogDevice.getEnergyConsumption()));
 				output.append(",");
 			}
 			output.append("Total_network_usage");
-			data.add(Double.toString(NetworkUsageMonitor.getNetworkUsage()/Config.MAX_SIMULATION_TIME));
+			data.add(Double.toString(NetworkUsageMonitor.getNetworkUsage() / Config.MAX_SIMULATION_TIME));
 			output.append("");
 			output.append("\n");
-			
-			//TODO : have to modify for multi time simulation
-		    output.append(String.join(",", data));
-		    output.append("\n");
-			
+
+			// TODO : have to modify for multi time simulation
+			output.append(String.join(",", data));
+			output.append("\n");
+
 			output.flush();
 			output.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Something wrong occured when write result file!\n");
 			System.exit(1);
-		}				
+		}
 	}
-	private FogDevice getCloud(){
-		for(FogDevice dev : getFogDevices())
-			if(dev.getName().equals("cloud"))
+
+	private FogDevice getCloud() {
+		for (FogDevice dev : getFogDevices())
+			if (dev.getName().equals("cloud"))
 				return dev;
 		return null;
 	}
-	
-	private void printCostDetails(){
-		System.out.println("Cost of execution in cloud = "+getCloud().getTotalCost());
+
+	private void printCostDetails() {
+		System.out.println("Cost of execution in cloud = " + getCloud().getTotalCost());
 	}
-	
+
 	private void printPowerDetails() {
 		double avg = 0;
 		double count = 0;
-		for(FogDevice fogDevice : getFogDevices()){
-			//System.out.println(fogDevice.getName() + " : Energy Consumed = "+fogDevice.getEnergyConsumption());
-			//System.out.println(fogDevice.getEnergyConsumption());
-			if(count++ >= 2) {
-				avg += fogDevice.getEnergyConsumption();				
+		for (FogDevice fogDevice : getFogDevices()) {
+			// System.out.println(fogDevice.getName() + " : Energy Consumed =
+			// "+fogDevice.getEnergyConsumption());
+			// System.out.println(fogDevice.getEnergyConsumption());
+			if (count++ >= 2) {
+				avg += fogDevice.getEnergyConsumption();
 			}
 		}
 		System.out.println(getFogDevices().get(0).getEnergyConsumption());
 		System.out.println(getFogDevices().get(1).getEnergyConsumption());
-		System.out.println(avg/(count-2));
+		System.out.println(avg / (count - 2));
 	}
 
-	private String getStringForLoopId(int loopId){
-		for(String appId : getApplications().keySet()){
+	private String getStringForLoopId(int loopId) {
+		for (String appId : getApplications().keySet()) {
 			Application app = getApplications().get(appId);
-			for(AppLoop loop : app.getLoops()){
-				if(loop.getLoopId() == loopId)
+			for (AppLoop loop : app.getLoops()) {
+				if (loop.getLoopId() == loopId)
 					return loop.getModules().toString();
 			}
 		}
 		return null;
 	}
+
 	private void printTimeDetails() {
 //		System.out.println("=========================================");
 //		System.out.println("============== RESULTS ==================");
@@ -232,82 +245,83 @@ public class Controller extends SimEntity{
 		double count = 0;
 //		System.out.println("APPLICATION LOOP DELAYS");
 //		System.out.println("=========================================");
-		for(Integer loopId : TimeKeeper.getInstance().getLoopIdToTupleIds().keySet()){
+		for (Integer loopId : TimeKeeper.getInstance().getLoopIdToTupleIds().keySet()) {
 //			System.out.println(getStringForLoopId(loopId) + " ---> "+TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loopId));
 			count++;
 			avg += TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loopId);
 		}
-		System.out.println(avg/count);
+		System.out.println(avg / count);
 //		System.out.println("=========================================");
 //		System.out.println("TUPLE CPU EXECUTION DELAY");
 //		System.out.println("=========================================");
-		
-		for(String tupleType : TimeKeeper.getInstance().getTupleTypeToAverageCpuTime().keySet()){
-//			System.out.println(tupleType + " ---> "+TimeKeeper.getInstance().getTupleTypeToAverageCpuTime().get(tupleType));
+
+		for (String tupleType : TimeKeeper.getInstance().getTupleTypeToAverageCpuTime().keySet()) {
+//			System.out.println(
+//					tupleType + " ---> " + TimeKeeper.getInstance().getTupleTypeToAverageCpuTime().get(tupleType));
 //			System.out.println(TimeKeeper.getInstance().getTupleTypeToAverageCpuTime().get(tupleType));
 		}
 //		System.out.println("=========================================");
 
 	}
 
-	protected void manageResources(){
+	protected void manageResources() {
 		send(getId(), Config.RESOURCE_MANAGE_INTERVAL, FogEvents.CONTROLLER_RESOURCE_MANAGE);
 	}
-	
+
 	private void processTupleFinished(SimEvent ev) {
 	}
-	
+
 	@Override
-	public void shutdownEntity() {	
+	public void shutdownEntity() {
 	}
-	
-	public void submitApplication(Application application, int delay, ModulePlacement modulePlacement){
+
+	public void submitApplication(Application application, int delay, ModulePlacement modulePlacement) {
 		FogUtils.appIdToGeoCoverageMap.put(application.getAppId(), application.getGeoCoverage());
 		getApplications().put(application.getAppId(), application);
 		getAppLaunchDelays().put(application.getAppId(), delay);
 		getAppModulePlacementPolicy().put(application.getAppId(), modulePlacement);
-		
-		for(Sensor sensor : sensors){
+
+		for (Sensor sensor : sensors) {
 			sensor.setApp(getApplications().get(sensor.getAppId()));
 		}
-		for(Actuator ac : actuators){
+		for (Actuator ac : actuators) {
 			ac.setApp(getApplications().get(ac.getAppId()));
 		}
-		
-		for(AppEdge edge : application.getEdges()){
-			if(edge.getEdgeType() == AppEdge.ACTUATOR){
+
+		for (AppEdge edge : application.getEdges()) {
+			if (edge.getEdgeType() == AppEdge.ACTUATOR) {
 				String moduleName = edge.getSource();
-				for(Actuator actuator : getActuators()){
-					if(actuator.getActuatorType().equalsIgnoreCase(edge.getDestination()))
-						application.getModuleByName(moduleName).subscribeActuator(actuator.getId(), edge.getTupleType());
+				for (Actuator actuator : getActuators()) {
+					if (actuator.getActuatorType().equalsIgnoreCase(edge.getDestination()))
+						application.getModuleByName(moduleName).subscribeActuator(actuator.getId(),
+								edge.getTupleType());
 				}
 			}
-		}	
+		}
 	}
-	
-	public void submitApplication(Application application, ModulePlacement modulePlacement){
+
+	public void submitApplication(Application application, ModulePlacement modulePlacement) {
 		submitApplication(application, 0, modulePlacement);
 	}
-	
-	
-	private void processAppSubmit(SimEvent ev){
+
+	private void processAppSubmit(SimEvent ev) {
 		Application app = (Application) ev.getData();
 		processAppSubmit(app);
 	}
-	
-	private void processAppSubmit(Application application){
-		System.out.println(CloudSim.clock()+" Submitted application "+ application.getAppId());
+
+	private void processAppSubmit(Application application) {
+		System.out.println(CloudSim.clock() + " Submitted application " + application.getAppId());
 		FogUtils.appIdToGeoCoverageMap.put(application.getAppId(), application.getGeoCoverage());
 		getApplications().put(application.getAppId(), application);
-		
+
 		ModulePlacement modulePlacement = getAppModulePlacementPolicy().get(application.getAppId());
-		for(FogDevice fogDevice : fogDevices){
+		for (FogDevice fogDevice : fogDevices) {
 			sendNow(fogDevice.getId(), FogEvents.ACTIVE_APP_UPDATE, application);
 		}
-		
+
 		Map<Integer, List<AppModule>> deviceToModuleMap = modulePlacement.getDeviceToModuleMap();
-		for(Integer deviceId : deviceToModuleMap.keySet()){
-			for(AppModule module : deviceToModuleMap.get(deviceId)){
+		for (Integer deviceId : deviceToModuleMap.keySet()) {
+			for (AppModule module : deviceToModuleMap.get(deviceId)) {
 				sendNow(deviceId, FogEvents.APP_SUBMIT, application);
 				sendNow(deviceId, FogEvents.LAUNCH_MODULE, module);
 			}
@@ -343,7 +357,7 @@ public class Controller extends SimEntity{
 	}
 
 	public void setSensors(List<Sensor> sensors) {
-		for(Sensor sensor : sensors)
+		for (Sensor sensor : sensors)
 			sensor.setControllerId(getId());
 		this.sensors = sensors;
 	}

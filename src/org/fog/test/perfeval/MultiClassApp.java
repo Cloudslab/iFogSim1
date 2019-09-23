@@ -109,14 +109,14 @@ public class MultiClassApp {
 
 		for (int i = 0; i < info.NUMBER_OF_APPS; i++) {
 			app.addAppModule("class" + number_of_class + "-" + String.valueOf(i), 2);
-			printOneStringLog("Make appModule", "name",
+			info.printOneStringLog("Make appModule", "name",
 					"class" + number_of_class + "-" + String.valueOf(i) + "-" + String.valueOf(i));
 		}
 		app.addAppModule("class" + number_of_class + "_fog", 15);
 		app.addAppModule("class" + number_of_class + "_cloud", 20);
 
-		printOneStringLog("Make appModule", "name", "class" + number_of_class + "_fog");
-		printOneStringLog("Make appModule", "name", "class" + number_of_class + "_cloud");
+		info.printOneStringLog("Make appModule", "name", "class" + number_of_class + "_fog");
+		info.printOneStringLog("Make appModule", "name", "class" + number_of_class + "_cloud");
 		String appName = "class" + number_of_class;
 		String fog = appName + "_fog";
 		String cloud = appName + "_cloud";
@@ -268,7 +268,7 @@ public class MultiClassApp {
 			String cresult = "CRESULT" + number_of_class + "-" + String.valueOf(i);
 			// module name, input, output
 			// mapping (edge) cam_data -> data
-			printTwoStringLog("Make tuple mapping module:" + edge, "input", cam_data, "right", data);
+			info.printTwoStringLog("Make tuple mapping module:" + edge, "input", cam_data, "right", data);
 			app.addTupleMapping(edge, cam_data, data, new FractionalSelectivity(1.0));
 
 			if (offloading_policy == 2) {
@@ -290,12 +290,13 @@ public class MultiClassApp {
 				}));
 			} else {
 				// mapping (fog) data -> result
-				printTwoStringLog("Make tuple mapping module:" + fog, "input", data, "right", result);
+				info.printTwoStringLog("Make tuple mapping module:" + fog, "input", data, "right", result);
 				app.addTupleMapping(fog, data, result, new FractionalSelectivity(1.0));
 				// mapping (fog) data -> USERS_STATE
-				printTwoStringLog("Make tuple mapping module:" + fog, "input", data, "right", "USERS_STATE");
+				info.printTwoStringLog("Make tuple mapping module:" + fog, "input", data, "right", "USERS_STATE");
 				app.addTupleMapping(fog, data, "USERS_STATE", new FractionalSelectivity(1.0));
-				printTwoStringLog("Make tuple mapping module:" + edge, "input", result, "right", "SELF_STATE_UPDATE");
+				info.printTwoStringLog("Make tuple mapping module:" + edge, "input", result, "right",
+						"SELF_STATE_UPDATE");
 				app.addTupleMapping(edge, result, "SELF_STATE_UPDATE", new FractionalSelectivity(1.0));
 				loops.add(new AppLoop(new ArrayList<String>() {
 					{
@@ -327,13 +328,14 @@ public class MultiClassApp {
 			for (int i = 0; i < info.number_of_each_class.get(x); i++) {
 				app.addAppModule("class" + String.valueOf(x + 1) + "-" + String.valueOf(i), 2);
 
-				printOneStringLog("Make appModule", "name", "class" + String.valueOf(x + 1) + "-" + String.valueOf(i));
+				info.printOneStringLog("Make appModule", "name",
+						"class" + String.valueOf(x + 1) + "-" + String.valueOf(i));
 			}
 			app.addAppModule("class" + String.valueOf(x + 1) + "_fog", 15);
 			app.addAppModule("class" + String.valueOf(x + 1) + "_cloud", 20);
 
-			printOneStringLog("Make appModule", "name", "class" + String.valueOf(x + 1) + "_fog");
-			printOneStringLog("Make appModule", "name", "class" + String.valueOf(x + 1) + "_cloud");
+			info.printOneStringLog("Make appModule", "name", "class" + String.valueOf(x + 1) + "_fog");
+			info.printOneStringLog("Make appModule", "name", "class" + String.valueOf(x + 1) + "_cloud");
 		}
 
 		// 3. make appEdges
@@ -348,13 +350,14 @@ public class MultiClassApp {
 					String edge = appName + "-" + String.valueOf(i);
 					String cam_data = "CAM_CLASS" + String.valueOf(x + 1) + "-" + String.valueOf(i);
 					// make sensor -> edge
-					printTwoStringLog("Make edge(sensor->edge)", "left", sensor, "right", edge);
-					printOneStringLog("Tuple type", "name", cam_data);
+					info.printTwoStringLog("Make edge(sensor->edge)", "left", sensor, "right", edge);
+					info.printOneStringLog("Tuple type", "name", cam_data);
 					app.addAppEdge(cam_data, edge, 10, 50, cam_data, Tuple.UP, AppEdge.SENSOR);
 
 					// make edge -> fog
-					printTwoStringLog("Make edge(edge->fog)", "left", edge, "right", fog);
-					printOneStringLog("Tuple type", "name", "DATA" + String.valueOf(x + 1) + "-" + String.valueOf(i));
+					info.printTwoStringLog("Make edge(edge->fog)", "left", edge, "right", fog);
+					info.printOneStringLog("Tuple type", "name",
+							"DATA" + String.valueOf(x + 1) + "-" + String.valueOf(i));
 					String data = "DATA" + String.valueOf(x + 1) + "-" + String.valueOf(i);
 					if (appName.equals("class1")) {
 						app.addAppEdge(edge, fog, 77145, 50, data, Tuple.UP, AppEdge.MODULE);
@@ -368,20 +371,20 @@ public class MultiClassApp {
 
 					// make fog -> edge
 					String result = "RESULT" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-					printTwoStringLog("Make edge(fog->edge)", "left", fog, "right", edge);
-					printOneStringLog("Tuple type", "name", result);
+					info.printTwoStringLog("Make edge(fog->edge)", "left", fog, "right", edge);
+					info.printOneStringLog("Tuple type", "name", result);
 					app.addAppEdge(fog, edge, 10, 50, result, Tuple.DOWN, AppEdge.MODULE);
 
 					// make edge -> act
 					String act = "ACT" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-					printTwoStringLog("Make edge(edge->act)", "left", sensor, "right", act);
-					printOneStringLog("Tuple type", "name", "SELF_STATE_UPDATE");
+					info.printTwoStringLog("Make edge(edge->act)", "left", sensor, "right", act);
+					info.printOneStringLog("Tuple type", "name", "SELF_STATE_UPDATE");
 					app.addAppEdge(edge, act, 50, 20, "SELF_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
 
 				}
 				// make fog -> cloud
-				printTwoStringLog("Make edge(fog->cloud)", "left", fog, "right", cloud);
-				printOneStringLog("Tuple type", "name", "USERS_STATE" + String.valueOf(x + 1));
+				info.printTwoStringLog("Make edge(fog->cloud)", "left", fog, "right", cloud);
+				info.printOneStringLog("Tuple type", "name", "USERS_STATE" + String.valueOf(x + 1));
 				app.addAppEdge(fog, cloud, 50, 20, "USERS_STATE", Tuple.UP, AppEdge.MODULE);
 			}
 			break;
@@ -395,19 +398,20 @@ public class MultiClassApp {
 					String edge = appName + "-" + String.valueOf(i);
 					String cam_data = "CAM_CLASS" + String.valueOf(x + 1) + "-" + String.valueOf(i);
 					// make sensor -> edge
-					printTwoStringLog("Make edge(sensor->edge)", "left", sensor, "right", edge);
-					printOneStringLog("Tuple type", "name", cam_data);
+					info.printTwoStringLog("Make edge(sensor->edge)", "left", sensor, "right", edge);
+					info.printOneStringLog("Tuple type", "name", cam_data);
 					app.addAppEdge(cam_data, edge, 10, 50, cam_data, Tuple.UP, AppEdge.SENSOR);
 
 					// make edge -> fog
-					printTwoStringLog("Make edge(edge->fog)", "left", edge, "right", fog);
-					printOneStringLog("Tuple type", "name", "DATA" + String.valueOf(x + 1) + "-" + String.valueOf(i));
+					info.printTwoStringLog("Make edge(edge->fog)", "left", edge, "right", fog);
+					info.printOneStringLog("Tuple type", "name",
+							"DATA" + String.valueOf(x + 1) + "-" + String.valueOf(i));
 					String data = "DATA" + String.valueOf(x + 1) + "-" + String.valueOf(i);
 					app.addAppEdge(edge, fog, 10, 50, data, Tuple.UP, AppEdge.MODULE);
 					// make fog -> edge
 					String result = "RESULT" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-					printTwoStringLog("Make edge(fog->edge)", "left", fog, "right", edge);
-					printOneStringLog("Tuple type", "name", result);
+					info.printTwoStringLog("Make edge(fog->edge)", "left", fog, "right", edge);
+					info.printOneStringLog("Tuple type", "name", result);
 					if (appName.equals("class1")) {
 						app.addAppEdge(fog, edge, 5000, 50, result, Tuple.DOWN, AppEdge.MODULE);
 					} else if (appName.equals("class2")) {
@@ -420,14 +424,14 @@ public class MultiClassApp {
 
 					// make edge -> act
 					String act = "ACT" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-					printTwoStringLog("Make edge(edge->act)", "left", sensor, "right", act);
-					printOneStringLog("Tuple type", "name", "SELF_STATE_UPDATE");
+					info.printTwoStringLog("Make edge(edge->act)", "left", sensor, "right", act);
+					info.printOneStringLog("Tuple type", "name", "SELF_STATE_UPDATE");
 					app.addAppEdge(edge, act, 50, 20, "SELF_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
 
 				}
 				// make fog -> cloud
-				printTwoStringLog("Make edge(fog->cloud)", "left", fog, "right", cloud);
-				printOneStringLog("Tuple type", "name", "USERS_STATE" + String.valueOf(x + 1));
+				info.printTwoStringLog("Make edge(fog->cloud)", "left", fog, "right", cloud);
+				info.printOneStringLog("Tuple type", "name", "USERS_STATE" + String.valueOf(x + 1));
 				app.addAppEdge(fog, cloud, 50, 20, "USERS_STATE", Tuple.UP, AppEdge.MODULE);
 			}
 			break;
@@ -451,19 +455,20 @@ public class MultiClassApp {
 				String cam_data = "CAM_CLASS" + String.valueOf(x + 1) + "-" + String.valueOf(i);
 				// module name, input, output
 				// mapping (edge) cam_data -> data
-				printTwoStringLog("Make tuple mapping module:" + edge, "input", cam_data, "right", data);
+				info.printTwoStringLog("Make tuple mapping module:" + edge, "input", cam_data, "right", data);
 				app.addTupleMapping(edge, cam_data, data, new FractionalSelectivity(1.0));
 
 				// mapping (fog) data -> result
-				printTwoStringLog("Make tuple mapping module:" + fog, "input", data, "right", result);
+				info.printTwoStringLog("Make tuple mapping module:" + fog, "input", data, "right", result);
 				app.addTupleMapping(fog, data, result, new FractionalSelectivity(1.0));
 
 				// mapping (fog) data -> USERS_STATE
-				printTwoStringLog("Make tuple mapping module:" + fog, "input", data, "right", "USERS_STATE");
+				info.printTwoStringLog("Make tuple mapping module:" + fog, "input", data, "right", "USERS_STATE");
 				app.addTupleMapping(fog, data, "USERS_STATE", new FractionalSelectivity(1.0));
 
 				// mapping (edge) result -> SELF_STATE_UPDATE
-				printTwoStringLog("Make tuple mapping module:" + edge, "input", result, "right", "SELF_STATE_UPDATE");
+				info.printTwoStringLog("Make tuple mapping module:" + edge, "input", result, "right",
+						"SELF_STATE_UPDATE");
 				app.addTupleMapping(edge, result, "SELF_STATE_UPDATE", new FractionalSelectivity(1.0));
 				loops.add(new AppLoop(new ArrayList<String>() {
 					{
@@ -484,64 +489,18 @@ public class MultiClassApp {
 		return app;
 	}
 
-	private static void printTwoStringLog(String Purpose, String left, String l1, String right, String r1) {
-		Log.printLine("[" + Purpose + "] " + left + ": " + l1 + " ," + right + " : " + r1);
-	}
-
-	private static void printOneStringLog(String Purpose, String left, String l1) {
-		Log.printLine("[" + Purpose + "] " + left + ": " + l1);
-	}
-
-	private static Integer getKIndexofList(Integer k, Integer how_many, List<Integer> li) {
-		Integer total = 0;
-		Integer z = 0;
-		Integer i = 0;
-		List<Integer> temp = li;
-		while (true) {
-			z = temp.indexOf(k);
-			if (i == how_many) {
-				total += z;
-				return total;
-			} else {
-				temp = temp.subList(z + 1, temp.size());
-				total += z;
-				total++;
-				i++;
-				continue;
-			}
-		}
-	}
-
-	private static Integer getWhichDevice(Integer idx_in_r) {
-		Integer z = idx_in_r;
-		if (z < ClassInfo.NUMBER_OF_CLASS1) {
-			return 0;
-		} else if (z >= ClassInfo.NUMBER_OF_CLASS1 && z < ClassInfo.NUMBER_OF_CLASS1 + ClassInfo.NUMBER_OF_CLASS2) {
-			return 1;
-		} else if (z >= ClassInfo.NUMBER_OF_CLASS1 + ClassInfo.NUMBER_OF_CLASS2
-				&& z < ClassInfo.NUMBER_OF_CLASS1 + ClassInfo.NUMBER_OF_CLASS2 + ClassInfo.NUMBER_OF_CLASS3) {
-			return 2;
-		} else if (z >= ClassInfo.NUMBER_OF_CLASS1 + ClassInfo.NUMBER_OF_CLASS2 + ClassInfo.NUMBER_OF_CLASS3
-				&& z < ClassInfo.NUMBER_OF_CLASS1 + ClassInfo.NUMBER_OF_CLASS2 + ClassInfo.NUMBER_OF_CLASS3
-						+ ClassInfo.NUMBER_OF_CLASS4) {
-			return 3;
-		} else {
-			return -1;
-		}
-	}
-
 	private static ModuleMapping createDevicesAndMapping(int userId, String[] appIds, int offloading_policy,
 			ClassInfo info) {
 		ModuleMapping moduleMapping = ModuleMapping.createModuleMapping();
-
+		int class_num = info.CLASS_NUM - 1;
 		// TODO: make fog,cloud devices configurable, now these fixed to 1
 		// 1. make cloud device
 //		FogDevice cloud = createFogDevice("cloud", CLOUD_MIPS, 32000, CLOUD_UPBW*NUMBER_OF_APPS, CLOUD_DOWNBW*NUMBER_OF_APPS, 0, 0.01, 100, 0); 
-		FogDevice cloud = createFogDevice("cloud", info.CLOUD_MIPS, 32000,
-				(info.CLOUD_UPBW * info.NUMBER_OF_APPS >= info.CLOUD_MAXBW) ? info.CLOUD_MAXBW
-						: info.CLOUD_UPBW * info.NUMBER_OF_APPS,
-				(info.CLOUD_DOWNBW * info.NUMBER_OF_APPS >= info.CLOUD_MAXBW) ? info.CLOUD_MAXBW
-						: info.CLOUD_DOWNBW * info.NUMBER_OF_APPS,
+		FogDevice cloud = createFogDevice("cloud", info.CLOUD_MIPS[class_num], 32000,
+				(info.CLOUD_UPBW[class_num] * info.NUMBER_OF_APPS >= info.CLOUD_MAXBW) ? info.CLOUD_MAXBW
+						: info.CLOUD_UPBW[class_num] * info.NUMBER_OF_APPS,
+				(info.CLOUD_DOWNBW[class_num] * info.NUMBER_OF_APPS >= info.CLOUD_MAXBW) ? info.CLOUD_MAXBW
+						: info.CLOUD_DOWNBW[class_num] * info.NUMBER_OF_APPS,
 				0, 0.01, 100, 0);
 		cloud.setParentId(-1);
 		fogDevices.add(cloud);
@@ -549,10 +508,10 @@ public class MultiClassApp {
 		// 2. make fog device
 		// bandwidth(kb/s)
 		FogDevice fog = createFogDevice("fog-layer", info.FOG_MIPS, 8000,
-				(info.FOG_UPBW * info.NUMBER_OF_APPS >= info.FOG_MAXBW) ? info.FOG_MAXBW
-						: info.FOG_UPBW * info.NUMBER_OF_APPS,
-				(info.FOG_DOWNBW * info.NUMBER_OF_APPS >= info.FOG_MAXBW) ? info.FOG_MAXBW
-						: info.FOG_DOWNBW * info.NUMBER_OF_APPS,
+				(info.FOG_UPBW[class_num] * info.NUMBER_OF_APPS >= info.FOG_MAXBW) ? info.FOG_MAXBW
+						: info.FOG_UPBW[class_num] * info.NUMBER_OF_APPS,
+				(info.FOG_DOWNBW[class_num] * info.NUMBER_OF_APPS >= info.FOG_MAXBW) ? info.FOG_MAXBW
+						: info.FOG_DOWNBW[class_num] * info.NUMBER_OF_APPS,
 				1, 0.0, 8, 0);
 		fog.setParentId(cloud.getId());
 		fog.setUplinkLatency(info.FOG_TO_CLOUD_LATENCY);
@@ -561,12 +520,10 @@ public class MultiClassApp {
 		// 3. make edge device
 		for (int i = 0; i < info.numOfSensorNode; i++) {
 			String sensorNodeId = "0-" + i;
-			FogDevice sensorNode = createFogDevice("m-" + sensorNodeId, info.EDGE_MIPS, 1000,
-					(info.EDGE_UPBW * info.NUMBER_OF_APPS >= info.EDGE_MAXBW) ? info.EDGE_MAXBW
-							: info.EDGE_UPBW * info.NUMBER_OF_APPS,
-					(info.EDGE_DOWNBW * info.NUMBER_OF_APPS >= info.EDGE_MAXBW) ? info.EDGE_MAXBW
-							: info.EDGE_DOWNBW * info.NUMBER_OF_APPS,
-					2, 0, 1.0815, 0);
+			FogDevice sensorNode = createFogDevice("m-" + sensorNodeId, info.EDGE_MIPS[class_num], 1000,
+					(info.EDGE_UPBW[class_num] >= info.EDGE_MAXBW) ? info.EDGE_MAXBW : info.EDGE_UPBW[class_num],
+					(info.EDGE_DOWNBW[class_num] >= info.EDGE_MAXBW) ? info.EDGE_MAXBW : info.EDGE_DOWNBW[class_num], 2,
+					0, 1.0815, 0);
 			sensorNode.setParentId(fog.getId());
 			sensorNode.setUplinkLatency(info.EDGE_TO_FOG_LATENCY);
 			fogDevices.add(sensorNode);
@@ -587,7 +544,7 @@ public class MultiClassApp {
 				String sensor_device_name = "s-" + info.CLASS_NUM + "-" + String.valueOf(i);
 
 				// make sensors
-				printOneStringLog("make sensor device :", "name", sensor_device_name);
+				info.printOneStringLog("make sensor device :", "name", sensor_device_name);
 				Sensor sensor_device = null;
 				if (appIds[info.CLASS_NUM - 1].equals("class1")) {
 					sensor_device = new Sensor(sensor_device_name, cam_data, userId, "multi_app",
@@ -609,7 +566,7 @@ public class MultiClassApp {
 				sensors.add(sensor_device);
 				// make actuators
 				String act_device_name = "act-" + info.CLASS_NUM + "-" + String.valueOf(i);
-				printOneStringLog("make actuator device :", "name", act_device_name);
+				info.printOneStringLog("make actuator device :", "name", act_device_name);
 				Actuator noti = new Actuator(act_device_name, userId, "multi_app", act);
 				actuators.add(noti);
 
@@ -647,7 +604,7 @@ public class MultiClassApp {
 					String sensor_device_name = "s-" + String.valueOf(x + 1) + "-" + String.valueOf(i);
 
 					// make sensors
-					printOneStringLog("make sensor device :", "name", sensor_device_name);
+					info.printOneStringLog("make sensor device :", "name", sensor_device_name);
 					Sensor sensor_device = null;
 					if (appIds[x].equals("class1")) {
 						sensor_device = new Sensor(sensor_device_name, cam_data, userId, "multi_app",
@@ -669,19 +626,19 @@ public class MultiClassApp {
 					sensors.add(sensor_device);
 					// make actuators
 					String act_device_name = "act-" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-					printOneStringLog("make actuator device :", "name", act_device_name);
+					info.printOneStringLog("make actuator device :", "name", act_device_name);
 					Actuator noti = new Actuator(act_device_name, userId, "multi_app", act);
 					actuators.add(noti);
 
 					// TODO: change fogDevices to Hashmap
-					Integer idx = getKIndexofList(x, i, ClassInfo.random_idx);
+					Integer idx = info.getKIndexofList(x, i, ClassInfo.random_idx);
 					// 5. connect devices to edge
 
-					sensor_device.setGatewayDeviceId(fogDevices.get(getWhichDevice(idx) + 2).getId());
+					sensor_device.setGatewayDeviceId(fogDevices.get(info.getWhichDevice(idx) + 2).getId());
 					sensor_device.setLatency(info.SENSOR_TO_EDGE_LATENCY);
-					noti.setGatewayDeviceId(fogDevices.get(getWhichDevice(idx) + 2).getId());
+					noti.setGatewayDeviceId(fogDevices.get(info.getWhichDevice(idx) + 2).getId());
 					noti.setLatency(0.05);
-					moduleMapping.addModuleToDevice(edge, fogDevices.get(getWhichDevice(idx) + 2).getName());
+					moduleMapping.addModuleToDevice(edge, fogDevices.get(info.getWhichDevice(idx) + 2).getName());
 					Log.printLine("sensor, noti :" + sensor_device.getName() + "," + noti.getName() + "->"
 							+ sensor_device.getGatewayDeviceId());
 				}
@@ -695,7 +652,8 @@ public class MultiClassApp {
 
 	private static ModuleMapping createFogDevices(int userId, String[] appIds, int offloading_policy, ClassInfo info) {
 
-		FogDevice cloud = createFogDevice("cloud", info.CLOUD_MIPS, 32000, 10000, 10000, 0, 0.01, 100, 0);
+		int class_num = info.CLASS_NUM - 1;
+		FogDevice cloud = createFogDevice("cloud", info.CLOUD_MIPS[class_num], 32000, 10000, 10000, 0, 0.01, 100, 0);
 		cloud.setParentId(-1);
 		fogDevices.add(cloud);
 
@@ -707,8 +665,8 @@ public class MultiClassApp {
 
 		for (int i = 0; i < info.numOfSensorNode; i++) {
 			String sensorNodeId = "0-" + i;
-			FogDevice sensorNode = createFogDevice("m-" + sensorNodeId, info.EDGE_MIPS, 1000, 1000, 1000, 2, 0, 0.5665,
-					0);
+			FogDevice sensorNode = createFogDevice("m-" + sensorNodeId, info.EDGE_MIPS[class_num], 1000, 1000, 1000, 2,
+					0, 0.5665, 0);
 			sensorNode.setParentId(fog.getId());
 			sensorNode.setUplinkLatency(info.EDGE_TO_FOG_LATENCY);
 			fogDevices.add(sensorNode);
@@ -793,7 +751,7 @@ public class MultiClassApp {
 		return moduleMapping;
 	}
 
-	private static FogDevice createFogDevice(String nodeName, long mips, int ram, long upBw, long downBw, int level,
+	private static FogDevice createFogDevice(String nodeName, long mips, int ram, double upBw, double downBw, int level,
 			double ratePerMips, double busyPower, double idlePower) {
 
 		List<Pe> peList = new ArrayList<Pe>();
@@ -831,7 +789,7 @@ public class MultiClassApp {
 		FogDevice fogdevice = null;
 		try {
 			fogdevice = new FogDevice(nodeName, characteristics, new AppModuleAllocationPolicy(hostList), storageList,
-					1000000, upBw, downBw, 0, ratePerMips);
+					10000000, upBw, downBw, 0, ratePerMips);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

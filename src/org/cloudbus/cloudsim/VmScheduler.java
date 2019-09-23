@@ -15,8 +15,8 @@ import java.util.Map;
 import org.cloudbus.cloudsim.lists.PeList;
 
 /**
- * VmScheduler is an abstract class that represents the policy used by a VMM to share processing
- * power among VMs running in a host.
+ * VmScheduler is an abstract class that represents the policy used by a VMM to
+ * share processing power among VMs running in a host.
  * 
  * @author Rodrigo N. Calheiros
  * @author Anton Beloglazov
@@ -61,7 +61,7 @@ public abstract class VmScheduler {
 	/**
 	 * Allocates PEs for a VM.
 	 * 
-	 * @param vm the vm
+	 * @param vm        the vm
 	 * @param mipsShare the mips share
 	 * @return $true if this policy allows a new VM in the host, $false otherwise
 	 * @pre $none
@@ -107,7 +107,8 @@ public abstract class VmScheduler {
 	 * Returns the MIPS share of each Pe that is allocated to a given VM.
 	 * 
 	 * @param vm the vm
-	 * @return an array containing the amount of MIPS of each pe that is available to the VM
+	 * @return an array containing the amount of MIPS of each pe that is available
+	 *         to the VM
 	 * @pre $none
 	 * @post $none
 	 */
@@ -182,7 +183,7 @@ public abstract class VmScheduler {
 	/**
 	 * Sets the vm list.
 	 * 
-	 * @param <T> the generic type
+	 * @param <T>    the generic type
 	 * @param peList the pe list
 	 */
 	protected <T extends Pe> void setPeList(List<T> peList) {

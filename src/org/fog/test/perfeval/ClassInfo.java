@@ -14,7 +14,7 @@ import org.fog.utils.Config;
 
 import com.google.common.primitives.Ints;
 
-class ClassInfo {
+public class ClassInfo {
 	static HashMap<String, ArrayList<Integer>> map_of_each_class = null;
 	// [string:[1,2],...]
 	static String[] name_of_classes = { "class1", "class2", "class3", "class4" };
@@ -31,7 +31,7 @@ class ClassInfo {
 	static double CLASS3_TRANSMISSION_TIME = 0;
 	static double CLASS4_TRANSMISSION_TIME = 0;
 
-	static int NUMBER_OF_APPS = 0;
+	public static int NUMBER_OF_APPS = 0;
 	static int NUMBER_OF_CLASS1 = 0;
 	static int NUMBER_OF_CLASS2 = 0;
 	static int NUMBER_OF_CLASS3 = 0;
@@ -46,10 +46,10 @@ class ClassInfo {
 	static int OFFLOADING_POLICY = -1;
 	static int CLASS_NUM = -1;
 	static int SINGLE_APP = 0;
-	static int CLASS1_MIPS = 3290000;
-	static int CLASS2_MIPS = 105840;
-	static int CLASS3_MIPS = 1000000;
-	static int CLASS4_MIPS = 59000;
+	public static int CLASS1_MIPS = 3290000;
+	public static int CLASS2_MIPS = 105840;
+	public static int CLASS3_MIPS = 1000000;
+	public static int CLASS4_MIPS = 59000;
 	static int CLOUD_MIPS[] = { 727000, 275000, 225000, 225000 };
 	static int FOG_MIPS = 84000;
 	static int EDGE_MIPS[] = { 2636, 2280, 2225, 2225 };
@@ -72,18 +72,46 @@ class ClassInfo {
 	static double CLASS4_OUTPUT_SIZE = 13846510 / 1024;
 
 	static int CLOUD_NETWORK = -1;
-	static int PACKET_LOSS = -1;
+	public static int PACKET_LOSS = -1;
 
 	static double SENSOR_TO_EDGE_LATENCY = 50;
 	static double EDGE_TO_FOG_LATENCY = 100;
 	static double FOG_TO_CLOUD_LATENCY = 1000;
 
-	static int EDGE_MAXBW = 1000000;
-	static int FOG_MAXBW = 1000000;
+	static int EDGE_MAXBW = 1250000;
+
+	public static int getEDGE_MAXBW() {
+		return EDGE_MAXBW;
+	}
+
+	public static void setEDGE_MAXBW(int eDGE_MAXBW) {
+		EDGE_MAXBW = eDGE_MAXBW;
+	}
+
+	public static int getFOG_MAXBW() {
+		return FOG_MAXBW;
+	}
+
+	public static void setFOG_MAXBW(int fOG_MAXBW) {
+		FOG_MAXBW = fOG_MAXBW;
+	}
+
+	public static int getCLOUD_MAXBW() {
+		return CLOUD_MAXBW;
+	}
+
+	public static void setCLOUD_MAXBW(int cLOUD_MAXBW) {
+		CLOUD_MAXBW = cLOUD_MAXBW;
+	}
+
+	public static double[][] FOG_ALPHA = new double[][] { { 19.771, 12.213 }, { 0.6121, 0.424 }, { 10.861, 0.3797 },
+			{ 0.0545, 0.04953 } };
+	public static double[][] CLOUD_ALPHA = new double[][] { { 1.6374, 3.8421 }, { 0.0639, 0.3045 }, { 1.8113, 2.0932 },
+			{ 0.0354, 0.254 } };
+	static int FOG_MAXBW = 1250000;
 	static int CLOUD_MAXBW = 10000000;
 
 	static int using_fresult = -1;
-
 	// class1
 	// Upload throughput 10009.76563 8897.569444 6159.855769 4106.570513 544.7491497
 	// 306.8127395 113.5859929
@@ -199,36 +227,38 @@ class ClassInfo {
 
 	public static void setFogPacketLossAndCloudNetwork() {
 		int class_num = CLASS_NUM - 1;
-		switch (ClassInfo.PACKET_LOSS) {
-		case 5:
-			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][1];
-			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][1];
-			break;
-		case 10:
-			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][2];
-			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][2];
-			break;
-		case 15:
-			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][3];
-			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][3];
-			break;
-		case 20:
-			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][4];
-			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][4];
-			break;
-		case 25:
-			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][5];
-			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][5];
-			break;
-		case 30:
-			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][6];
-			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][6];
-			break;
-		default:
-			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][0];
-			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][0];
-			break;
-		}
+		ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][0];
+		ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][0];
+//		switch (ClassInfo.PACKET_LOSS) {
+//		case 5:
+//			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][1];
+//			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][1];
+//			break;
+//		case 10:
+//			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][2];
+//			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][2];
+//			break;
+//		case 15:
+//			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][3];
+//			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][3];
+//			break;
+//		case 20:
+//			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][4];
+//			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][4];
+//			break;
+//		case 25:
+//			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][5];
+//			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][5];
+//			break;
+//		case 30:
+//			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][6];
+//			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][6];
+//			break;
+//		default:
+//			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][0];
+//			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][0];
+//			break;
+//		}
 
 		ClassInfo.FOG_UPBW[class_num] = FOG_UP_BW_ALL_CLASS[class_num][CLOUD_NETWORK];
 		ClassInfo.CLOUD_DOWNBW[class_num] = CLOUD_DOWN_BW_ALL_CLASS[class_num][CLOUD_NETWORK];

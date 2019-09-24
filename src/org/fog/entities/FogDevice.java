@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Random;
 
 import org.apache.commons.math3.util.Pair;
 import org.cloudbus.cloudsim.Cloudlet;
@@ -30,6 +31,7 @@ import org.fog.application.AppModule;
 import org.fog.application.Application;
 import org.fog.policy.AppModuleAllocationPolicy;
 import org.fog.scheduler.StreamOperatorScheduler;
+import org.fog.test.perfeval.ClassInfo;
 import org.fog.utils.Config;
 import org.fog.utils.FogEvents;
 import org.fog.utils.FogLinearPowerModel;
@@ -81,6 +83,8 @@ public class FogDevice extends PowerDatacenter {
 	protected double uplinkBandwidth;
 	protected double downlinkBandwidth;
 	protected double uplinkLatency;
+
+	public static int maxbw;
 	protected List<Pair<Integer, Double>> associatedActuatorIds;
 
 	protected double energyConsumption;
@@ -90,9 +94,84 @@ public class FogDevice extends PowerDatacenter {
 
 	protected double ratePerMips;
 
+	protected double nowNorthUtilizedBW;
+	protected double nowSouthUtilizedBW;
 	protected double totalCost;
 
 	protected Map<String, Map<String, Integer>> moduleInstanceCount;
+
+	protected ClassInfo info;
+
+	public FogDevice(String name, FogDeviceCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
+			List<Storage> storageList, double schedulingInterval, double uplinkBandwidth, double downlinkBandwidth,
+			double uplinkLatency, double ratePerMips, ClassInfo info) throws Exception {
+		super(name, characteristics, vmAllocationPolicy, storageList, schedulingInterval);
+		setCharacteristics(characteristics);
+		setVmAllocationPolicy(vmAllocationPolicy);
+		setLastProcessTime(0.0);
+		setStorageList(storageList);
+		setVmList(new ArrayList<Vm>());
+		setSchedulingInterval(schedulingInterval);
+		setUplinkBandwidth(uplinkBandwidth);
+		setDownlinkBandwidth(downlinkBandwidth);
+		setUplinkLatency(uplinkLatency);
+		setRatePerMips(ratePerMips);
+		setAssociatedActuatorIds(new ArrayList<Pair<Integer, Double>>());
+		for (Host host : getCharacteristics().getHostList()) {
+			host.setDatacenter(this);
+		}
+		setActiveApplications(new ArrayList<String>());
+		// If this resource doesn't have any PEs then no useful at all
+		if (getCharacteristics().getNumberOfPes() == 0) {
+			throw new Exception(
+					super.getName() + " : Error - this entity has no PEs. Therefore, can't process any Cloudlets.");
+		}
+		// stores id of this class
+		getCharacteristics().setId(super.getId());
+
+		applicationMap = new HashMap<String, Application>();
+		appToModulesMap = new HashMap<String, List<String>>();
+		northTupleQueue = new LinkedList<Tuple>();
+		southTupleQueue = new LinkedList<Pair<Tuple, Integer>>();
+		setNorthLinkBusy(false);
+		setSouthLinkBusy(false);
+
+		setChildrenIds(new ArrayList<Integer>());
+		setChildToOperatorsMap(new HashMap<Integer, List<String>>());
+
+		this.cloudTrafficMap = new HashMap<Integer, Integer>();
+
+		this.lockTime = 0;
+
+		this.energyConsumption = 0;
+		this.lastUtilization = 0;
+		this.info = info;
+		String[] parts = getName().split("_");
+
+		if (parts[parts.length - 1].equals("fog")) {
+			this.maxbw = info.getFOG_MAXBW();
+		} else if (parts[parts.length - 1].equals("cloud")) {
+			this.maxbw = info.getCLOUD_MAXBW();
+		} else {
+			this.maxbw = info.getEDGE_MAXBW();
+		}
+
+		setTotalCost(0);
+		setModuleInstanceCount(new HashMap<String, Map<String, Integer>>());
+		setChildToLatencyMap(new HashMap<Integer, Double>());
+		Log.print("name:" + name + System.lineSeparator() + "mips: "
+				+ characteristics.getHostList().get(0).getPeList().get(0).getPeProvisioner().getMips()
+				+ System.lineSeparator() + "ram: " + characteristics.getHostList().get(0).getRamProvisioner().getRam()
+				+ System.lineSeparator() + "upBw:" + uplinkBandwidth + System.lineSeparator() + "downBw:"
+				+ downlinkBandwidth + System.lineSeparator() + "level:" + level + System.lineSeparator()
+				+ "ratePerMips:" + ratePerMips + System.lineSeparator() + "busyPower: "
+				+ ((FogLinearPowerModel) ((PowerHost) characteristics.getHostList().get(0)).getPowerModel())
+						.getMaxPower()
+				+ System.lineSeparator() + "idlePower: "
+				+ ((FogLinearPowerModel) ((PowerHost) characteristics.getHostList().get(0)).getPowerModel())
+						.getStaticPower()
+				+ System.lineSeparator());
+	}
 
 	public FogDevice(String name, FogDeviceCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
 			List<Storage> storageList, double schedulingInterval, double uplinkBandwidth, double downlinkBandwidth,
@@ -277,9 +356,21 @@ public class FogDevice extends PowerDatacenter {
 			break;
 		case FogEvents.RESOURCE_MGMT:
 			manageResources(ev);
+		case FogEvents.UPLINK_END:
+			uplinkUpdate(ev);
+		case FogEvents.DOWNLINK_END:
+			downlinkUpdate(ev);
 		default:
 			break;
 		}
+	}
+
+	private void uplinkUpdate(SimEvent ev) {
+		this.nowNorthUtilizedBW -= getUplinkBandwidth();
+	}
+
+	private void downlinkUpdate(SimEvent ev) {
+		this.nowSouthUtilizedBW -= getDownlinkBandwidth();
 	}
 
 	/**
@@ -371,6 +462,7 @@ public class FogDevice extends PowerDatacenter {
 	 * 
 	 * @return the double
 	 */
+	// TODO: check
 	protected double updateCloudetProcessingWithoutSchedulingFutureEventsForce() {
 		double currentTime = CloudSim.clock();
 		double minTime = Double.MAX_VALUE;
@@ -513,23 +605,150 @@ public class FogDevice extends PowerDatacenter {
 	}
 
 	protected void updateAllocatedMips(String incomingOperator) {
-		// System.out.println("updateAllocatedMips " + incomingOperator);
+		System.out.println("updateAllocatedMips " + incomingOperator);
+
+		int class_num = -1;
+		int fccheck = -1;
+		if (incomingOperator != null) {
+			String[] parts = incomingOperator.split("_");
+			if (parts.length != 1) {
+				class_num = Integer.valueOf(parts[0].substring(parts[0].length() - 1));
+				if (parts[1].equals("fog"))
+					fccheck = 1;
+				else
+					fccheck = 0;
+			} else {
+				parts = incomingOperator.split("-");
+				class_num = Integer.valueOf(parts[0].substring(parts[0].length() - 1));
+			}
+		}
+
 		getHost().getVmScheduler().deallocatePesForAllVms();
 		// if possible allocate instance to vm
 		for (final Vm vm : getHost().getVmList()) {
 
 			if (vm.getCloudletScheduler().runningCloudlets() > 0
 					|| ((AppModule) vm).getName().equals(incomingOperator)) {
-				getHost().getVmScheduler().allocatePesForVm(vm, new ArrayList<Double>() {
-					{
-						if (getName() == "fog-layer") {
-							System.out.println(String.valueOf(vm.getCloudletScheduler().runningCloudlets()) + " "
-									+ ((AppModule) vm).getName() + " " + incomingOperator + " "
-									+ vm.getCurrentRequestedTotalMips());
+
+				if (vm.getCurrentRequestedMips().size() == 1 | fccheck == -1) {
+					getHost().getVmScheduler().allocatePesForVm(vm, new ArrayList<Double>() {
+						{
+							add((double) getHost().getTotalMips());
 						}
-						add((double) getHost().getTotalMips());
+					});
+				} else {
+					double divider = -1;
+
+					switch (class_num) {
+					case 4:
+						if (fccheck == 1 && info.NUMBER_OF_APPS != 0) {
+							divider = info.NUMBER_OF_APPS * info.FOG_ALPHA[class_num - 1][0]
+									+ info.FOG_ALPHA[class_num - 1][1];
+						} else if (fccheck == 0 && info.NUMBER_OF_APPS != 0) {
+							divider = info.NUMBER_OF_APPS * info.CLOUD_ALPHA[class_num - 1][0]
+									+ info.CLOUD_ALPHA[class_num - 1][1];
+						} else {
+							getHost().getVmScheduler().allocatePesForVm(vm, new ArrayList<Double>() {
+								{
+									add((double) getHost().getTotalMips());
+								}
+							});
+							break;
+						}
+
+						double mips4 = (info.CLASS4_MIPS * info.NUMBER_OF_APPS) / divider;
+						this.getCharacteristics().getHostList().get(0).getPeList().get(0).getPeProvisioner()
+								.setMips(mips4);
+						getHost().getVmScheduler().allocatePesForVm(vm, new ArrayList<Double>() {
+							{
+								add((double) mips4);
+							}
+						});
+						break;
+					case 3:
+						if (fccheck == 1 && info.NUMBER_OF_APPS != 0) {
+							divider = info.NUMBER_OF_APPS * info.FOG_ALPHA[class_num - 1][0]
+									+ info.FOG_ALPHA[class_num - 1][1];
+						} else if (fccheck == 0 && info.NUMBER_OF_APPS != 0) {
+							divider = info.NUMBER_OF_APPS * info.CLOUD_ALPHA[class_num - 1][0]
+									+ info.CLOUD_ALPHA[class_num - 1][1];
+						} else {
+							getHost().getVmScheduler().allocatePesForVm(vm, new ArrayList<Double>() {
+								{
+									add((double) getHost().getTotalMips());
+								}
+							});
+							break;
+						}
+
+						double mips3 = (info.CLASS3_MIPS * info.NUMBER_OF_APPS) / divider;
+						this.getCharacteristics().getHostList().get(0).getPeList().get(0).getPeProvisioner()
+								.setMips(mips3);
+						getHost().getVmScheduler().allocatePesForVm(vm, new ArrayList<Double>() {
+							{
+								add((double) mips3);
+							}
+						});
+						break;
+					case 2:
+						if (fccheck == 1 && info.NUMBER_OF_APPS != 0) {
+							divider = info.NUMBER_OF_APPS * info.FOG_ALPHA[class_num - 1][0]
+									+ info.FOG_ALPHA[class_num - 1][1];
+						} else if (fccheck == 0 && info.NUMBER_OF_APPS != 0) {
+							divider = info.NUMBER_OF_APPS * info.CLOUD_ALPHA[class_num - 1][0]
+									+ info.CLOUD_ALPHA[class_num - 1][1];
+						} else {
+							getHost().getVmScheduler().allocatePesForVm(vm, new ArrayList<Double>() {
+								{
+									add((double) getHost().getTotalMips());
+								}
+							});
+							break;
+						}
+
+						double mips2 = (info.CLASS2_MIPS * info.NUMBER_OF_APPS) / divider;
+						this.getCharacteristics().getHostList().get(0).getPeList().get(0).getPeProvisioner()
+								.setMips(mips2);
+						getHost().getVmScheduler().allocatePesForVm(vm, new ArrayList<Double>() {
+							{
+								add((double) mips2);
+							}
+						});
+						break;
+					case 1:
+						if (fccheck == 1 && info.NUMBER_OF_APPS != 0) {
+							divider = info.NUMBER_OF_APPS * info.FOG_ALPHA[class_num - 1][0]
+									+ info.FOG_ALPHA[class_num - 1][1];
+						} else if (fccheck == 0 && info.NUMBER_OF_APPS != 0) {
+							divider = info.NUMBER_OF_APPS * info.CLOUD_ALPHA[class_num - 1][0]
+									+ info.CLOUD_ALPHA[class_num - 1][1];
+						} else {
+							getHost().getVmScheduler().allocatePesForVm(vm, new ArrayList<Double>() {
+								{
+									add((double) getHost().getTotalMips());
+								}
+							});
+							break;
+						}
+
+						double mips1 = (info.CLASS1_MIPS * info.NUMBER_OF_APPS) / divider;
+						this.getCharacteristics().getHostList().get(0).getPeList().get(0).getPeProvisioner()
+								.setMips(mips1);
+						getHost().getVmScheduler().allocatePesForVm(vm, new ArrayList<Double>() {
+							{
+								add((double) mips1);
+							}
+						});
+						break;
+					default:
+						getHost().getVmScheduler().allocatePesForVm(vm, new ArrayList<Double>() {
+							{
+								add((double) getHost().getTotalMips());
+							}
+						});
+						break;
 					}
-				});
+				}
 			} else {
 				// System.out.println(String.valueOf(vm.getCloudletScheduler().runningCloudlets())
 				// + " "
@@ -726,7 +945,6 @@ public class FogDevice extends PowerDatacenter {
 		Tuple tuple = (Tuple) ev.getData();
 
 		AppModule module = getModuleByName(moduleName);
-
 		// if tuple direction is upside
 		if (tuple.getDirection() == Tuple.UP) {
 			String srcModule = tuple.getSrcModuleName();
@@ -746,9 +964,10 @@ public class FogDevice extends PowerDatacenter {
 		updateAllocatedMips(moduleName);
 		processCloudletSubmit(ev, false);
 		updateAllocatedMips(moduleName);
-//		for(Vm vm : getHost().getVmList()){
-//			System.out.println(getName()+ "MIPS allocated to "+((AppModule)vm).getName()+" = "+getHost().getTotalAllocatedMipsForVm(vm));
-//		}
+		for (Vm vm : getHost().getVmList()) {
+			System.out.println(getName() + "MIPS allocated to " + ((AppModule) vm).getName() + " = "
+					+ getHost().getTotalAllocatedMipsForVm(vm));
+		}
 	}
 
 	protected void processModuleArrival(SimEvent ev) {
@@ -764,7 +983,6 @@ public class FogDevice extends PowerDatacenter {
 		}
 
 		initializePeriodicTuples(module);
-//		System.out.println("here1");		
 		module.updateVmProcessing(CloudSim.clock(),
 				getVmAllocationPolicy().getHost(module).getVmScheduler().getAllocatedMipsForVm(module));
 	}
@@ -793,16 +1011,55 @@ public class FogDevice extends PowerDatacenter {
 		}
 	}
 
+	protected double applyPacketLoss(long fileSize, double bw) {
+		Random rand = new Random();
+		double result = 0;
+		double minimum_size = 256;
+		int origin_steps = (int) ((fileSize / minimum_size));
+		int steps = 0;
+		int check_step = origin_steps;
+		while (true) {
+			if (steps == check_step) {
+				break;
+			}
+			if (rand.nextInt(100) > (100 - this.info.PACKET_LOSS)) {
+				check_step = origin_steps - steps;
+				result += 1;
+				steps = 0;
+			} else {
+				result += 1;
+				steps += 1;
+			}
+		}
+		double addSize = (result * minimum_size);
+		double t = addSize / bw;
+		return t;
+	}
+
 	protected void sendUpFreeLink(Tuple tuple) {
-		double networkDelay = tuple.getCloudletFileSize() / getUplinkBandwidth();
-		setNorthLinkBusy(true);
+		double networkDelay;
+		String[] p = tuple.getDestModuleName().split("_");
+		CloudSim.pauseSimulation();
+		if (p[p.length - 1].equals("fog") && this.getName().startsWith("m") && this.info.PACKET_LOSS != 0) {
+			networkDelay = applyPacketLoss(tuple.getCloudletFileSize(), getUplinkBandwidth());
+		} else {
+			networkDelay = tuple.getCloudletFileSize() / getUplinkBandwidth();
+		}
+//		setNorthLinkBusy(true);
 		send(getId(), networkDelay, FogEvents.UPDATE_NORTH_TUPLE_QUEUE);
 		send(parentId, networkDelay + getUplinkLatency(), FogEvents.TUPLE_ARRIVAL, tuple);
+		send(getId(), networkDelay, FogEvents.UPLINK_END);
+		CloudSim.resumeSimulation();
 		NetworkUsageMonitor.sendingTuple(getUplinkLatency(), tuple.getCloudletFileSize());
 	}
 
 	protected void sendUp(Tuple tuple) {
 		if (parentId > 0) {
+			if (this.nowNorthUtilizedBW <= this.maxbw) {
+				this.nowNorthUtilizedBW += getUplinkBandwidth();
+			} else {
+				setNorthLinkBusy(true);
+			}
 			if (!isNorthLinkBusy()) {
 				sendUpFreeLink(tuple);
 			} else {
@@ -821,18 +1078,31 @@ public class FogDevice extends PowerDatacenter {
 	}
 
 	protected void sendDownFreeLink(Tuple tuple, int childId) {
-		double networkDelay = tuple.getCloudletFileSize() / getDownlinkBandwidth();
-		// Logger.debug(getName(), "Sending tuple with tupleType =
-		// "+tuple.getTupleType()+" DOWN");
-		setSouthLinkBusy(true);
+		double networkDelay;
+		String[] p = getName().split("_");
+		CloudSim.pauseSimulation();
+		if (p[p.length - 1].equals("fog") && tuple.getDestModuleName().startsWith("m") && this.info.PACKET_LOSS != 0) {
+			networkDelay = applyPacketLoss(tuple.getCloudletFileSize(), getDownlinkBandwidth());
+		} else {
+			networkDelay = tuple.getCloudletFileSize() / getDownlinkBandwidth();
+		}
+
+//		setSouthLinkBusy(true);
 		double latency = getChildToLatencyMap().get(childId);
 		send(getId(), networkDelay, FogEvents.UPDATE_SOUTH_TUPLE_QUEUE);
 		send(childId, networkDelay + latency, FogEvents.TUPLE_ARRIVAL, tuple);
+		send(getId(), networkDelay, FogEvents.DOWNLINK_END);
+		CloudSim.resumeSimulation();
 		NetworkUsageMonitor.sendingTuple(latency, tuple.getCloudletFileSize());
 	}
 
 	protected void sendDown(Tuple tuple, int childId) {
 		if (getChildrenIds().contains(childId)) {
+			if (this.nowSouthUtilizedBW <= this.maxbw) {
+				this.nowSouthUtilizedBW += getDownlinkBandwidth();
+			} else {
+				setSouthLinkBusy(true);
+			}
 			if (!isSouthLinkBusy()) {
 				sendDownFreeLink(tuple, childId);
 			} else {

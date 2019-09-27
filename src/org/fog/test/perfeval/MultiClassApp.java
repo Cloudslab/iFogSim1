@@ -108,9 +108,8 @@ public class MultiClassApp {
 		// 2. make 4 classes client, fog, cloud appmodule
 
 		for (int i = 0; i < info.NUMBER_OF_APPS; i++) {
-			app.addAppModule("class" + number_of_class + "-" + String.valueOf(i), 2);
-			info.printOneStringLog("Make appModule", "name",
-					"class" + number_of_class + "-" + String.valueOf(i) + "-" + String.valueOf(i));
+			app.addAppModule("class" + number_of_class + "-" + String.valueOf(i), 10);
+			info.printOneStringLog("Make appModule", "name", "class" + number_of_class + "-" + String.valueOf(i));
 		}
 		app.addAppModule("class" + number_of_class + "_fog", 15);
 		app.addAppModule("class" + number_of_class + "_cloud", 20);
@@ -253,9 +252,6 @@ public class MultiClassApp {
 			}
 			break;
 		}
-		Log.printLine("---------------------------------------");
-		Log.printLine("---------------------------------------");
-
 		// 4. make tuple mapping
 		for (int i = 0; i < info.NUMBER_OF_APPS; i++) {
 			String sensor = "CAM-" + String.valueOf(i);
@@ -495,24 +491,28 @@ public class MultiClassApp {
 		int class_num = info.CLASS_NUM - 1;
 		// TODO: make fog,cloud devices configurable, now these fixed to 1
 		// 1. make cloud device
-//		FogDevice cloud = createFogDevice("cloud", CLOUD_MIPS, 32000, CLOUD_UPBW*NUMBER_OF_APPS, CLOUD_DOWNBW*NUMBER_OF_APPS, 0, 0.01, 100, 0); 
-		FogDevice cloud = createFogDevice("cloud", info.CLOUD_MIPS[class_num], 32000,
-				(info.CLOUD_UPBW[class_num] * info.NUMBER_OF_APPS >= info.CLOUD_MAXBW) ? info.CLOUD_MAXBW
-						: info.CLOUD_UPBW[class_num] * info.NUMBER_OF_APPS,
-				(info.CLOUD_DOWNBW[class_num] * info.NUMBER_OF_APPS >= info.CLOUD_MAXBW) ? info.CLOUD_MAXBW
-						: info.CLOUD_DOWNBW[class_num] * info.NUMBER_OF_APPS,
-				0, 0.01, 100, 0);
+		FogDevice cloud = createFogDevice("cloud", info.CLOUD_MIPS[class_num], 32000, info.CLOUD_UPBW[class_num],
+				info.CLOUD_DOWNBW[class_num], 0, 0.01, 100, 0, info);
+//		FogDevice cloud = createFogDevice("cloud", info.CLOUD_MIPS[class_num], 32000,
+//				(info.CLOUD_UPBW[class_num] * info.NUMBER_OF_APPS >= info.CLOUD_MAXBW) ? info.CLOUD_MAXBW
+//						: info.CLOUD_UPBW[class_num] * info.NUMBER_OF_APPS,
+//				(info.CLOUD_DOWNBW[class_num] * info.NUMBER_OF_APPS >= info.CLOUD_MAXBW) ? info.CLOUD_MAXBW
+//						: info.CLOUD_DOWNBW[class_num] * info.NUMBER_OF_APPS,
+//				0, 0.01, 100, 0);
+
 		cloud.setParentId(-1);
 		fogDevices.add(cloud);
 
 		// 2. make fog device
 		// bandwidth(kb/s)
-		FogDevice fog = createFogDevice("fog-layer", info.FOG_MIPS, 8000,
-				(info.FOG_UPBW[class_num] * info.NUMBER_OF_APPS >= info.FOG_MAXBW) ? info.FOG_MAXBW
-						: info.FOG_UPBW[class_num] * info.NUMBER_OF_APPS,
-				(info.FOG_DOWNBW[class_num] * info.NUMBER_OF_APPS >= info.FOG_MAXBW) ? info.FOG_MAXBW
-						: info.FOG_DOWNBW[class_num] * info.NUMBER_OF_APPS,
-				1, 0.0, 8, 0);
+		FogDevice fog = createFogDevice("fog-layer", info.FOG_MIPS, 8000, info.FOG_UPBW[class_num],
+				info.FOG_DOWNBW[class_num], 1, 0.0, 8, 0, info);
+//		FogDevice fog = createFogDevice("fog-layer", info.FOG_MIPS, 8000,
+//				(info.FOG_UPBW[class_num] * info.NUMBER_OF_APPS >= info.FOG_MAXBW) ? info.FOG_MAXBW
+//						: info.FOG_UPBW[class_num] * info.NUMBER_OF_APPS,
+//				(info.FOG_DOWNBW[class_num] * info.NUMBER_OF_APPS >= info.FOG_MAXBW) ? info.FOG_MAXBW
+//						: info.FOG_DOWNBW[class_num] * info.NUMBER_OF_APPS,
+//				1, 0.0, 8, 0);
 		fog.setParentId(cloud.getId());
 		fog.setUplinkLatency(info.FOG_TO_CLOUD_LATENCY);
 		fogDevices.add(fog);
@@ -521,9 +521,11 @@ public class MultiClassApp {
 		for (int i = 0; i < info.numOfSensorNode; i++) {
 			String sensorNodeId = "0-" + i;
 			FogDevice sensorNode = createFogDevice("m-" + sensorNodeId, info.EDGE_MIPS[class_num], 1000,
-					(info.EDGE_UPBW[class_num] >= info.EDGE_MAXBW) ? info.EDGE_MAXBW : info.EDGE_UPBW[class_num],
-					(info.EDGE_DOWNBW[class_num] >= info.EDGE_MAXBW) ? info.EDGE_MAXBW : info.EDGE_DOWNBW[class_num], 2,
-					0, 1.0815, 0);
+					info.EDGE_UPBW[class_num], info.EDGE_DOWNBW[class_num], 2, 0, 1.0815, 0, info);
+//			FogDevice sensorNode = createFogDevice("m-" + sensorNodeId, info.EDGE_MIPS[class_num], 1000,
+//					(info.EDGE_UPBW[class_num] >= info.EDGE_MAXBW) ? info.EDGE_MAXBW : info.EDGE_UPBW[class_num],
+//					(info.EDGE_DOWNBW[class_num] >= info.EDGE_MAXBW) ? info.EDGE_MAXBW : info.EDGE_DOWNBW[class_num], 2,
+//					0, 1.0815, 0);
 			sensorNode.setParentId(fog.getId());
 			sensorNode.setUplinkLatency(info.EDGE_TO_FOG_LATENCY);
 			fogDevices.add(sensorNode);
@@ -653,12 +655,13 @@ public class MultiClassApp {
 	private static ModuleMapping createFogDevices(int userId, String[] appIds, int offloading_policy, ClassInfo info) {
 
 		int class_num = info.CLASS_NUM - 1;
-		FogDevice cloud = createFogDevice("cloud", info.CLOUD_MIPS[class_num], 32000, 10000, 10000, 0, 0.01, 100, 0);
+		FogDevice cloud = createFogDevice("cloud", info.CLOUD_MIPS[class_num], 32000, 10000, 10000, 0, 0.01, 100, 0,
+				info);
 		cloud.setParentId(-1);
 		fogDevices.add(cloud);
 
 		// TODO: now number of fog-layer devices fixed at 1
-		FogDevice fog = createFogDevice("fog-layer", info.FOG_MIPS, 8000, 1000, 1000, 1, 0.0, 8, 0);
+		FogDevice fog = createFogDevice("fog-layer", info.FOG_MIPS, 8000, 1000, 1000, 1, 0.0, 8, 0, info);
 		fog.setParentId(cloud.getId());
 		fog.setUplinkLatency(info.FOG_TO_CLOUD_LATENCY);
 		fogDevices.add(fog);
@@ -666,7 +669,7 @@ public class MultiClassApp {
 		for (int i = 0; i < info.numOfSensorNode; i++) {
 			String sensorNodeId = "0-" + i;
 			FogDevice sensorNode = createFogDevice("m-" + sensorNodeId, info.EDGE_MIPS[class_num], 1000, 1000, 1000, 2,
-					0, 0.5665, 0);
+					0, 0.5665, 0, info);
 			sensorNode.setParentId(fog.getId());
 			sensorNode.setUplinkLatency(info.EDGE_TO_FOG_LATENCY);
 			fogDevices.add(sensorNode);
@@ -752,7 +755,7 @@ public class MultiClassApp {
 	}
 
 	private static FogDevice createFogDevice(String nodeName, long mips, int ram, double upBw, double downBw, int level,
-			double ratePerMips, double busyPower, double idlePower) {
+			double ratePerMips, double busyPower, double idlePower, ClassInfo info) {
 
 		List<Pe> peList = new ArrayList<Pe>();
 
@@ -780,7 +783,7 @@ public class MultiClassApp {
 										// resource
 		double costPerBw = 0.0; // the cost of using bw in this resource
 
-		LinkedList<Storage> storageList = new LinkedList<Storage>(); // we are not adding SAN
+		LinkedList<Storage> storageList = new LinkedList<Storage>();
 		// devices by now
 
 		FogDeviceCharacteristics characteristics = new FogDeviceCharacteristics(arch, os, vmm, host, time_zone, cost,
@@ -789,7 +792,7 @@ public class MultiClassApp {
 		FogDevice fogdevice = null;
 		try {
 			fogdevice = new FogDevice(nodeName, characteristics, new AppModuleAllocationPolicy(hostList), storageList,
-					10000000, upBw, downBw, 0, ratePerMips);
+					1000000, upBw, downBw, 0, ratePerMips, info);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -74,9 +74,9 @@ public class ClassInfo {
 	static int CLOUD_NETWORK = -1;
 	public static int PACKET_LOSS = -1;
 
-	static double SENSOR_TO_EDGE_LATENCY = 50;
-	static double EDGE_TO_FOG_LATENCY = 100;
-	static double FOG_TO_CLOUD_LATENCY = 1000;
+	public static double SENSOR_TO_EDGE_LATENCY = 50;
+	public static double EDGE_TO_FOG_LATENCY = 100;
+	public static double FOG_TO_CLOUD_LATENCY = 1000;
 
 	static int EDGE_MAXBW = 1250000;
 
@@ -229,36 +229,36 @@ public class ClassInfo {
 		int class_num = CLASS_NUM - 1;
 		ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][0];
 		ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][0];
-//		switch (ClassInfo.PACKET_LOSS) {
-//		case 5:
-//			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][1];
-//			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][1];
-//			break;
-//		case 10:
-//			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][2];
-//			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][2];
-//			break;
-//		case 15:
-//			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][3];
-//			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][3];
-//			break;
-//		case 20:
-//			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][4];
-//			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][4];
-//			break;
-//		case 25:
-//			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][5];
-//			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][5];
-//			break;
-//		case 30:
-//			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][6];
-//			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][6];
-//			break;
-//		default:
-//			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][0];
-//			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][0];
-//			break;
-//		}
+		switch (ClassInfo.PACKET_LOSS) {
+		case 5:
+			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][1];
+			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][1];
+			break;
+		case 10:
+			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][2];
+			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][2];
+			break;
+		case 15:
+			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][3];
+			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][3];
+			break;
+		case 20:
+			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][4];
+			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][4];
+			break;
+		case 25:
+			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][5];
+			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][5];
+			break;
+		case 30:
+			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][6];
+			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][6];
+			break;
+		default:
+			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][0];
+			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][0];
+			break;
+		}
 
 		ClassInfo.FOG_UPBW[class_num] = FOG_UP_BW_ALL_CLASS[class_num][CLOUD_NETWORK];
 		ClassInfo.CLOUD_DOWNBW[class_num] = CLOUD_DOWN_BW_ALL_CLASS[class_num][CLOUD_NETWORK];
@@ -375,7 +375,7 @@ public class ClassInfo {
 
 		origin_data = t.get(18).split("=");
 		value = origin_data[origin_data.length - 1];
-		configs = appendValue(configs, Integer.valueOf(value));
+		configs = appendValue(configs, Double.valueOf(value));
 		PACKET_LOSS = Integer.valueOf(value);
 
 		origin_data = t.get(19).split("=");

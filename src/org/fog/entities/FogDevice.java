@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Random;
 
 import org.apache.commons.math3.util.Pair;
 import org.cloudbus.cloudsim.Cloudlet;
@@ -605,7 +604,7 @@ public class FogDevice extends PowerDatacenter {
 	}
 
 	protected void updateAllocatedMips(String incomingOperator) {
-		System.out.println("updateAllocatedMips " + incomingOperator);
+//		System.out.println("updateAllocatedMips " + incomingOperator);
 
 		int class_num = -1;
 		int fccheck = -1;
@@ -964,10 +963,10 @@ public class FogDevice extends PowerDatacenter {
 		updateAllocatedMips(moduleName);
 		processCloudletSubmit(ev, false);
 		updateAllocatedMips(moduleName);
-		for (Vm vm : getHost().getVmList()) {
-			System.out.println(getName() + "MIPS allocated to " + ((AppModule) vm).getName() + " = "
-					+ getHost().getTotalAllocatedMipsForVm(vm));
-		}
+//		for (Vm vm : getHost().getVmList()) {
+//			System.out.println(getName() + "MIPS allocated to " + ((AppModule) vm).getName() + " = "
+//					+ getHost().getTotalAllocatedMipsForVm(vm));
+//		}
 	}
 
 	protected void processModuleArrival(SimEvent ev) {
@@ -1012,28 +1011,21 @@ public class FogDevice extends PowerDatacenter {
 	}
 
 	protected double applyPacketLoss(long fileSize, double bw) {
-		Random rand = new Random();
-		double result = 0;
-		double minimum_size = 256;
-		int origin_steps = (int) ((fileSize / minimum_size));
-		int steps = 0;
-		int check_step = origin_steps;
-		while (true) {
-			if (steps == check_step) {
-				break;
-			}
-			if (rand.nextInt(100) > (100 - this.info.PACKET_LOSS)) {
-				check_step = origin_steps - steps;
-				result += 1;
-				steps = 0;
-			} else {
-				result += 1;
-				steps += 1;
-			}
+		double newbw = bw;
+		double max_mss = 1460; // tcp
+		double p = Math.sqrt(this.info.PACKET_LOSS * 0.01);
+		double rtt = info.EDGE_TO_FOG_LATENCY;
+
+		if (p == 0)
+			return fileSize / bw;
+		// System.out.println(bw);
+//		newbw = (mss / rtt) * (c / p) / 1024;
+		// System.out.println(newbw);
+		if ((newbw * info.NUMBER_OF_APPS) >= bw) {
+			newbw = bw / info.NUMBER_OF_APPS;
 		}
-		double addSize = (result * minimum_size);
-		double t = addSize / bw;
-		return t;
+
+		return fileSize / newbw;
 	}
 
 	protected void sendUpFreeLink(Tuple tuple) {

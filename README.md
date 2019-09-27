@@ -30,7 +30,7 @@ git pull origin master
 
 *   check src/org/fog/utils/Config class
 *	you can get result as csv file format. 
-*   if you run with ArrhythmiaApp.java with file output then, you can get below results,
+*   if you run with MultiClassApp.java with file output then, you can get below results, (set FILE_OUTPUT option in config file)
 ```
 	Total execution time	,
     Average Latency of Control Loop (application Loop),

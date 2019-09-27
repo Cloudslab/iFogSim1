@@ -44,7 +44,9 @@ public class MultiClassApp {
 		Log.printLine("Starting multi class Applications...");
 		ClassInfo class_info = new ClassInfo();
 		if (args.length != 0) {
-			class_info.openConfigFile(args[0], args[1]);
+			// TODO: add multiple application on same device execution map
+//			class_info.openConfigFile(args[0], args[1]);
+			class_info.openConfigFile(args[0]);
 		}
 		if (class_info.ENABLE_LOG == 0)
 			Log.disable();

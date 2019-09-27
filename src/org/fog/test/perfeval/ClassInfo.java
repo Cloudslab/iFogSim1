@@ -273,7 +273,7 @@ public class ClassInfo {
 	}
 	// open config file for multiple simulation or configuable simulation
 
-	public static void openConfigFile(String filepath, String filepath_map) {
+	public static void openConfigFile(String filepath) {
 		List<String> t = readFile(filepath);
 
 		Log.printLine("start to read config file");
@@ -384,7 +384,7 @@ public class ClassInfo {
 		Config.MAX_SIMULATION_TIME = Integer.valueOf(value);
 
 		setFogPacketLossAndCloudNetwork();
-		openExecutionMapFile(filepath_map);
+//		openExecutionMapFile(filepath_map);
 	}
 
 	private static void setNumberOfApps(String ratio) {

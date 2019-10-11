@@ -257,9 +257,9 @@ public class Controller extends SimEntity {
 //		System.out.println("=========================================");
 
 		for (String tupleType : TimeKeeper.getInstance().getTupleTypeToAverageCpuTime().keySet()) {
-			System.out.println(
-					tupleType + " ---> " + TimeKeeper.getInstance().getTupleTypeToAverageCpuTime().get(tupleType));
-			System.out.println(TimeKeeper.getInstance().getTupleTypeToAverageCpuTime().get(tupleType));
+//			System.out.println(
+//					tupleType + " ---> " + TimeKeeper.getInstance().getTupleTypeToAverageCpuTime().get(tupleType));
+//			System.out.println(TimeKeeper.getInstance().getTupleTypeToAverageCpuTime().get(tupleType));
 		}
 //		System.out.println("=========================================");
 

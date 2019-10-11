@@ -24,6 +24,27 @@ public class ClassInfo {
 	// just idx
 	static List<Integer> random_idx = null;
 
+	static int using_res_map = 0;
+	// data[class_num][packet_loss][num_of_instance]
+	static int[][][] res_map = {
+			{ { 2, 2, 2, 2, 2, 2, 2, 2 }, { 2, 2, 2, 2, 2, 2, 2, 2 }, { 2, 2, 2, 2, 2, 2, 2, 2 },
+					{ 2, 2, 2, 2, 2, 2, 2, 2 }, { 2, 2, 2, 2, 2, 2, 2, 2 }, { 2, 2, 2, 2, 2, 2, 2, 2 },
+					{ 2, 2, 2, 2, 2, 2, 2, 2 }, { 2, 2, 2, 2, 2, 2, 2, 2 }, { 2, 2, 2, 2, 2, 2, 2, 2 },
+					{ 2, 2, 2, 2, 2, 2, 2, 2 } },
+			{ { 1, 1, 1, 0, 0, 0, 0, 0 }, { 1, 1, 0, 0, 0, 0, 0, 0 }, { 1, 1, 0, 0, 0, 0, 0, 0 },
+					{ 1, 0, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0, 0 },
+					{ 1, 0, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0, 0 },
+					{ 1, 0, 0, 0, 0, 0, 0, 0 } },
+			{ { 1, 1, 1, 1, 1, 1, 0, 0 }, { 2, 2, 2, 2, 2, 0, 0, 0 }, { 2, 2, 2, 2, 2, 0, 0, 0 },
+					{ 2, 2, 2, 2, 0, 0, 0, 0 }, { 2, 2, 2, 2, 0, 0, 0, 0 }, { 2, 2, 2, 2, 0, 0, 0, 0 },
+					{ 2, 2, 2, 0, 0, 0, 0, 0 }, { 2, 2, 2, 0, 0, 0, 0, 0 }, { 2, 2, 2, 0, 0, 0, 0, 0 },
+					{ 2, 2, 2, 0, 0, 0, 0, 0 } },
+			{ { 1, 1, 1, 0, 0, 0, 0, 0 }, { 1, 1, 1, 0, 0, 0, 0, 0 }, { 1, 1, 1, 0, 0, 0, 0, 0 },
+					{ 1, 1, 1, 0, 0, 0, 0, 0 }, { 1, 1, 1, 0, 0, 0, 0, 0 }, { 1, 1, 1, 0, 0, 0, 0, 0 },
+					{ 1, 1, 1, 0, 0, 0, 0, 0 }, { 1, 1, 1, 0, 0, 0, 0, 0 }, { 1, 1, 1, 0, 0, 0, 0, 0 },
+					{ 1, 1, 1, 0, 0, 0, 0, 0 } }
+
+	};
 	static int numOfSensorNode = Config.NUMBER_OF_EDGE;
 
 	static double CLASS1_TRANSMISSION_TIME = 0;
@@ -112,37 +133,19 @@ public class ClassInfo {
 	static int CLOUD_MAXBW = 10000000;
 
 	static int using_fresult = -1;
-	// class1
-	// Upload throughput 10009.76563 8897.569444 6159.855769 4106.570513 544.7491497
-	// 306.8127395 113.5859929
-	// download throughput 180.7201868 174.6961806 112.3046875 74.86979167
-	// 9.88846305 5.555708922 2.05256609
-
-	// class2
-	// Upload throughput 2902.733546 1660.618851 1088.52508 385.0147846 179.6094982
-	// 59.86458972 51.54918558
-	// download throughput 889.7569444 508.9711335 333.6588542 117.993308
-	// 55.04912351 18.34970784 15.800735
-
-	// class3
-	// Upload throughput 2187.926913 1016.21986 309.4208849 99.67404157 51.00517516
-	// 30.51292676 16.5436999
-	// download throughput 1953.125 906.8870328 276.1314655 88.97569444 45.39576247
-	// 27.23745748 14.82928241
-
-	// class4
-	// Upload throughput 14851.88802 6789.434524 1679.36543 720.0915404 412.0755058
-	// 226.6742846 138.0233543
-	// download throughput 1775.568182 782.9428494 200.7378472 86.03050595
-	// 49.16028912 27.06577715 16.49900114
 
 	// 4 7
 	// [class_num][packet_loss]
-	static double EDGE_UP_BW_ALL_CLASS[][] = { { 10009, 8897, 6159, 4106, 544, 306, 113 },
-			{ 2902, 1660, 1088, 385, 179, 59, 51 }, { 2187, 1016, 309, 99, 51, 30, 16 },
-			{ 14851, 6789, 1679, 720, 412, 226, 138 } };
-	static double FOG_DOWN_BW_ALL_CLASS[][] = { { 180, 174, 112, 74, 9, 5, 2 }, { 889, 508, 333, 117, 55, 18, 15 },
-			{ 1953, 906, 276, 88, 45, 27, 14 }, { 1775, 782, 200, 86, 49, 27, 16 } };
+	static double EDGE_UP_BW_ALL_CLASS[][] = {
+			{ 2675.428779, 2241.101014, 1101.790382, 372.8516181, 211.8471157, 144.0680162, 82.35566685, 54.03987559 },
+			{ 9751.371281, 1172.833778, 357.8299514, 126.6433519, 56.02994085, 31.18328822, 18.76013232, 9.529634028 },
+			{ 8451.608133, 963.6907877, 364.8351037, 134.0693566, 71.20281387, 39.78138099, 20.32544897, 11.73910663 },
+			{ 2541.263685, 1855.318449, 468.5175955, 271.406657, 242.2419099, 137.7661747, 52.5864096, 66.61914306 } };
+	static double FOG_DOWN_BW_ALL_CLASS[][] = {
+			{ 297.6648287, 252.7351913, 267.8020141, 296.6538915, 312.2672542, 250.4804246, 275.1120954, 271.9241828 },
+			{ 4896.07569, 1995.689321, 1265.603496, 594.1109598, 389.4335991, 210.8467187, 123.4011969, 60.7593139 },
+			{ 4363.968093, 1629.208241, 1013.226971, 375.1728756, 242.5775889, 168.0645707, 106.8656681, 63.36929717 },
+			{ 8205.882611, 1499.198459, 830.5834582, 420.4083472, 242.894509, 125.8441799, 74.14563561, 39.55754545 } };
 
 //	Upload throughput	125.1220703	586.6529304	625.6103516
 //	download throughput	0.1572265625	1.965332031	2.382220644
@@ -230,29 +233,33 @@ public class ClassInfo {
 		ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][0];
 		ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][0];
 		switch (ClassInfo.PACKET_LOSS) {
-		case 5:
+		case 2:
 			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][1];
 			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][1];
 			break;
-		case 10:
+		case 4:
 			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][2];
 			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][2];
 			break;
-		case 15:
+		case 6:
 			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][3];
 			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][3];
 			break;
-		case 20:
+		case 8:
 			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][4];
 			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][4];
 			break;
-		case 25:
+		case 10:
 			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][5];
 			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][5];
 			break;
-		case 30:
+		case 12:
 			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][6];
 			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][6];
+			break;
+		case 14:
+			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][7];
+			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][7];
 			break;
 		default:
 			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][0];
@@ -263,15 +270,6 @@ public class ClassInfo {
 		ClassInfo.FOG_UPBW[class_num] = FOG_UP_BW_ALL_CLASS[class_num][CLOUD_NETWORK];
 		ClassInfo.CLOUD_DOWNBW[class_num] = CLOUD_DOWN_BW_ALL_CLASS[class_num][CLOUD_NETWORK];
 	}
-
-	public static void openExecutionMapFile(String filepath) {
-		List<String> t = readFile(filepath);
-		for (String line : t) {
-//			System.out.println(line);
-			// line -> 1,2,3,4,5,6,7,8
-		}
-	}
-	// open config file for multiple simulation or configuable simulation
 
 	public static void openConfigFile(String filepath) {
 		List<String> t = readFile(filepath);
@@ -383,8 +381,11 @@ public class ClassInfo {
 		configs = appendValue(configs, Integer.valueOf(value));
 		Config.MAX_SIMULATION_TIME = Integer.valueOf(value);
 
+		origin_data = t.get(20).split("=");
+		value = origin_data[origin_data.length - 1];
+		configs = appendValue(configs, Integer.valueOf(value));
+		using_res_map = Integer.valueOf(value);
 		setFogPacketLossAndCloudNetwork();
-//		openExecutionMapFile(filepath_map);
 	}
 
 	private static void setNumberOfApps(String ratio) {

@@ -1011,20 +1011,21 @@ public class FogDevice extends PowerDatacenter {
 	}
 
 	protected double applyPacketLoss(long fileSize, double bw) {
-		double newbw = bw;
-		double max_mss = 1460; // tcp
 		double p = Math.sqrt(this.info.PACKET_LOSS * 0.01);
+		double newbw = bw;
+		double max_mss = 129472 * 6; // tcp
 		double rtt = info.EDGE_TO_FOG_LATENCY;
-
+		double b = (fileSize * 1.01 * this.info.PACKET_LOSS) / max_mss; // TODO: have to check this
+		double max_tp = max_mss / rtt;
+		double time_out = 30; // TODO: have to check this
+		double cal_tp = (1 / (rtt * Math.sqrt((2 * b * p) / 3)
+				+ time_out * Math.min(1, 3 * Math.sqrt(3 * b * p / 8)) * p * (1 + (32 * p * p))));
 		if (p == 0)
 			return fileSize / bw;
-		// System.out.println(bw);
-//		newbw = (mss / rtt) * (c / p) / 1024;
-		// System.out.println(newbw);
-		if ((newbw * info.NUMBER_OF_APPS) >= bw) {
-			newbw = bw / info.NUMBER_OF_APPS;
-		}
-
+//		System.out.println(bw);
+		newbw = Math.min(max_tp, cal_tp) * 1024;
+//		System.out.println(newbw);
+//		newbw = bw;
 		return fileSize / newbw;
 	}
 

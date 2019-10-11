@@ -54,6 +54,11 @@ public class MultiClassApp {
 		System.exit(0);
 	}
 
+	private static void setOffloading(ClassInfo class_info) {
+		class_info.OFFLOADING_POLICY = class_info.res_map[class_info.CLASS_NUM - 1][class_info.NUMBER_OF_APPS
+				- 1][class_info.PACKET_LOSS / 2];
+	}
+
 	private static void startSimulation(ClassInfo class_info) {
 		Log.printLine("CREATE APPLICATIONS");
 		try {
@@ -66,6 +71,9 @@ public class MultiClassApp {
 			CloudSim.init(num_user, calendar, trace_flag);
 			Application app = null;
 			if (class_info.SINGLE_APP != 0) {
+				if (class_info.using_res_map != 0) {
+					setOffloading(class_info);
+				}
 				app = createApplication(class_info);
 			} else {
 				app = createApplications(class_info);

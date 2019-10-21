@@ -65,7 +65,7 @@ public class ClassInfo {
 	static int ENABLE_LOG = 0;
 
 	static int OFFLOADING_POLICY = -1;
-	static int CLASS_NUM = -1;
+	public static int CLASS_NUM = -1;
 	static int SINGLE_APP = 0;
 	public static int CLASS1_MIPS = 3290000;
 	public static int CLASS2_MIPS = 105840;
@@ -98,6 +98,8 @@ public class ClassInfo {
 	public static double SENSOR_TO_EDGE_LATENCY = 50;
 	public static double EDGE_TO_FOG_LATENCY = 100;
 	public static double FOG_TO_CLOUD_LATENCY = 1000;
+
+	public static List<Integer> RUNNING_REGION = new ArrayList<Integer>();
 
 	static int EDGE_MAXBW = 1250000;
 
@@ -136,12 +138,12 @@ public class ClassInfo {
 
 	// 4 7
 	// [class_num][packet_loss]
-	static double EDGE_UP_BW_ALL_CLASS[][] = {
+	public static double EDGE_UP_BW_ALL_CLASS[][] = {
 			{ 2675.428779, 2241.101014, 1101.790382, 372.8516181, 211.8471157, 144.0680162, 82.35566685, 54.03987559 },
 			{ 9751.371281, 1172.833778, 357.8299514, 126.6433519, 56.02994085, 31.18328822, 18.76013232, 9.529634028 },
 			{ 8451.608133, 963.6907877, 364.8351037, 134.0693566, 71.20281387, 39.78138099, 20.32544897, 11.73910663 },
 			{ 2541.263685, 1855.318449, 468.5175955, 271.406657, 242.2419099, 137.7661747, 52.5864096, 66.61914306 } };
-	static double FOG_DOWN_BW_ALL_CLASS[][] = {
+	public static double FOG_DOWN_BW_ALL_CLASS[][] = {
 			{ 297.6648287, 252.7351913, 267.8020141, 296.6538915, 312.2672542, 250.4804246, 275.1120954, 271.9241828 },
 			{ 4896.07569, 1995.689321, 1265.603496, 594.1109598, 389.4335991, 210.8467187, 123.4011969, 60.7593139 },
 			{ 4363.968093, 1629.208241, 1013.226971, 375.1728756, 242.5775889, 168.0645707, 106.8656681, 63.36929717 },
@@ -385,6 +387,13 @@ public class ClassInfo {
 		value = origin_data[origin_data.length - 1];
 		configs = appendValue(configs, Integer.valueOf(value));
 		using_res_map = Integer.valueOf(value);
+
+		origin_data = t.get(21).split("=");
+		value = origin_data[origin_data.length - 1];
+		String[] runs = value.split(",");
+		for (int x = 0; x < 3; x++) {
+			RUNNING_REGION.add(x, Integer.valueOf(runs[x]));
+		}
 		setFogPacketLossAndCloudNetwork();
 	}
 

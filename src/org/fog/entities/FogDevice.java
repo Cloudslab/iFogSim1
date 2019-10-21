@@ -97,6 +97,8 @@ public class FogDevice extends PowerDatacenter {
 	protected double nowSouthUtilizedBW;
 	protected double totalCost;
 
+	public static boolean now_up = false;
+	public static boolean now_down = false;
 	protected Map<String, Map<String, Integer>> moduleInstanceCount;
 
 	protected ClassInfo info;
@@ -365,11 +367,17 @@ public class FogDevice extends PowerDatacenter {
 	}
 
 	private void uplinkUpdate(SimEvent ev) {
+		double t = this.nowSouthUtilizedBW;
 		this.nowNorthUtilizedBW -= getUplinkBandwidth();
+		if (nowNorthUtilizedBW == 0 && t > 0)
+			this.now_up = false;
 	}
 
 	private void downlinkUpdate(SimEvent ev) {
+		double t = this.nowSouthUtilizedBW;
 		this.nowSouthUtilizedBW -= getDownlinkBandwidth();
+		if (nowNorthUtilizedBW == 0 && t > 0)
+			this.now_down = false;
 	}
 
 	/**
@@ -774,8 +782,21 @@ public class FogDevice extends PowerDatacenter {
 
 		double timeNow = CloudSim.clock();
 		double currentEnergyConsumption = getEnergyConsumption();
-		double newEnergyConsumption = currentEnergyConsumption
-				+ (timeNow - lastUtilizationUpdateTime) * getHost().getPowerModel().getPower(lastUtilization);
+		double newEnergyConsumption = -1;
+		if (this.getName().startsWith("m") && this.now_up) {
+			double m = this.info.EDGE_UP_BW_ALL_CLASS[this.info.CLASS_NUM - 1][0];
+			// edge -> fog
+			newEnergyConsumption = currentEnergyConsumption + (timeNow - lastUtilizationUpdateTime)
+					* (lastUtilization * (((283.17 * m) + 132.86) / 1000) + 0.5565);
+		} else if (this.getName().startsWith("m") && this.now_down) {
+			double m = this.info.FOG_DOWN_BW_ALL_CLASS[this.info.CLASS_NUM - 1][0];
+			// fog -> edge
+			newEnergyConsumption = currentEnergyConsumption + (timeNow - lastUtilizationUpdateTime)
+					* (lastUtilization * (((283.17 * m) + 132.86) / 1000) + 0.5565);
+		} else {
+			newEnergyConsumption = currentEnergyConsumption
+					+ (timeNow - lastUtilizationUpdateTime) * getHost().getPowerModel().getPower(lastUtilization);
+		}
 		setEnergyConsumption(newEnergyConsumption);
 
 		double currentCost = getTotalCost();
@@ -1025,7 +1046,7 @@ public class FogDevice extends PowerDatacenter {
 //		System.out.println(bw);
 		newbw = Math.min(max_tp, cal_tp) * 1024;
 //		System.out.println(newbw);
-//		newbw = bw;
+		newbw = bw;
 		return fileSize / newbw;
 	}
 
@@ -1047,6 +1068,7 @@ public class FogDevice extends PowerDatacenter {
 	}
 
 	protected void sendUp(Tuple tuple) {
+		this.now_up = true;
 		if (parentId > 0) {
 			if (this.nowNorthUtilizedBW <= this.maxbw) {
 				this.nowNorthUtilizedBW += getUplinkBandwidth();
@@ -1074,6 +1096,7 @@ public class FogDevice extends PowerDatacenter {
 		double networkDelay;
 		String[] p = getName().split("_");
 		CloudSim.pauseSimulation();
+
 		if (p[p.length - 1].equals("fog") && tuple.getDestModuleName().startsWith("m") && this.info.PACKET_LOSS != 0) {
 			networkDelay = applyPacketLoss(tuple.getCloudletFileSize(), getDownlinkBandwidth());
 		} else {
@@ -1081,6 +1104,7 @@ public class FogDevice extends PowerDatacenter {
 		}
 
 //		setSouthLinkBusy(true);
+
 		double latency = getChildToLatencyMap().get(childId);
 		send(getId(), networkDelay, FogEvents.UPDATE_SOUTH_TUPLE_QUEUE);
 		send(childId, networkDelay + latency, FogEvents.TUPLE_ARRIVAL, tuple);
@@ -1090,6 +1114,7 @@ public class FogDevice extends PowerDatacenter {
 	}
 
 	protected void sendDown(Tuple tuple, int childId) {
+		this.now_down = true;
 		if (getChildrenIds().contains(childId)) {
 			if (this.nowSouthUtilizedBW <= this.maxbw) {
 				this.nowSouthUtilizedBW += getDownlinkBandwidth();

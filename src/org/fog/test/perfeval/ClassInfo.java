@@ -68,13 +68,15 @@ public class ClassInfo {
 	public static int CLASS_NUM = -1;
 	static int SINGLE_APP = 0;
 	public static int CLASS1_MIPS = 3290000;
-	public static int CLASS2_MIPS = 105840;
+	public static int CLASS2_MIPS = 103657;
 	public static int CLASS3_MIPS = 1000000;
 	public static int CLASS4_MIPS = 59000;
-	static int CLOUD_MIPS[] = { 727000, 275000, 225000, 225000 };
+	//static int CLOUD_MIPS[] = { 727000, 275000, 225000, 225000 };
+	static int CLOUD_MIPS[] = { 727000, 225000, 225000, 225000 };
 	static int FOG_MIPS = 84000;
-	static int EDGE_MIPS[] = { 2636, 2280, 2225, 2225 };
-
+	//static int EDGE_MIPS[] = { 2636, 2280, 2225, 2225 };
+	static int EDGE_MIPS[] = { 2636, 2225, 2225, 2225 };
+	
 	// class3
 	static double EDGE_UPBW[] = { 2187000, 2187000, 2187000, 2187000 };
 	static double EDGE_DOWNBW[] = { -1, -1, -1, -1 };
@@ -367,7 +369,7 @@ public class ClassInfo {
 		value = origin_data[origin_data.length - 1];
 		configs = appendValue(configs, Integer.valueOf(value));
 		SINGLE_APP = Integer.valueOf(value);
-
+		
 		origin_data = t.get(17).split("=");
 		value = origin_data[origin_data.length - 1];
 		configs = appendValue(configs, Integer.valueOf(value));
@@ -513,6 +515,7 @@ public class ClassInfo {
 
 	public static Integer getWhichDevice(Integer idx_in_r) {
 		Integer z = idx_in_r;
+		System.out.println(idx_in_r);
 		if (z < ClassInfo.NUMBER_OF_CLASS1) {
 			return 0;
 		} else if (z >= ClassInfo.NUMBER_OF_CLASS1 && z < ClassInfo.NUMBER_OF_CLASS1 + ClassInfo.NUMBER_OF_CLASS2) {

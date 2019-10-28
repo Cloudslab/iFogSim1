@@ -85,6 +85,7 @@ public class VmSchedulerTimeSharedOverbookingEnergy extends VmSchedulerTimeShare
 		double time = CloudSim.clock();
 		double totalMips = getTotalMips();
 		double usingMips = totalMips - this.getAvailableMips();
+
 		if(usingMips < 0) {
 			System.err.println("addUtilizationEntry : using mips is negative, No way!");
 		}

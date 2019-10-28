@@ -246,8 +246,8 @@ public class Controller extends SimEntity {
 //		System.out.println("APPLICATION LOOP DELAYS");
 //		System.out.println("=========================================");
 		for (Integer loopId : TimeKeeper.getInstance().getLoopIdToTupleIds().keySet()) {
-//			System.out.println(getStringForLoopId(loopId) + " ---> "
-//					+ TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loopId));
+			System.out.println(getStringForLoopId(loopId) + " ---> "
+					+ TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loopId));
 			count++;
 			avg += TimeKeeper.getInstance().getLoopIdToCurrentAverage().get(loopId);
 		}

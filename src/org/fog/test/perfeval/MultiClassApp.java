@@ -103,16 +103,11 @@ public class MultiClassApp {
 	}
 
 	private static Application createApplications(ClassInfo info) {
-		// 0 -> running on the edge
-		// 1 -> on the fog
-		// 2 -> on the cloud
-		// 3 -> on the random place
-		Application app = makeClasses("multi_app", 0, info);
+		Application app = makeClasses("multi_app", info);
 		return app;
 	}
 
-	private static void tupleMapping(Application app, ClassInfo info, int offloading_policy, int device_idx) {
-		int number_of_class = info.CLASS_NUM;
+	private static void tupleMapping(Application app, ClassInfo info, int offloading_policy, int device_idx, int number_of_class) {
 		String appName = "class" + number_of_class;
 		String fog = appName + "_fog";
 		String cloud = appName + "_cloud";
@@ -126,11 +121,21 @@ public class MultiClassApp {
 		String cinput = "CINPUT" + number_of_class + "-" + String.valueOf(device_idx);
 		String cresult = "CRESULT" + number_of_class + "-" + String.valueOf(device_idx);
 
+		System.out.println(appName);
+		System.out.println(fog);
+		System.out.println(cloud);
+		System.out.println(sensor);
+		System.out.println(edge);
+		System.out.println(data);
+		System.out.println(result);
+		System.out.println(act);
+		System.out.println(cam_data);
+		System.out.println(cinput);
+		System.out.println(cresult);
 		// module name, input, output
 		// mapping (edge) cam_data -> data
 		info.printTwoStringLog("Make tuple mapping module:" + edge, "input", cam_data, "right", data);
 		app.addTupleMapping(edge, cam_data, data, new FractionalSelectivity(1.0));
-
 		if (offloading_policy == 2) {
 			// mapping (fog) data -> cinput
 			app.addTupleMapping(fog, data, cinput, new FractionalSelectivity(1.0));
@@ -171,8 +176,7 @@ public class MultiClassApp {
 			app.addTupleMapping(cloud, "USERS_STATE", "CLOUD_RESULT", new FractionalSelectivity(1.0));
 	}
 
-	private static void makeEdge(Application app, ClassInfo info, int offloading_policy, int device_idx) {
-		int number_of_class = info.CLASS_NUM;
+	private static void makeEdge(Application app, ClassInfo info, int offloading_policy, int device_idx, int number_of_class) {
 		String appName = "class" + number_of_class;
 		String fog = appName + "_fog";
 		String cloud = appName + "_cloud";
@@ -209,7 +213,6 @@ public class MultiClassApp {
 
 		switch (offloading_policy) {
 		case 0:
-
 			if (appName.equals("class1")) {
 				app.addAppEdge(cam_data, edge, info.CLASS1_MIPS, up_size, cam_data, Tuple.UP, AppEdge.SENSOR);
 			} else if (appName.equals("class2")) {
@@ -332,13 +335,13 @@ public class MultiClassApp {
 		int current_idx = 0;
 		for (int p = 0; p < 3; p++) {
 			for (int k = 0; k < info.RUNNING_REGION.get(p); k++) {
-				makeEdge(app, info, p, current_idx++);
+				makeEdge(app, info, p, current_idx++, info.CLASS_NUM);
 			}
 		}
 		current_idx = 0;
 		for (int p = 0; p < 3; p++) {
 			for (int k = 0; k < info.RUNNING_REGION.get(p); k++) {
-				tupleMapping(app, info, p, current_idx++);
+				tupleMapping(app, info, p, current_idx++, info.CLASS_NUM);
 			}
 		}
 
@@ -347,172 +350,72 @@ public class MultiClassApp {
 		return app;
 	}
 
-	private static Application makeClasses(String appId, int offloading_policy, ClassInfo info) {
+	private static Application makeClasses(String appId, ClassInfo info) {
 		// 1. make empty app
 		Application app = Application.createApplication(appId, 1);
-
-		// 2. make 4 classes client, fog, cloud appmodule
-		for (int x = 0; x < 4; x++) {
-			for (int i = 0; i < info.number_of_each_class.get(x); i++) {
-				app.addAppModule("class" + String.valueOf(x + 1) + "-" + String.valueOf(i), 2);
-
-				info.printOneStringLog("Make appModule", "name",
-						"class" + String.valueOf(x + 1) + "-" + String.valueOf(i));
+		int[] number_of_classes = {info.NUMBER_OF_CLASS1, info.NUMBER_OF_CLASS2, info.NUMBER_OF_CLASS3, info.NUMBER_OF_CLASS4};
+		
+		int j = 0;
+		for(int each : number_of_classes) {
+			j++;
+			if(each == 0) continue;
+			for (int i = 0; i < each; i++) {
+				app.addAppModule("class" + j + "-" + String.valueOf(i), 10);
+				info.printOneStringLog("Make appModule", "name", "class" + j + "-" + String.valueOf(i));
 			}
-			app.addAppModule("class" + String.valueOf(x + 1) + "_fog", 15);
-			app.addAppModule("class" + String.valueOf(x + 1) + "_cloud", 20);
+			app.addAppModule("class" + j + "_fog", 15);
+			app.addAppModule("class" + j + "_cloud", 20);
 
-			info.printOneStringLog("Make appModule", "name", "class" + String.valueOf(x + 1) + "_fog");
-			info.printOneStringLog("Make appModule", "name", "class" + String.valueOf(x + 1) + "_cloud");
-		}
+			info.printOneStringLog("Make appModule", "name", "class" + j + "_fog");
+			info.printOneStringLog("Make appModule", "name", "class" + j + "_cloud");
 
-		// 3. make appEdges
-		switch (offloading_policy) {
-		case 0:
-			for (int x = 0; x < 4; x++) {
-				String appName = "class" + String.valueOf(x + 1);
-				String fog = appName + "_fog";
-				String cloud = appName + "_cloud";
-				for (int i = 0; i < info.number_of_each_class.get(x); i++) {
-					String sensor = "CAM" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-					String edge = appName + "-" + String.valueOf(i);
-					String cam_data = "CAM_CLASS" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-					// make sensor -> edge
-					info.printTwoStringLog("Make edge(sensor->edge)", "left", sensor, "right", edge);
-					info.printOneStringLog("Tuple type", "name", cam_data);
-					app.addAppEdge(cam_data, edge, 10, 50, cam_data, Tuple.UP, AppEdge.SENSOR);
-
-					// make edge -> fog
-					info.printTwoStringLog("Make edge(edge->fog)", "left", edge, "right", fog);
-					info.printOneStringLog("Tuple type", "name",
-							"DATA" + String.valueOf(x + 1) + "-" + String.valueOf(i));
-					String data = "DATA" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-					if (appName.equals("class1")) {
-						app.addAppEdge(edge, fog, 77145, 50, data, Tuple.UP, AppEdge.MODULE);
-					} else if (appName.equals("class2")) {
-						app.addAppEdge(edge, fog, 4835, 50, data, Tuple.UP, AppEdge.MODULE);
-					} else if (appName.equals("class3")) {
-						app.addAppEdge(edge, fog, 150472, 50, data, Tuple.UP, AppEdge.MODULE);
-					} else {
-						app.addAppEdge(edge, fog, 3062, 50, data, Tuple.UP, AppEdge.MODULE);
-					}
-
-					// make fog -> edge
-					String result = "RESULT" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-					info.printTwoStringLog("Make edge(fog->edge)", "left", fog, "right", edge);
-					info.printOneStringLog("Tuple type", "name", result);
-					app.addAppEdge(fog, edge, 10, 50, result, Tuple.DOWN, AppEdge.MODULE);
-
-					// make edge -> act
-					String act = "ACT" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-					info.printTwoStringLog("Make edge(edge->act)", "left", sensor, "right", act);
-					info.printOneStringLog("Tuple type", "name", "SELF_STATE_UPDATE");
-					app.addAppEdge(edge, act, 50, 20, "SELF_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
-
-				}
-				// make fog -> cloud
-				info.printTwoStringLog("Make edge(fog->cloud)", "left", fog, "right", cloud);
-				info.printOneStringLog("Tuple type", "name", "USERS_STATE" + String.valueOf(x + 1));
-				app.addAppEdge(fog, cloud, 50, 20, "USERS_STATE", Tuple.UP, AppEdge.MODULE);
-			}
-			break;
-		case 1:
-			for (int x = 0; x < 4; x++) {
-				String appName = "class" + String.valueOf(x + 1);
-				String fog = appName + "_fog";
-				String cloud = appName + "_cloud";
-				for (int i = 0; i < info.number_of_each_class.get(x); i++) {
-					String sensor = "CAM" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-					String edge = appName + "-" + String.valueOf(i);
-					String cam_data = "CAM_CLASS" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-					// make sensor -> edge
-					info.printTwoStringLog("Make edge(sensor->edge)", "left", sensor, "right", edge);
-					info.printOneStringLog("Tuple type", "name", cam_data);
-					app.addAppEdge(cam_data, edge, 10, 50, cam_data, Tuple.UP, AppEdge.SENSOR);
-
-					// make edge -> fog
-					info.printTwoStringLog("Make edge(edge->fog)", "left", edge, "right", fog);
-					info.printOneStringLog("Tuple type", "name",
-							"DATA" + String.valueOf(x + 1) + "-" + String.valueOf(i));
-					String data = "DATA" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-					app.addAppEdge(edge, fog, 10, 50, data, Tuple.UP, AppEdge.MODULE);
-					// make fog -> edge
-					String result = "RESULT" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-					info.printTwoStringLog("Make edge(fog->edge)", "left", fog, "right", edge);
-					info.printOneStringLog("Tuple type", "name", result);
-					if (appName.equals("class1")) {
-						app.addAppEdge(fog, edge, 5000, 50, result, Tuple.DOWN, AppEdge.MODULE);
-					} else if (appName.equals("class2")) {
-						app.addAppEdge(fog, edge, 100, 50, result, Tuple.DOWN, AppEdge.MODULE);
-					} else if (appName.equals("class3")) {
-						app.addAppEdge(fog, edge, 2200, 50, result, Tuple.DOWN, AppEdge.MODULE);
-					} else {
-						app.addAppEdge(fog, edge, 30, 50, result, Tuple.DOWN, AppEdge.MODULE);
-					}
-
-					// make edge -> act
-					String act = "ACT" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-					info.printTwoStringLog("Make edge(edge->act)", "left", sensor, "right", act);
-					info.printOneStringLog("Tuple type", "name", "SELF_STATE_UPDATE");
-					app.addAppEdge(edge, act, 50, 20, "SELF_STATE_UPDATE", Tuple.DOWN, AppEdge.ACTUATOR);
-
-				}
-				// make fog -> cloud
-				info.printTwoStringLog("Make edge(fog->cloud)", "left", fog, "right", cloud);
-				info.printOneStringLog("Tuple type", "name", "USERS_STATE" + String.valueOf(x + 1));
-				app.addAppEdge(fog, cloud, 50, 20, "USERS_STATE", Tuple.UP, AppEdge.MODULE);
-			}
-			break;
-		case 2:
-			break;
-		}
-		Log.printLine("---------------------------------------");
-		Log.printLine("---------------------------------------");
-
-		// 4. make tuple mapping
-		for (int x = 0; x < 4; x++) {
-			String appName = "class" + String.valueOf(x + 1);
+			String appName = "class" + j;
 			String fog = appName + "_fog";
 			String cloud = appName + "_cloud";
-			for (int i = 0; i < info.number_of_each_class.get(x); i++) {
-				String sensor = "CAM" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-				String edge = appName + "-" + String.valueOf(i);
-				String data = "DATA" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-				String result = "RESULT" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-				String act = "ACT" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-				String cam_data = "CAM_CLASS" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-				// module name, input, output
-				// mapping (edge) cam_data -> data
-				info.printTwoStringLog("Make tuple mapping module:" + edge, "input", cam_data, "right", data);
-				app.addTupleMapping(edge, cam_data, data, new FractionalSelectivity(1.0));
 
-				// mapping (fog) data -> result
-				info.printTwoStringLog("Make tuple mapping module:" + fog, "input", data, "right", result);
-				app.addTupleMapping(fog, data, result, new FractionalSelectivity(1.0));
-
-				// mapping (fog) data -> USERS_STATE
-				info.printTwoStringLog("Make tuple mapping module:" + fog, "input", data, "right", "USERS_STATE");
-				app.addTupleMapping(fog, data, "USERS_STATE", new FractionalSelectivity(1.0));
-
-				// mapping (edge) result -> SELF_STATE_UPDATE
-				info.printTwoStringLog("Make tuple mapping module:" + edge, "input", result, "right",
-						"SELF_STATE_UPDATE");
-				app.addTupleMapping(edge, result, "SELF_STATE_UPDATE", new FractionalSelectivity(1.0));
-				loops.add(new AppLoop(new ArrayList<String>() {
-					{
-						add(cam_data);
-						add(edge);
-						add(fog);
-						add(edge);
-						add(act);
-					}
-				}));
+			double up_size = 0;
+			double down_size = 0;
+			switch (appName) {
+			case "class1":
+				up_size = info.CLASS1_INPUT_SIZE;
+				down_size = info.CLASS1_OUTPUT_SIZE;
+				break;
+			case "class2":
+				up_size = info.CLASS2_INPUT_SIZE;
+				down_size = info.CLASS2_OUTPUT_SIZE;
+				break;
+			case "class3":
+				up_size = info.CLASS3_INPUT_SIZE;
+				down_size = info.CLASS3_OUTPUT_SIZE;
+				break;
+			case "class4":
+				up_size = info.CLASS4_INPUT_SIZE;
+				down_size = info.CLASS4_OUTPUT_SIZE;
+				break;
 			}
-			// mapping (cloud) USERS_STATE -> CLOUD_RESULT
-			app.addTupleMapping(cloud, "USERS_STATE", "CLOUD_RESULT", new FractionalSelectivity(1.0));
 		}
+		int current_idx = 0;
+		j = 0;
+		for(int each : number_of_classes) {
+			j++;
+			if(each == 0) continue;
+			for(int x=0;x < each; x++)
+				makeEdge(app,info, info.OFFLOADING_POLICY, current_idx++, j);
+			current_idx = 0;
+		}
+		current_idx = 0;
+		j = 0;
+		for(int each : number_of_classes) {
+			j++;
+			if(each == 0) continue;
+			for(int x=0;x < each; x++)
+				tupleMapping(app,info, info.OFFLOADING_POLICY, current_idx++, j);
+			current_idx = 0;
+		}
+		
 		app.setLoops(loops);
 		app.setUserId(1);
+		
 
 		return app;
 	}
@@ -521,16 +424,9 @@ public class MultiClassApp {
 			ClassInfo info) {
 		ModuleMapping moduleMapping = ModuleMapping.createModuleMapping();
 		int class_num = info.CLASS_NUM - 1;
-		// TODO: make fog,cloud devices configurable, now these fixed to 1
 		// 1. make cloud device
 		FogDevice cloud = createFogDevice("cloud", info.CLOUD_MIPS[class_num], 32000, info.CLOUD_UPBW[class_num],
 				info.CLOUD_DOWNBW[class_num], 0, 0.01, 100, 0, info);
-//		FogDevice cloud = createFogDevice("cloud", info.CLOUD_MIPS[class_num], 32000,
-//				(info.CLOUD_UPBW[class_num] * info.NUMBER_OF_APPS >= info.CLOUD_MAXBW) ? info.CLOUD_MAXBW
-//						: info.CLOUD_UPBW[class_num] * info.NUMBER_OF_APPS,
-//				(info.CLOUD_DOWNBW[class_num] * info.NUMBER_OF_APPS >= info.CLOUD_MAXBW) ? info.CLOUD_MAXBW
-//						: info.CLOUD_DOWNBW[class_num] * info.NUMBER_OF_APPS,
-//				0, 0.01, 100, 0);
 
 		cloud.setParentId(-1);
 		fogDevices.add(cloud);
@@ -539,12 +435,6 @@ public class MultiClassApp {
 		// bandwidth(kb/s)
 		FogDevice fog = createFogDevice("fog-layer", info.FOG_MIPS, 8000, info.FOG_UPBW[class_num],
 				info.FOG_DOWNBW[class_num], 1, 0.0, 8, 0, info);
-//		FogDevice fog = createFogDevice("fog-layer", info.FOG_MIPS, 8000,
-//				(info.FOG_UPBW[class_num] * info.NUMBER_OF_APPS >= info.FOG_MAXBW) ? info.FOG_MAXBW
-//						: info.FOG_UPBW[class_num] * info.NUMBER_OF_APPS,
-//				(info.FOG_DOWNBW[class_num] * info.NUMBER_OF_APPS >= info.FOG_MAXBW) ? info.FOG_MAXBW
-//						: info.FOG_DOWNBW[class_num] * info.NUMBER_OF_APPS,
-//				1, 0.0, 8, 0);
 		fog.setParentId(cloud.getId());
 		fog.setUplinkLatency(info.FOG_TO_CLOUD_LATENCY);
 		fogDevices.add(fog);
@@ -554,10 +444,6 @@ public class MultiClassApp {
 			String sensorNodeId = "0-" + i;
 			FogDevice sensorNode = createFogDevice("m-" + sensorNodeId, info.EDGE_MIPS[class_num], 1000,
 					info.EDGE_UPBW[class_num], info.EDGE_DOWNBW[class_num], 2, 0, 1.0815, 0, info);
-//			FogDevice sensorNode = createFogDevice("m-" + sensorNodeId, info.EDGE_MIPS[class_num], 1000,
-//					(info.EDGE_UPBW[class_num] >= info.EDGE_MAXBW) ? info.EDGE_MAXBW : info.EDGE_UPBW[class_num],
-//					(info.EDGE_DOWNBW[class_num] >= info.EDGE_MAXBW) ? info.EDGE_MAXBW : info.EDGE_DOWNBW[class_num], 2,
-//					0, 1.0815, 0);
 			sensorNode.setParentId(fog.getId());
 			sensorNode.setUplinkLatency(info.EDGE_TO_FOG_LATENCY);
 			fogDevices.add(sensorNode);
@@ -618,27 +504,34 @@ public class MultiClassApp {
 			moduleMapping.addModuleToDevice(cloud_module, "cloud");
 			moduleMapping.addModuleToDevice(fog_module, "fog-layer");
 		} else {
+			int[] number_of_classes = {info.NUMBER_OF_CLASS1, info.NUMBER_OF_CLASS2, info.NUMBER_OF_CLASS3, info.NUMBER_OF_CLASS4};
 			// 4. make sensor,act devices
-			ArrayList<Integer> device_idx = new ArrayList<Integer>() {
-			};
-			for (int x = 0; x < 4; x++)
-				device_idx.add(0);
-
-			for (int x = 0; x < 4; x++) {
-				String appName = "class" + String.valueOf(x + 1);
+			int j = 0;
+			int idx = 2;
+			for (int each : number_of_classes) {
+				j++;
+				if(each == 0) continue;
+				String appName = "class" + String.valueOf(j);
 				String fog_module = appName + "_fog";
-				String cloud_module = appName + "_cloud";
-				for (int i = 0; i < info.number_of_each_class.get(x); i++) {
-					String sensor = "CAM" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-					String edge = appName + "-" + String.valueOf(i);
-					String data = "DATA" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-					String result = "RESULT" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-					String act = "ACT" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-					String cam_data = "CAM_CLASS" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-					String sensor_device_name = "s-" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-
+				String cloud_module = appName + "_cloud";					
+				for(int x = 0; x < each; x++) {
+					String sensor = "CAM" + String.valueOf(j) + "-" + String.valueOf(x);
+					String edge = appName + "-" + String.valueOf(x);
+					String data = "DATA" + String.valueOf(j) + "-" + String.valueOf(x);
+					String result = "RESULT" + String.valueOf(j) + "-" + String.valueOf(x);
+					String act = "ACT" + String.valueOf(j) + "-" + String.valueOf(x);
+					String cam_data = "CAM_CLASS" + String.valueOf(j) + "-" + String.valueOf(x);
+					String sensor_device_name = "s-" + String.valueOf(j) + "-" + String.valueOf(x);
+					System.out.println(sensor);
+					System.out.println(edge);
+					System.out.println(data);
+					System.out.println(result);
+					System.out.println(act);
+					System.out.println(cam_data);
+					System.out.println(sensor_device_name);
+					
 					// make sensors
-					info.printOneStringLog("make sensor device :", "name", sensor_device_name);
+					info.printOneStringLog("make sensor device", "name", sensor_device_name);
 					Sensor sensor_device = null;
 					if (appIds[x].equals("class1")) {
 						sensor_device = new Sensor(sensor_device_name, cam_data, userId, "multi_app",
@@ -659,20 +552,18 @@ public class MultiClassApp {
 					}
 					sensors.add(sensor_device);
 					// make actuators
-					String act_device_name = "act-" + String.valueOf(x + 1) + "-" + String.valueOf(i);
-					info.printOneStringLog("make actuator device :", "name", act_device_name);
+					String act_device_name = "act-" + String.valueOf(j) + "-" + String.valueOf(x);
+					info.printOneStringLog("make actuator device", "name", act_device_name);
 					Actuator noti = new Actuator(act_device_name, userId, "multi_app", act);
 					actuators.add(noti);
 
-					// TODO: change fogDevices to Hashmap
-					Integer idx = info.getKIndexofList(x, i, ClassInfo.random_idx);
+					//Integer idx = info.getKIndexofList(x, i, ClassInfo.random_idx);
 					// 5. connect devices to edge
-
-					sensor_device.setGatewayDeviceId(fogDevices.get(info.getWhichDevice(idx) + 2).getId());
+					sensor_device.setGatewayDeviceId(fogDevices.get(idx).getId());
 					sensor_device.setLatency(info.SENSOR_TO_EDGE_LATENCY);
-					noti.setGatewayDeviceId(fogDevices.get(info.getWhichDevice(idx) + 2).getId());
+					noti.setGatewayDeviceId(fogDevices.get(idx).getId());
 					noti.setLatency(0.05);
-					moduleMapping.addModuleToDevice(edge, fogDevices.get(info.getWhichDevice(idx) + 2).getName());
+					moduleMapping.addModuleToDevice(edge, fogDevices.get(idx++).getName());
 					Log.printLine("sensor, noti :" + sensor_device.getName() + "," + noti.getName() + "->"
 							+ sensor_device.getGatewayDeviceId());
 				}
@@ -681,108 +572,6 @@ public class MultiClassApp {
 			}
 		}
 
-		return moduleMapping;
-	}
-
-	private static ModuleMapping createFogDevices(int userId, String[] appIds, int offloading_policy, ClassInfo info) {
-
-		int class_num = info.CLASS_NUM - 1;
-		FogDevice cloud = createFogDevice("cloud", info.CLOUD_MIPS[class_num], 32000, 10000, 10000, 0, 0.01, 100, 0,
-				info);
-		cloud.setParentId(-1);
-		fogDevices.add(cloud);
-
-		// TODO: now number of fog-layer devices fixed at 1
-		FogDevice fog = createFogDevice("fog-layer", info.FOG_MIPS, 8000, 1000, 1000, 1, 0.0, 8, 0, info);
-		fog.setParentId(cloud.getId());
-		fog.setUplinkLatency(info.FOG_TO_CLOUD_LATENCY);
-		fogDevices.add(fog);
-
-		for (int i = 0; i < info.numOfSensorNode; i++) {
-			String sensorNodeId = "0-" + i;
-			FogDevice sensorNode = createFogDevice("m-" + sensorNodeId, info.EDGE_MIPS[class_num], 1000, 1000, 1000, 2,
-					0, 1.0815, 0.5665, info);
-			sensorNode.setParentId(fog.getId());
-			sensorNode.setUplinkLatency(info.EDGE_TO_FOG_LATENCY);
-			fogDevices.add(sensorNode);
-		}
-		ArrayList<Integer> apps = new ArrayList<Integer>() {
-		};
-		for (int x = 0; x < 4; x++)
-			apps.add(0);
-		int didx = 2;
-		int i = 0;
-		for (int x = 0; x < 4; x++) {
-			i = 0;
-			for (Integer app_idx : info.map_of_each_class.get(appIds[x])) {
-				Sensor sensor = null;
-				if (appIds[x].equals("class1")) {
-					sensor = new Sensor("s-" + String.valueOf(app_idx + 1) + "-" + apps.get(app_idx),
-							"CAM_class" + String.valueOf(app_idx + 1), userId, appIds[x],
-							new DeterministicDistribution(info.CLASS1_TRANSMISSION_TIME));
-				} else if (appIds[x].equals("class2")) {
-					sensor = new Sensor("s-" + String.valueOf(app_idx + 1) + "-" + apps.get(app_idx),
-							"CAM_class" + String.valueOf(app_idx + 1), userId, appIds[x],
-							new DeterministicDistribution(info.CLASS2_TRANSMISSION_TIME));
-				} else if (appIds[x].equals("class3")) {
-					sensor = new Sensor("s-" + String.valueOf(app_idx + 1) + "-" + apps.get(app_idx),
-							"CAM_class" + String.valueOf(app_idx + 1), userId, appIds[x],
-							new DeterministicDistribution(info.CLASS3_TRANSMISSION_TIME));
-				} else {
-					sensor = new Sensor("s-" + String.valueOf(app_idx + 1) + "-" + apps.get(app_idx),
-							"CAM_class" + String.valueOf(app_idx + 1), userId, appIds[x],
-							new DeterministicDistribution(info.CLASS4_TRANSMISSION_TIME));
-				}
-				sensors.add(sensor);
-				Actuator noti = new Actuator(appIds[x] + "_act-" + String.valueOf(app_idx + 1), userId, appIds[x],
-						appIds[x] + "_ACT");
-				actuators.add(noti);
-				sensor.setGatewayDeviceId(fogDevices.get(didx).getId());
-				sensor.setLatency(info.SENSOR_TO_EDGE_LATENCY);
-				noti.setGatewayDeviceId(fogDevices.get(didx).getId());
-				noti.setLatency(5.0);
-				Log.printLine("Sensor : " + "s-" + String.valueOf(app_idx + 1) + "-" + apps.get(app_idx) + ", Device: "
-						+ fogDevices.get(didx).getName() + ", Tuple: " + "CAM_class" + String.valueOf(app_idx + 1));
-				apps.set(app_idx, apps.get(app_idx) + 1);
-			}
-			didx += 1;
-		}
-
-		for (int x = 0; x < 4; x++)
-			apps.add(0);
-		ModuleMapping moduleMapping = ModuleMapping.createModuleMapping(); // initializing a module mapping
-		for (int x = 0; x < 4; x++) {
-			moduleMapping.addModuleToDevice("class" + String.valueOf(x + 1) + "_cloud", "cloud"); // fixing all
-																									// instances of the
-																									// Connector module
-																									// to the Cloud
-			moduleMapping.addModuleToDevice("class" + String.valueOf(x + 1) + "_fog", "fog-layer"); // fixing all
-																									// instances of the
-																									// Concentration
-																									// Calculator module
-																									// to the Cloud
-		}
-		apps.clear();
-		for (int x = 0; x < 4; x++)
-			apps.add(0);
-		for (int x = 0; x < 4; x++) {
-			for (Integer app_idx : info.map_of_each_class.get(appIds[x])) {
-				for (FogDevice device : fogDevices) {
-					if (device.getName().startsWith("m")) {
-						String[] temps = device.getName().split("-");
-						String last = temps[temps.length - 1];
-						if (Integer.valueOf(last) == x) {
-							Log.printLine("module name : " + "class" + String.valueOf(app_idx + 1) + "-"
-									+ Integer.valueOf(apps.get(app_idx)) + "-> " + device.getName());
-							moduleMapping.addModuleToDevice(
-									"class" + String.valueOf(app_idx + 1) + "-" + Integer.valueOf(apps.get(app_idx)),
-									device.getName());
-							apps.set(app_idx, apps.get(app_idx) + 1);
-						}
-					}
-				}
-			}
-		}
 		return moduleMapping;
 	}
 

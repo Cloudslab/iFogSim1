@@ -121,7 +121,10 @@ public class Application {
 	 */
 	public void addTupleMapping(String moduleName, String inputTupleType, String outputTupleType,
 			SelectivityModel selectivityModel) {
+//		System.out.println("addTupleMapping");
+//		System.out.println(moduleName);
 		AppModule module = getModuleByName(moduleName);
+//		System.out.println(inputTupleType +" "+ outputTupleType);
 		module.getSelectivityMap().put(new Pair<String, String>(inputTupleType, outputTupleType), selectivityModel);
 	}
 

@@ -784,10 +784,17 @@ public class FogDevice extends PowerDatacenter {
 		double currentEnergyConsumption = getEnergyConsumption();
 		double newEnergyConsumption = -1;
 		if (this.getName().startsWith("m") && this.now_up) {
-			double m = this.info.EDGE_UP_BW_ALL_CLASS[this.info.CLASS_NUM - 1][0];
-			// edge -> fog
-			newEnergyConsumption = currentEnergyConsumption + (timeNow - lastUtilizationUpdateTime)
+			if(info.CLASS_NUM != 5) {
+				double m = this.info.EDGE_UP_BW_ALL_CLASS[this.info.CLASS_NUM - 1][0];
+				// edge -> fog
+				newEnergyConsumption = currentEnergyConsumption + (timeNow - lastUtilizationUpdateTime)
 					* (lastUtilization * (((283.17 * m) + 132.86) / 1000) + 0.5565);
+			}else {
+				double m = this.info.EDGE_UP_BW_ALL_CLASS[3][0];
+				// edge -> fog
+				newEnergyConsumption = currentEnergyConsumption + (timeNow - lastUtilizationUpdateTime)
+					* (lastUtilization * (((283.17 * m) + 132.86) / 1000) + 0.5565);				
+			}
 		} else if (this.getName().startsWith("m") && this.now_down) {
 			double m = this.info.FOG_DOWN_BW_ALL_CLASS[this.info.CLASS_NUM - 1][0];
 			// fog -> edge
@@ -1034,19 +1041,21 @@ public class FogDevice extends PowerDatacenter {
 	protected double applyPacketLoss(long fileSize, double bw) {
 		double p = Math.sqrt(this.info.PACKET_LOSS * 0.01);
 		double newbw = bw;
-		double max_mss = 129472 * 6; // tcp
+		double max_mss = 4096 * 2; // tcp
 		double rtt = info.EDGE_TO_FOG_LATENCY;
 		double b = (fileSize * 1.01 * this.info.PACKET_LOSS) / max_mss; // TODO: have to check this
-		double max_tp = max_mss / rtt;
+		double max_tp = max_mss / rtt / 1024;
 		double time_out = 30; // TODO: have to check this
 		double cal_tp = (1 / (rtt * Math.sqrt((2 * b * p) / 3)
 				+ time_out * Math.min(1, 3 * Math.sqrt(3 * b * p / 8)) * p * (1 + (32 * p * p))));
 		if (p == 0)
 			return fileSize / bw;
-//		System.out.println(bw);
+
 		newbw = Math.min(max_tp, cal_tp) * 1024;
+		if (newbw > bw)
+			newbw = bw;
 //		System.out.println(newbw);
-		newbw = bw;
+//		newbw = bw;
 		return fileSize / newbw;
 	}
 

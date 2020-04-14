@@ -24,7 +24,6 @@ import org.fog.utils.FogEvents;
 import org.fog.utils.FogUtils;
 import org.fog.utils.NetworkUsageMonitor;
 import org.fog.utils.TimeKeeper;
-
 public class Controller extends SimEntity {
 
 	public static boolean ONLY_CLOUD = false;
@@ -211,17 +210,29 @@ public class Controller extends SimEntity {
 	private void printPowerDetails() {
 		double avg = 0;
 		double count = 0;
-		for (FogDevice fogDevice : getFogDevices()) {
-			// System.out.println(fogDevice.getName() + " : Energy Consumed =
-			// "+fogDevice.getEnergyConsumption());
-			// System.out.println(fogDevice.getEnergyConsumption());
-			if (count++ >= 2) {
-				avg += fogDevice.getEnergyConsumption();
+		org.fog.test.perfeval.ClassInfo class_info = new org.fog.test.perfeval.ClassInfo();
+		if(class_info.CLASS_NUM != 5) {
+			for (FogDevice fogDevice : getFogDevices()) {
+//				 System.out.println(fogDevice.getName() + " : Energy Consumed ="+fogDevice.getEnergyConsumption());
+//				 System.out.println(fogDevice.getEnergyConsumption());
+				if (count++ >= 2) {
+					avg += fogDevice.getEnergyConsumption();
+				}
 			}
+			System.out.println(getFogDevices().get(0).getEnergyConsumption());
+			System.out.println(getFogDevices().get(1).getEnergyConsumption());
+			System.out.println(avg / (count - 2));			
+		}else {
+			for (FogDevice fogDevice : getFogDevices()) {
+//				 System.out.println(fogDevice.getName() + " : Energy Consumed ="+fogDevice.getEnergyConsumption());
+//				 System.out.println(fogDevice.getEnergyConsumption());
+				if (count++ >= 1) {
+					avg += fogDevice.getEnergyConsumption();
+				}
+			}
+			System.out.println(getFogDevices().get(0).getEnergyConsumption());
+			System.out.println(avg / (count - 1));						
 		}
-		System.out.println(getFogDevices().get(0).getEnergyConsumption());
-		System.out.println(getFogDevices().get(1).getEnergyConsumption());
-		System.out.println(avg / (count - 2));
 	}
 
 	private String getStringForLoopId(int loopId) {

@@ -70,12 +70,12 @@ public class ClassInfo {
 	public static int CLASS1_MIPS = 3290000;
 	public static int CLASS2_MIPS = 103657;
 	public static int CLASS3_MIPS = 1000000;
-	public static int CLASS4_MIPS = 59000;
+	public static Double CLASS4_MIPS = 59000.0;
 	//static int CLOUD_MIPS[] = { 727000, 275000, 225000, 225000 };
-	static int CLOUD_MIPS[] = { 727000, 225000, 225000, 225000 };
-	static int FOG_MIPS = 84000;
+	static Double CLOUD_MIPS[] = { 727000.0, 225000.0, 225000.0, 225000.0 };
+	static Double FOG_MIPS = 84000.0;
 	//static int EDGE_MIPS[] = { 2636, 2280, 2225, 2225 };
-	static int EDGE_MIPS[] = { 2636, 2225, 2225, 2225 };
+	static Double EDGE_MIPS[] = { 2636.0, 2225.0, 2225.0, 2225.0 };
 	
 	// class3
 	static double EDGE_UPBW[] = { 2187000, 2187000, 2187000, 2187000 };
@@ -93,7 +93,8 @@ public class ClassInfo {
 	static double CLASS3_OUTPUT_SIZE = 8200000 / 1024;
 	static double CLASS4_INPUT_SIZE = 145536 / 1024;
 	static double CLASS4_OUTPUT_SIZE = 13846510 / 1024;
-
+	
+	static double FOG_APP_MIPS = 0;
 	static int CLOUD_NETWORK = -1;
 	public static int PACKET_LOSS = -1;
 
@@ -150,6 +151,17 @@ public class ClassInfo {
 			{ 4896.07569, 1995.689321, 1265.603496, 594.1109598, 389.4335991, 210.8467187, 123.4011969, 60.7593139 },
 			{ 4363.968093, 1629.208241, 1013.226971, 375.1728756, 242.5775889, 168.0645707, 106.8656681, 63.36929717 },
 			{ 8205.882611, 1499.198459, 830.5834582, 420.4083472, 242.894509, 125.8441799, 74.14563561, 39.55754545 } };
+
+	public static double VIRT_EDGE_UP_BW_ALL_CLASS[][] = {
+			{ 2675.428779, 2675.428779, 2675.428779, 2675.428779, 2675.428779, 2675.428779, 2675.428779, 2675.428779 },
+			{ 9751.371281, 9751.371281, 9751.371281, 9751.371281, 9751.371281, 9751.371281, 9751.371281, 9751.371281 },
+			{ 8451.608133, 8451.608133, 8451.608133, 8451.608133, 8451.608133, 8451.608133, 8451.608133, 8451.608133 },
+			{ 2541.263685, 2541.263685,2541.263685,2541.263685, 2541.263685, 2541.263685,2541.263685,2541.263685 } };
+	public static double VIRT_FOG_DOWN_BW_ALL_CLASS[][] = {
+			{ 297.6648287, 297.6648287,297.6648287,297.6648287,297.6648287,297.6648287,297.6648287,297.6648287, },
+			{ 4896.07569,4896.07569,4896.07569,4896.07569,4896.07569,4896.07569,4896.07569,4896.07569, },
+			{ 4363.968093, 4363.968093,4363.968093,4363.968093,4363.968093,4363.968093,4363.968093,4363.968093, },
+			{ 8205.882611,8205.882611,8205.882611,8205.882611,8205.882611,8205.882611,8205.882611,8205.882611, } };
 
 //	Upload throughput	125.1220703	586.6529304	625.6103516
 //	download throughput	0.1572265625	1.965332031	2.382220644
@@ -234,40 +246,42 @@ public class ClassInfo {
 
 	public static void setFogPacketLossAndCloudNetwork() {
 		int class_num = CLASS_NUM - 1;
-		ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][0];
-		ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][0];
+		if(class_num == 4)
+			class_num = 3;
+		ClassInfo.EDGE_UPBW[class_num] = VIRT_EDGE_UP_BW_ALL_CLASS[class_num][0];
+		ClassInfo.FOG_DOWNBW[class_num] = VIRT_FOG_DOWN_BW_ALL_CLASS[class_num][0];
 		switch (ClassInfo.PACKET_LOSS) {
 		case 2:
-			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][1];
-			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][1];
+			ClassInfo.EDGE_UPBW[class_num] = VIRT_EDGE_UP_BW_ALL_CLASS[class_num][1];
+			ClassInfo.FOG_DOWNBW[class_num] = VIRT_FOG_DOWN_BW_ALL_CLASS[class_num][1];
 			break;
 		case 4:
-			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][2];
-			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][2];
+			ClassInfo.EDGE_UPBW[class_num] = VIRT_EDGE_UP_BW_ALL_CLASS[class_num][2];
+			ClassInfo.FOG_DOWNBW[class_num] = VIRT_FOG_DOWN_BW_ALL_CLASS[class_num][2];
 			break;
 		case 6:
-			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][3];
-			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][3];
+			ClassInfo.EDGE_UPBW[class_num] = VIRT_EDGE_UP_BW_ALL_CLASS[class_num][3];
+			ClassInfo.FOG_DOWNBW[class_num] = VIRT_FOG_DOWN_BW_ALL_CLASS[class_num][3];
 			break;
 		case 8:
-			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][4];
-			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][4];
+			ClassInfo.EDGE_UPBW[class_num] = VIRT_EDGE_UP_BW_ALL_CLASS[class_num][4];
+			ClassInfo.FOG_DOWNBW[class_num] = VIRT_FOG_DOWN_BW_ALL_CLASS[class_num][4];
 			break;
 		case 10:
-			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][5];
-			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][5];
+			ClassInfo.EDGE_UPBW[class_num] = VIRT_EDGE_UP_BW_ALL_CLASS[class_num][5];
+			ClassInfo.FOG_DOWNBW[class_num] = VIRT_FOG_DOWN_BW_ALL_CLASS[class_num][5];
 			break;
 		case 12:
-			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][6];
-			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][6];
+			ClassInfo.EDGE_UPBW[class_num] = VIRT_EDGE_UP_BW_ALL_CLASS[class_num][6];
+			ClassInfo.FOG_DOWNBW[class_num] = VIRT_FOG_DOWN_BW_ALL_CLASS[class_num][6];
 			break;
 		case 14:
-			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][7];
-			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][7];
+			ClassInfo.EDGE_UPBW[class_num] = VIRT_EDGE_UP_BW_ALL_CLASS[class_num][7];
+			ClassInfo.FOG_DOWNBW[class_num] = VIRT_FOG_DOWN_BW_ALL_CLASS[class_num][7];
 			break;
 		default:
-			ClassInfo.EDGE_UPBW[class_num] = EDGE_UP_BW_ALL_CLASS[class_num][0];
-			ClassInfo.FOG_DOWNBW[class_num] = FOG_DOWN_BW_ALL_CLASS[class_num][0];
+			ClassInfo.EDGE_UPBW[class_num] = VIRT_EDGE_UP_BW_ALL_CLASS[class_num][0];
+			ClassInfo.FOG_DOWNBW[class_num] = VIRT_FOG_DOWN_BW_ALL_CLASS[class_num][0];
 			break;
 		}
 
@@ -396,6 +410,26 @@ public class ClassInfo {
 		for (int x = 0; x < 3; x++) {
 			RUNNING_REGION.add(x, Integer.valueOf(runs[x]));
 		}
+		
+		origin_data = t.get(22).split("=");
+		value = origin_data[origin_data.length - 1];		
+		CLASS4_MIPS = Double.valueOf(value);
+		
+		origin_data = t.get(23).split("=");
+		value = origin_data[origin_data.length - 1];
+		CLOUD_MIPS[3] = Double.valueOf(value);
+		
+		origin_data = t.get(24).split("=");
+		value = origin_data[origin_data.length - 1];
+		FOG_MIPS = Double.valueOf(value);
+
+		origin_data = t.get(25).split("=");
+		value = origin_data[origin_data.length - 1];
+		EDGE_MIPS[3] = Double.valueOf(value);
+		
+		origin_data = t.get(26).split("=");
+		value = origin_data[origin_data.length - 1];
+		FOG_APP_MIPS = Double.valueOf(value);
 		setFogPacketLossAndCloudNetwork();
 	}
 
@@ -530,6 +564,7 @@ public class ClassInfo {
 		} else {
 			return -1;
 		}
+
 	}
 
 }

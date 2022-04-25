@@ -1,6 +1,9 @@
 # iFogSim
 A Toolkit for Modeling and Simulation of Resource Management Techniques in Internet of Things, Edge and Fog Computing Environments
 
+# Attention: iFogSim2 new Release 
+The new version of iFogSim (i.e., iFogSim2) can be accessed from <A href="https://github.com/Cloudslab/iFogSim">iFogSim2</A>
+
 # iFogSim Tutorial Examples
  Access from <A href="https://github.com/Cloudslab/iFogSimTutorials">https://github.com/Cloudslab/iFogSimTutorials</A>
 
